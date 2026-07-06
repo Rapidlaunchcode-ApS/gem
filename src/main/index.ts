@@ -11,8 +11,10 @@ import {
 } from 'electron'
 import { execFile } from 'node:child_process'
 import { join } from 'node:path'
-import type { ClipItem } from '../shared/types'
+import { themeSchema, type ClipItem } from '../shared/types'
+import { SettingsStore } from './settings'
 import { HistoryStore } from './store'
+import { createTrayIcon } from './trayIcon'
 import { ClipboardWatcher } from './watcher'
 
 const PANEL_HEIGHT = 380
@@ -21,6 +23,7 @@ const isDev = !app.isPackaged && process.env['ELECTRON_RENDERER_URL'] !== undefi
 let panel: BrowserWindow | null = null
 let tray: Tray | null = null
 let store: HistoryStore
+let settings: SettingsStore
 let watcher: ClipboardWatcher
 
 function createPanel(): BrowserWindow {
@@ -172,8 +175,7 @@ function showBoardMenu(id: string): void {
 }
 
 function createTray(): void {
-  tray = new Tray(nativeImage.createEmpty())
-  tray.setTitle('📋')
+  tray = new Tray(createTrayIcon())
   tray.setToolTip('PasteFree')
   tray.setContextMenu(
     Menu.buildFromTemplate([
@@ -250,6 +252,12 @@ function registerIpc(): void {
     broadcastState()
   })
 
+  ipcMain.handle('settings:get', () => settings.get())
+
+  ipcMain.handle('settings:set-theme', (_e, theme: unknown) => {
+    settings.setTheme(themeSchema.parse(theme))
+  })
+
   ipcMain.handle('panel:hide', () => panel?.hide())
 }
 
@@ -266,6 +274,7 @@ if (!gotLock) {
     app.dock?.hide()
 
     store = new HistoryStore()
+    settings = new SettingsStore()
     watcher = new ClipboardWatcher(store, broadcastState)
     watcher.start()
 

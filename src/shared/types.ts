@@ -54,6 +54,14 @@ export const legacyHistoryFileSchema = z.object({
   items: z.array(clipItemSchema)
 })
 
+export const themeSchema = z.enum(['system', 'light', 'dark'])
+export type Theme = z.infer<typeof themeSchema>
+
+export const settingsSchema = z.object({
+  theme: themeSchema
+})
+export type Settings = z.infer<typeof settingsSchema>
+
 export interface AppState {
   items: ClipItem[]
   boards: Board[]
@@ -76,6 +84,8 @@ export interface PasteFreeApi {
   showBoardMenu: (id: string) => Promise<void>
   /** Fired when the user picks “Rename” in the native menu. */
   onItemEdit: (listener: (id: string) => void) => () => void
+  getSettings: () => Promise<Settings>
+  setTheme: (theme: Theme) => Promise<void>
   clearHistory: () => Promise<void>
   hidePanel: () => Promise<void>
   onPanelShown: (listener: () => void) => () => void

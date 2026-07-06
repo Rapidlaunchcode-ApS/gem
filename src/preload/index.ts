@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer } from 'electron'
-import type { AppState, PasteFreeApi } from '../shared/types'
+import type { AppState, PasteFreeApi, Settings } from '../shared/types'
 
 function subscribe<T>(channel: string, listener: (payload: T) => void): () => void {
   const handler = (_e: Electron.IpcRendererEvent, payload: T): void => listener(payload)
@@ -22,6 +22,8 @@ const api: PasteFreeApi = {
   showItemMenu: (id) => ipcRenderer.invoke('item:menu', id) as Promise<void>,
   showBoardMenu: (id) => ipcRenderer.invoke('board:menu', id) as Promise<void>,
   onItemEdit: (listener) => subscribe<string>('item:edit', listener),
+  getSettings: () => ipcRenderer.invoke('settings:get') as Promise<Settings>,
+  setTheme: (theme) => ipcRenderer.invoke('settings:set-theme', theme) as Promise<void>,
   clearHistory: () => ipcRenderer.invoke('history:clear') as Promise<void>,
   hidePanel: () => ipcRenderer.invoke('panel:hide') as Promise<void>,
   onPanelShown: (listener) => subscribe<void>('panel:shown', () => listener())

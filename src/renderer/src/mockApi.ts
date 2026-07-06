@@ -1,4 +1,4 @@
-import type { AppState, Board, ClipItem, PasteFreeApi } from '../../shared/types'
+import type { AppState, Board, ClipItem, PasteFreeApi, Settings } from '../../shared/types'
 
 // 8x5 orange PNG so the image card has something to show.
 const DEMO_THUMB =
@@ -170,6 +170,8 @@ export function createMockApi(): PasteFreeApi {
     showItemMenu: () => Promise.resolve(),
     showBoardMenu: () => Promise.resolve(),
     onItemEdit: () => () => undefined,
+    getSettings: () => Promise.resolve<Settings>({ theme: 'system' }),
+    setTheme: () => Promise.resolve(),
     clearHistory: () => {
       items = items.filter((i) => i.pinned || i.boardId !== undefined)
       emit()

@@ -2,17 +2,16 @@ import type { ClipKind } from '../../shared/types'
 
 export interface KindMeta {
   label: string
-  icon: string
   color: string
 }
 
 export const KIND_META: Record<ClipKind, KindMeta> = {
-  text: { label: 'Text', icon: '¶', color: '#8e8e93' },
-  code: { label: 'Code', icon: '</>', color: '#af52de' },
-  markdown: { label: 'Markdown', icon: 'M↓', color: '#ff9f0a' },
-  link: { label: 'Link', icon: '🔗', color: '#0a84ff' },
-  color: { label: 'Color', icon: '◐', color: '#30d158' },
-  image: { label: 'Image', icon: '🖼', color: '#64d2ff' }
+  text: { label: 'Text', color: '#8e8e93' },
+  code: { label: 'Code', color: '#af52de' },
+  markdown: { label: 'Markdown', color: '#ff9f0a' },
+  link: { label: 'Link', color: '#0a84ff' },
+  color: { label: 'Color', color: '#30d158' },
+  image: { label: 'Image', color: '#64d2ff' }
 }
 
 export function timeAgo(timestamp: number): string {

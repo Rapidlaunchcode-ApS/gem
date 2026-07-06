@@ -4,6 +4,7 @@ import { marked } from 'marked'
 import { memo, useMemo } from 'react'
 import type { ClipItem } from '../../../shared/types'
 import { KIND_META, timeAgo } from '../kinds'
+import { KindIcon, LinkIcon, PinIcon } from './Icons'
 
 const PREVIEW_CHARS = 1200
 
@@ -33,8 +34,7 @@ export const Card = memo(function Card({
   onRenamed,
   onEditCancel
 }: CardProps) {
-  const meta = KIND_META[item.kind]
-  const headerColor = boardColor ?? (item.kind === 'color' ? item.content : meta.color)
+  const headerColor = boardColor ?? (item.kind === 'color' ? item.content : KIND_META[item.kind].color)
 
   return (
     <div
@@ -72,7 +72,7 @@ export const Card = memo(function Card({
           />
         ) : (
           <span className="card__kind" title={item.title ?? undefined}>
-            {!item.title && <span className="card__kind-icon">{meta.icon}</span>}
+            {!item.title && <KindIcon kind={item.kind} size={12} className="card__kind-icon" />}
             {item.title ?? kindTitle(item)}
           </span>
         )}
@@ -84,7 +84,7 @@ export const Card = memo(function Card({
             onTogglePin()
           }}
         >
-          {item.pinned ? '★' : '☆'}
+          <PinIcon size={13} filled={item.pinned} />
         </button>
       </div>
       <div className="card__body">
@@ -138,9 +138,8 @@ function CardBody({ item }: { item: ClipItem }) {
       )
     case 'color':
       return (
-        <div className="card__color">
-          <div className="card__swatch" style={{ background: item.content }} />
-          <code>{item.content}</code>
+        <div className="card__color" style={{ background: item.content }}>
+          <code className="card__color-code">{item.content}</code>
         </div>
       )
     case 'link':
@@ -167,7 +166,9 @@ function LinkBody({ url }: { url: string }) {
   }, [url])
   return (
     <div className="card__link">
-      <div className="card__link-globe">🌐</div>
+      <div className="card__link-badge">
+        <LinkIcon size={20} />
+      </div>
       <div className="card__link-host">{host}</div>
       <div className="card__link-url">{url}</div>
     </div>

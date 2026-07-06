@@ -1,14 +1,16 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import type { AppState, Board, ClipItem, ClipKind } from '../../shared/types'
+import type { AppState, Board, ClipItem, ClipKind, Theme } from '../../shared/types'
 import { Card } from './components/Card'
+import { ClipboardIcon, PinIcon, SearchIcon, SettingsIcon } from './components/Icons'
 import { Preview } from './components/Preview'
+import { Settings } from './components/Settings'
 import { KIND_META } from './kinds'
 
 type TypeFilter = 'all' | 'pinned' | ClipKind
 
 const TYPE_FILTERS: { key: TypeFilter; label: string }[] = [
   { key: 'all', label: 'All' },
-  { key: 'pinned', label: '★' },
+  { key: 'pinned', label: 'Pinned' },
   { key: 'text', label: KIND_META.text.label },
   { key: 'code', label: KIND_META.code.label },
   { key: 'markdown', label: KIND_META.markdown.label },
@@ -27,6 +29,8 @@ export function App() {
   const [creatingBoard, setCreatingBoard] = useState(false)
   const [editingItemId, setEditingItemId] = useState<string | null>(null)
   const [dragOverBoardId, setDragOverBoardId] = useState<string | null>(null)
+  const [settingsOpen, setSettingsOpen] = useState(false)
+  const [theme, setTheme] = useState<Theme>('system')
   const searchRef = useRef<HTMLInputElement>(null)
   const stripRef = useRef<HTMLDivElement>(null)
 
@@ -41,6 +45,22 @@ export function App() {
   useEffect(() => window.api.onItemEdit(setEditingItemId), [])
 
   useEffect(() => {
+    void window.api.getSettings().then((s) => setTheme(s.theme))
+  }, [])
+
+  // data-theme lets an explicit choice win over prefers-color-scheme
+  // (and makes the toggle work in the browser-mock renderer too).
+  useEffect(() => {
+    if (theme === 'system') delete document.documentElement.dataset['theme']
+    else document.documentElement.dataset['theme'] = theme
+  }, [theme])
+
+  const changeTheme = useCallback((next: Theme) => {
+    setTheme(next)
+    void window.api.setTheme(next)
+  }, [])
+
+  useEffect(() => {
     return window.api.onPanelShown(() => {
       setQuery('')
       setTypeFilter('all')
@@ -48,6 +68,7 @@ export function App() {
       setPreviewOpen(false)
       setCreatingBoard(false)
       setEditingItemId(null)
+      setSettingsOpen(false)
       searchRef.current?.focus()
       stripRef.current?.scrollTo({ left: 0 })
     })
@@ -149,7 +170,8 @@ export function App() {
         }
         case 'Escape':
           e.preventDefault()
-          if (previewOpen) setPreviewOpen(false)
+          if (settingsOpen) setSettingsOpen(false)
+          else if (previewOpen) setPreviewOpen(false)
           else void window.api.hidePanel()
           break
         case 'Backspace':
@@ -173,13 +195,23 @@ export function App() {
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [filtered.length, selected, paste, previewOpen, query, boards, activeBoardId, selectTab])
+  }, [
+    filtered.length,
+    selected,
+    paste,
+    previewOpen,
+    settingsOpen,
+    query,
+    boards,
+    activeBoardId,
+    selectTab
+  ])
 
   return (
     <div className="panel">
       <header className="panel__header">
         <div className="search">
-          <span className="search__icon">⌕</span>
+          <SearchIcon className="search__icon" size={14} />
           <input
             ref={searchRef}
             className="search__input"
@@ -256,7 +288,7 @@ export function App() {
                   setSelectedIndex(0)
                 }}
               >
-                {f.label}
+                {f.key === 'pinned' ? <PinIcon size={12} /> : f.label}
               </button>
             ))}
           </nav>
@@ -265,11 +297,19 @@ export function App() {
         <span className="panel__count">
           {filtered.length} {filtered.length === 1 ? 'item' : 'items'}
         </span>
+
+        <button
+          className="panel__settings"
+          title="Settings"
+          onClick={() => setSettingsOpen(true)}
+        >
+          <SettingsIcon size={16} />
+        </button>
       </header>
 
       {filtered.length === 0 ? (
         <div className="empty">
-          <div className="empty__icon">📋</div>
+          <ClipboardIcon className="empty__icon" size={36} />
           <div className="empty__title">
             {activeBoard
               ? `“${activeBoard.name}” is empty`
@@ -319,6 +359,10 @@ export function App() {
 
       {previewOpen && selected && (
         <Preview item={selected} onClose={() => setPreviewOpen(false)} />
+      )}
+
+      {settingsOpen && (
+        <Settings theme={theme} onThemeChange={changeTheme} onClose={() => setSettingsOpen(false)} />
       )}
     </div>
   )
