@@ -1,4 +1,4 @@
-import type { ClipItem, PasteFreeApi } from '../../shared/types'
+import type { AppState, Board, ClipItem, PasteFreeApi } from '../../shared/types'
 
 // 8x5 orange PNG so the image card has something to show.
 const DEMO_THUMB =
@@ -6,7 +6,45 @@ const DEMO_THUMB =
 
 const now = Date.now()
 
+const demoBoards: Board[] = [
+  { id: 'board-regex', name: 'Regex', color: '#bf5af2' },
+  { id: 'board-email', name: 'Email Templates', color: '#30d158' }
+]
+
 const demoItems: ClipItem[] = [
+  {
+    id: 'demo-regex-email',
+    kind: 'code',
+    title: 'Validate Email',
+    boardId: 'board-regex',
+    content:
+      "const check = new RegExp(/^[^\\s@]+@[^\\s@]+\\.[^\\s@]{2,}$/)\n\nfunction validateEmail(email: string): boolean {\n  return check.test(email)\n}",
+    chars: 132,
+    pinned: false,
+    copiedAt: now - 60_000
+  },
+  {
+    id: 'demo-regex-url',
+    kind: 'code',
+    title: 'Extract URL',
+    boardId: 'board-regex',
+    content:
+      'const url = new RegExp(/https?:\\/\\/(www\\.)?[-a-zA-Z0-9@:%._+~#=]{1,256}\\.[a-zA-Z0-9()]{1,6}\\b([-a-zA-Z0-9()@:%_+.~#?&//=]*)/)',
+    chars: 126,
+    pinned: false,
+    copiedAt: now - 5 * 60_000
+  },
+  {
+    id: 'demo-email-signature',
+    kind: 'text',
+    title: 'Signature',
+    boardId: 'board-email',
+    content:
+      'Nicklas Dupont\nRapidlaunchcode\n\nnicklas@rapidlaunchcode.app\nrapidlaunchcode.app',
+    chars: 79,
+    pinned: false,
+    copiedAt: now - 8 * 60_000
+  },
   {
     id: 'demo-code',
     kind: 'code',
@@ -20,7 +58,7 @@ const demoItems: ClipItem[] = [
     id: 'demo-md',
     kind: 'markdown',
     content:
-      '# Release notes\n\n- [x] Clipboard watcher\n- [x] Context-aware previews\n- [ ] Pinboards\n\n**Ship it** — see [docs](https://example.com)',
+      '# Release notes\n\n- [x] Clipboard watcher\n- [x] Context-aware previews\n- [x] Pinboards\n\n**Ship it** — see [docs](https://example.com)',
     chars: 130,
     pinned: false,
     copiedAt: now - 2 * 60_000
@@ -65,12 +103,13 @@ const demoItems: ClipItem[] = [
 /** Browser-only stand-in so the renderer can be developed at localhost:5173 without Electron. */
 export function createMockApi(): PasteFreeApi {
   let items = [...demoItems]
-  let notify: ((items: ClipItem[]) => void) | null = null
-  const emit = (): void => notify?.([...items])
+  let boards = [...demoBoards]
+  let notify: ((state: AppState) => void) | null = null
+  const emit = (): void => notify?.({ items: [...items], boards: [...boards] })
 
   return {
-    getHistory: () => Promise.resolve([...items]),
-    onHistoryChange: (listener) => {
+    getState: () => Promise.resolve({ items: [...items], boards: [...boards] }),
+    onStateChange: (listener) => {
       notify = listener
       return () => {
         notify = null
@@ -88,8 +127,51 @@ export function createMockApi(): PasteFreeApi {
       emit()
       return Promise.resolve()
     },
+    renameItem: (id, title) => {
+      const trimmed = title.trim()
+      items = items.map((i) => {
+        if (i.id !== id) return i
+        if (trimmed.length === 0) {
+          const { title: _dropped, ...rest } = i
+          return rest
+        }
+        return { ...i, title: trimmed }
+      })
+      emit()
+      return Promise.resolve()
+    },
+    assignToBoard: (itemId, boardId) => {
+      items = items.map((i) => {
+        if (i.id !== itemId) return i
+        if (boardId === null) {
+          const { boardId: _dropped, ...rest } = i
+          return rest
+        }
+        return { ...i, boardId }
+      })
+      emit()
+      return Promise.resolve()
+    },
+    createBoard: (name) => {
+      boards = [...boards, { id: `board-${boards.length}`, name, color: '#0a84ff' }]
+      emit()
+      return Promise.resolve()
+    },
+    deleteBoard: (id) => {
+      boards = boards.filter((b) => b.id !== id)
+      items = items.map((i) => {
+        if (i.boardId !== id) return i
+        const { boardId: _dropped, ...rest } = i
+        return rest
+      })
+      emit()
+      return Promise.resolve()
+    },
+    showItemMenu: () => Promise.resolve(),
+    showBoardMenu: () => Promise.resolve(),
+    onItemEdit: () => () => undefined,
     clearHistory: () => {
-      items = items.filter((i) => i.pinned)
+      items = items.filter((i) => i.pinned || i.boardId !== undefined)
       emit()
       return Promise.resolve()
     },

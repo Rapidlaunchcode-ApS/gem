@@ -1,14 +1,14 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import type { ClipItem, ClipKind } from '../../shared/types'
+import type { AppState, Board, ClipItem, ClipKind } from '../../shared/types'
 import { Card } from './components/Card'
 import { Preview } from './components/Preview'
 import { KIND_META } from './kinds'
 
-type Filter = 'all' | 'pinned' | ClipKind
+type TypeFilter = 'all' | 'pinned' | ClipKind
 
-const FILTERS: { key: Filter; label: string }[] = [
+const TYPE_FILTERS: { key: TypeFilter; label: string }[] = [
   { key: 'all', label: 'All' },
-  { key: 'pinned', label: '★ Pinned' },
+  { key: 'pinned', label: '★' },
   { key: 'text', label: KIND_META.text.label },
   { key: 'code', label: KIND_META.code.label },
   { key: 'markdown', label: KIND_META.markdown.label },
@@ -18,40 +18,64 @@ const FILTERS: { key: Filter; label: string }[] = [
 ]
 
 export function App() {
-  const [items, setItems] = useState<ClipItem[]>([])
+  const [state, setState] = useState<AppState>({ items: [], boards: [] })
+  const [activeBoardId, setActiveBoardId] = useState<string | null>(null)
   const [query, setQuery] = useState('')
-  const [filter, setFilter] = useState<Filter>('all')
+  const [typeFilter, setTypeFilter] = useState<TypeFilter>('all')
   const [selectedIndex, setSelectedIndex] = useState(0)
   const [previewOpen, setPreviewOpen] = useState(false)
+  const [creatingBoard, setCreatingBoard] = useState(false)
+  const [editingItemId, setEditingItemId] = useState<string | null>(null)
+  const [dragOverBoardId, setDragOverBoardId] = useState<string | null>(null)
   const searchRef = useRef<HTMLInputElement>(null)
   const stripRef = useRef<HTMLDivElement>(null)
 
+  const { items, boards } = state
+  const activeBoard = boards.find((b) => b.id === activeBoardId) ?? null
+
   useEffect(() => {
-    void window.api.getHistory().then(setItems)
-    return window.api.onHistoryChange(setItems)
+    void window.api.getState().then(setState)
+    return window.api.onStateChange(setState)
   }, [])
+
+  useEffect(() => window.api.onItemEdit(setEditingItemId), [])
 
   useEffect(() => {
     return window.api.onPanelShown(() => {
       setQuery('')
-      setFilter('all')
+      setTypeFilter('all')
       setSelectedIndex(0)
       setPreviewOpen(false)
+      setCreatingBoard(false)
+      setEditingItemId(null)
       searchRef.current?.focus()
       stripRef.current?.scrollTo({ left: 0 })
     })
   }, [])
 
+  // If the active board was deleted, fall back to history.
+  useEffect(() => {
+    if (activeBoardId && !boards.some((b) => b.id === activeBoardId)) {
+      setActiveBoardId(null)
+    }
+  }, [boards, activeBoardId])
+
   const filtered = useMemo(() => {
     const q = query.trim().toLowerCase()
     return items.filter((item) => {
-      if (filter === 'pinned' && !item.pinned) return false
-      if (filter !== 'all' && filter !== 'pinned' && item.kind !== filter) return false
+      if (activeBoard) {
+        if (item.boardId !== activeBoard.id) return false
+      } else {
+        if (typeFilter === 'pinned' && !item.pinned) return false
+        if (typeFilter !== 'all' && typeFilter !== 'pinned' && item.kind !== typeFilter)
+          return false
+      }
       if (q.length === 0) return true
+      if (item.title?.toLowerCase().includes(q)) return true
       if (item.kind === 'image') return 'image screenshot'.includes(q)
       return item.content.toLowerCase().includes(q)
     })
-  }, [items, query, filter])
+  }, [items, query, typeFilter, activeBoard])
 
   const selected = filtered[Math.min(selectedIndex, filtered.length - 1)] ?? null
 
@@ -72,12 +96,20 @@ export function App() {
     void window.api.pasteItem(item.id)
   }, [])
 
-  const togglePin = useCallback((item: ClipItem) => {
-    void window.api.setPinned(item.id, !item.pinned)
+  const selectTab = useCallback((boardId: string | null) => {
+    setActiveBoardId(boardId)
+    setSelectedIndex(0)
+    setQuery('')
+    searchRef.current?.focus()
   }, [])
 
   useEffect(() => {
     const onKeyDown = (e: KeyboardEvent): void => {
+      // Let inline inputs (rename, new board) handle their own keys.
+      const target = e.target as HTMLElement | null
+      if (target instanceof HTMLInputElement && !target.classList.contains('search__input')) {
+        return
+      }
       switch (e.key) {
         case 'ArrowRight':
           e.preventDefault()
@@ -106,6 +138,15 @@ export function App() {
             if (selected) setPreviewOpen((open) => !open)
           }
           break
+        case 'Tab': {
+          // Tab / Shift+Tab cycles History → boards → History.
+          e.preventDefault()
+          const tabs: (string | null)[] = [null, ...boards.map((b) => b.id)]
+          const current = tabs.indexOf(activeBoardId)
+          const next = (current + (e.shiftKey ? -1 : 1) + tabs.length) % tabs.length
+          selectTab(tabs[next] ?? null)
+          break
+        }
         case 'Escape':
           e.preventDefault()
           if (previewOpen) setPreviewOpen(false)
@@ -120,7 +161,7 @@ export function App() {
         case 'p':
           if (e.metaKey) {
             e.preventDefault()
-            if (selected) togglePin(selected)
+            if (selected) void window.api.setPinned(selected.id, !selected.pinned)
           }
           break
         default:
@@ -132,7 +173,7 @@ export function App() {
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [filtered.length, selected, paste, togglePin, previewOpen, query])
+  }, [filtered.length, selected, paste, previewOpen, query, boards, activeBoardId, selectTab])
 
   return (
     <div className="panel">
@@ -152,20 +193,75 @@ export function App() {
             spellCheck={false}
           />
         </div>
-        <nav className="filters">
-          {FILTERS.map((f) => (
-            <button
-              key={f.key}
-              className={`filters__chip${filter === f.key ? ' filters__chip--active' : ''}`}
-              onClick={() => {
-                setFilter(f.key)
-                setSelectedIndex(0)
+
+        <nav className="tabs">
+          <button
+            className={`tabs__tab${activeBoardId === null ? ' tabs__tab--active' : ''}`}
+            onClick={() => selectTab(null)}
+          >
+            <span className="tabs__dot" style={{ background: '#8e8e93' }} />
+            Clipboard History
+          </button>
+          {boards.map((board) => (
+            <BoardTab
+              key={board.id}
+              board={board}
+              active={activeBoardId === board.id}
+              dragOver={dragOverBoardId === board.id}
+              onSelect={() => selectTab(board.id)}
+              onDragOver={() => setDragOverBoardId(board.id)}
+              onDragLeave={() => setDragOverBoardId(null)}
+              onDropItem={(itemId) => {
+                setDragOverBoardId(null)
+                void window.api.assignToBoard(itemId, board.id)
               }}
-            >
-              {f.label}
-            </button>
+            />
           ))}
+          {creatingBoard ? (
+            <input
+              className="tabs__new-input"
+              placeholder="Board name"
+              autoFocus
+              spellCheck={false}
+              onBlur={() => setCreatingBoard(false)}
+              onKeyDown={(e) => {
+                if (e.key === 'Enter') {
+                  const name = e.currentTarget.value.trim()
+                  if (name) void window.api.createBoard(name)
+                  setCreatingBoard(false)
+                } else if (e.key === 'Escape') {
+                  setCreatingBoard(false)
+                }
+              }}
+            />
+          ) : (
+            <button
+              className="tabs__add"
+              title="New pinboard"
+              onClick={() => setCreatingBoard(true)}
+            >
+              +
+            </button>
+          )}
         </nav>
+
+        {activeBoard === null && (
+          <nav className="filters">
+            {TYPE_FILTERS.map((f) => (
+              <button
+                key={f.key}
+                className={`filters__chip${typeFilter === f.key ? ' filters__chip--active' : ''}`}
+                onClick={() => {
+                  setTypeFilter(f.key)
+                  setSelectedIndex(0)
+                }}
+              >
+                {f.label}
+              </button>
+            ))}
+          </nav>
+        )}
+
         <span className="panel__count">
           {filtered.length} {filtered.length === 1 ? 'item' : 'items'}
         </span>
@@ -175,12 +271,18 @@ export function App() {
         <div className="empty">
           <div className="empty__icon">📋</div>
           <div className="empty__title">
-            {items.length === 0 ? 'Your clipboard history will appear here' : 'No matches'}
+            {activeBoard
+              ? `“${activeBoard.name}” is empty`
+              : items.length === 0
+                ? 'Your clipboard history will appear here'
+                : 'No matches'}
           </div>
           <div className="empty__hint">
-            {items.length === 0
-              ? 'Copy something — code, links, images and markdown get smart previews.'
-              : 'Try a different search or filter.'}
+            {activeBoard
+              ? 'Drag a card onto the tab, or right-click a card → Pinboard.'
+              : items.length === 0
+                ? 'Copy something — code, links, images and markdown get smart previews.'
+                : 'Try a different search or filter.'}
           </div>
         </div>
       ) : (
@@ -189,10 +291,18 @@ export function App() {
             <Card
               key={item.id}
               item={item}
+              boardColor={activeBoard?.color ?? null}
               selected={i === Math.min(selectedIndex, filtered.length - 1)}
+              editing={editingItemId === item.id}
               onSelect={() => setSelectedIndex(i)}
               onPaste={() => paste(item)}
-              onTogglePin={() => togglePin(item)}
+              onTogglePin={() => void window.api.setPinned(item.id, !item.pinned)}
+              onContextMenu={() => void window.api.showItemMenu(item.id)}
+              onRenamed={(title) => {
+                setEditingItemId(null)
+                void window.api.renameItem(item.id, title)
+              }}
+              onEditCancel={() => setEditingItemId(null)}
             />
           ))}
         </div>
@@ -201,6 +311,7 @@ export function App() {
       <footer className="panel__hints">
         <span><kbd>↵</kbd> Paste</span>
         <span><kbd>Space</kbd> Preview</span>
+        <span><kbd>⇥</kbd> Boards</span>
         <span><kbd>⌘P</kbd> Pin</span>
         <span><kbd>⌘⌫</kbd> Delete</span>
         <span><kbd>Esc</kbd> Close</span>
@@ -210,5 +321,49 @@ export function App() {
         <Preview item={selected} onClose={() => setPreviewOpen(false)} />
       )}
     </div>
+  )
+}
+
+interface BoardTabProps {
+  board: Board
+  active: boolean
+  dragOver: boolean
+  onSelect: () => void
+  onDragOver: () => void
+  onDragLeave: () => void
+  onDropItem: (itemId: string) => void
+}
+
+function BoardTab({
+  board,
+  active,
+  dragOver,
+  onSelect,
+  onDragOver,
+  onDragLeave,
+  onDropItem
+}: BoardTabProps) {
+  return (
+    <button
+      className={`tabs__tab${active ? ' tabs__tab--active' : ''}${dragOver ? ' tabs__tab--drop' : ''}`}
+      onClick={onSelect}
+      onContextMenu={(e) => {
+        e.preventDefault()
+        void window.api.showBoardMenu(board.id)
+      }}
+      onDragOver={(e) => {
+        e.preventDefault()
+        onDragOver()
+      }}
+      onDragLeave={onDragLeave}
+      onDrop={(e) => {
+        e.preventDefault()
+        const itemId = e.dataTransfer.getData('application/x-pastefree-item')
+        if (itemId) onDropItem(itemId)
+      }}
+    >
+      <span className="tabs__dot" style={{ background: board.color }} />
+      {board.name}
+    </button>
   )
 }

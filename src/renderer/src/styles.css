@@ -15,7 +15,22 @@
   --text-dim: rgba(255, 255, 255, 0.55);
   --text-faint: rgba(255, 255, 255, 0.35);
   --accent: #0a84ff;
+  --preview-bg: rgba(30, 30, 34, 0.97);
   --radius: 12px;
+}
+
+@media (prefers-color-scheme: light) {
+  :root {
+    --bg: rgba(244, 244, 246, 0.55);
+    --surface: rgba(0, 0, 0, 0.05);
+    --surface-strong: rgba(0, 0, 0, 0.09);
+    --border: rgba(0, 0, 0, 0.1);
+    --text: rgba(20, 20, 25, 0.92);
+    --text-dim: rgba(20, 20, 25, 0.55);
+    --text-faint: rgba(20, 20, 25, 0.4);
+    --accent: #007aff;
+    --preview-bg: rgba(248, 248, 250, 0.98);
+  }
 }
 
 html,
@@ -56,7 +71,7 @@ body {
   display: flex;
   align-items: center;
   gap: 7px;
-  width: 260px;
+  width: clamp(150px, 20vw, 260px);
   flex-shrink: 0;
   background: var(--surface);
   border: 1px solid var(--border);
@@ -89,11 +104,97 @@ body {
   color: var(--text-faint);
 }
 
+/* ── Pinboard tabs ──────────────────────────────────── */
+
+.tabs {
+  display: flex;
+  align-items: center;
+  gap: 4px;
+  overflow-x: auto;
+  scrollbar-width: none;
+  flex: 1 1 auto;
+  min-width: 160px;
+}
+
+.tabs::-webkit-scrollbar {
+  display: none;
+}
+
+.tabs__tab {
+  appearance: none;
+  border: none;
+  display: flex;
+  align-items: center;
+  gap: 7px;
+  background: none;
+  color: var(--text-dim);
+  font-size: 13px;
+  font-family: inherit;
+  font-weight: 500;
+  padding: 6px 12px;
+  border-radius: 8px;
+  cursor: pointer;
+  white-space: nowrap;
+  transition: background 0.15s, color 0.15s;
+}
+
+.tabs__tab:hover {
+  color: var(--text);
+}
+
+.tabs__tab--active {
+  background: var(--surface-strong);
+  color: var(--text);
+}
+
+.tabs__tab--drop {
+  background: var(--accent);
+  color: #fff;
+}
+
+.tabs__dot {
+  width: 9px;
+  height: 9px;
+  border-radius: 50%;
+  flex-shrink: 0;
+}
+
+.tabs__add {
+  appearance: none;
+  border: none;
+  background: none;
+  color: var(--text-dim);
+  font-size: 17px;
+  line-height: 1;
+  padding: 5px 9px;
+  border-radius: 8px;
+  cursor: pointer;
+}
+
+.tabs__add:hover {
+  background: var(--surface);
+  color: var(--text);
+}
+
+.tabs__new-input {
+  background: var(--surface);
+  border: 1px solid var(--accent);
+  border-radius: 8px;
+  outline: none;
+  color: var(--text);
+  font-size: 12.5px;
+  font-family: inherit;
+  padding: 5px 10px;
+  width: 130px;
+}
+
 .filters {
   display: flex;
   gap: 6px;
   overflow-x: auto;
   scrollbar-width: none;
+  flex: 0 1 auto;
+  min-width: 60px;
 }
 
 .filters::-webkit-scrollbar {
@@ -129,6 +230,12 @@ body {
   color: var(--text-faint);
   font-size: 12px;
   white-space: nowrap;
+}
+
+@media (max-width: 860px) {
+  .panel__count {
+    display: none;
+  }
 }
 
 /* ── Card strip ─────────────────────────────────────── */
@@ -202,6 +309,25 @@ body {
 .card__kind-icon {
   font-size: 10px;
   opacity: 0.9;
+}
+
+.card__title-input {
+  flex: 1;
+  min-width: 0;
+  background: rgba(0, 0, 0, 0.25);
+  border: none;
+  border-radius: 5px;
+  outline: none;
+  color: #fff;
+  font-size: 11px;
+  font-weight: 600;
+  font-family: inherit;
+  padding: 2px 6px;
+  margin-right: 6px;
+}
+
+.card__title-input::placeholder {
+  color: rgba(255, 255, 255, 0.55);
 }
 
 .card__pin {
@@ -376,6 +502,26 @@ body {
   overflow: hidden;
 }
 
+@media (prefers-color-scheme: light) {
+  /* Code keeps an editor-dark background so github-dark token colors stay readable. */
+  .card__code,
+  .preview__code,
+  .card__markdown pre,
+  .preview__markdown pre {
+    background: #1e1e23;
+  }
+
+  .card__markdown code,
+  .preview__markdown code {
+    color: var(--text);
+  }
+
+  .card__markdown pre code,
+  .preview__markdown pre code {
+    color: #e6e6e6;
+  }
+}
+
 /* ── Empty state ────────────────────────────────────── */
 
 .empty {
@@ -441,7 +587,7 @@ body {
   max-height: 88vh;
   display: flex;
   flex-direction: column;
-  background: rgba(30, 30, 34, 0.97);
+  background: var(--preview-bg);
   border: 1px solid var(--border);
   border-radius: 14px;
   box-shadow: 0 24px 60px rgba(0, 0, 0, 0.5);

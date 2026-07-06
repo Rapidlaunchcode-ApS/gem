@@ -15,7 +15,7 @@ export function Preview({ item, onClose }: PreviewProps) {
     <div className="preview" onClick={onClose}>
       <div className="preview__card" onClick={(e) => e.stopPropagation()}>
         <div className="preview__header">
-          <span>{KIND_META[item.kind].label}</span>
+          <span>{item.title ?? KIND_META[item.kind].label}</span>
           <span>{timeAgo(item.copiedAt)}</span>
         </div>
         <div className="preview__body">

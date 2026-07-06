@@ -9,36 +9,73 @@ const PREVIEW_CHARS = 1200
 
 interface CardProps {
   item: ClipItem
+  /** Set when the card is shown inside a pinboard — colors the header like Paste. */
+  boardColor: string | null
   selected: boolean
+  editing: boolean
   onSelect: () => void
   onPaste: () => void
   onTogglePin: () => void
+  onContextMenu: () => void
+  onRenamed: (title: string) => void
+  onEditCancel: () => void
 }
 
 export const Card = memo(function Card({
   item,
+  boardColor,
   selected,
+  editing,
   onSelect,
   onPaste,
-  onTogglePin
+  onTogglePin,
+  onContextMenu,
+  onRenamed,
+  onEditCancel
 }: CardProps) {
   const meta = KIND_META[item.kind]
-  const headerColor = item.kind === 'color' ? item.content : meta.color
+  const headerColor = boardColor ?? (item.kind === 'color' ? item.content : meta.color)
 
   return (
     <div
       className={`card${selected ? ' card--selected' : ''}`}
       data-id={item.id}
+      draggable={!editing}
+      onDragStart={(e) => {
+        e.dataTransfer.setData('application/x-pastefree-item', item.id)
+        e.dataTransfer.effectAllowed = 'copy'
+      }}
       onClick={onSelect}
       onDoubleClick={onPaste}
+      onContextMenu={(e) => {
+        e.preventDefault()
+        onSelect()
+        onContextMenu()
+      }}
       role="option"
       aria-selected={selected}
     >
       <div className="card__header" style={{ background: headerColor }}>
-        <span className="card__kind">
-          <span className="card__kind-icon">{meta.icon}</span>
-          {kindTitle(item)}
-        </span>
+        {editing ? (
+          <input
+            className="card__title-input"
+            defaultValue={item.title ?? ''}
+            placeholder={kindTitle(item)}
+            autoFocus
+            spellCheck={false}
+            onClick={(e) => e.stopPropagation()}
+            onBlur={(e) => onRenamed(e.currentTarget.value)}
+            onKeyDown={(e) => {
+              if (e.key === 'Enter') onRenamed(e.currentTarget.value)
+              else if (e.key === 'Escape') onEditCancel()
+            }}
+          />
+        ) : (
+          <span className="card__kind" title={item.title ?? undefined}>
+            {!item.title && <span className="card__kind-icon">{meta.icon}</span>}
+            {item.title ?? kindTitle(item)}
+          </span>
+        )}
         <button
           className={`card__pin${item.pinned ? ' card__pin--active' : ''}`}
           title={item.pinned ? 'Unpin' : 'Pin'}
@@ -74,7 +111,7 @@ function sizeLabel(item: ClipItem): string {
     return `${item.width}×${item.height}`
   }
   if (item.chars !== undefined) {
-    return item.chars === 1 ? '1 char' : `${item.chars.toLocaleString()} chars`
+    return item.chars === 1 ? '1 character' : `${item.chars.toLocaleString()} characters`
   }
   return ''
 }

@@ -81,8 +81,8 @@ function togglePanel(): void {
   else showPanel()
 }
 
-function broadcastHistory(): void {
-  panel?.webContents.send('history:changed', store.all())
+function broadcastState(): void {
+  panel?.webContents.send('state:changed', store.state())
 }
 
 function writeItemToClipboard(item: ClipItem): void {
@@ -94,7 +94,14 @@ function writeItemToClipboard(item: ClipItem): void {
   watcher.markOwnWrite()
   // Re-copying bumps the item to the front of history.
   store.add({ ...item, copiedAt: Date.now() })
-  broadcastHistory()
+  broadcastState()
+}
+
+function pasteItem(item: ClipItem): void {
+  panel?.hide()
+  writeItemToClipboard(item)
+  // Give macOS a beat to return focus to the previous app before keystroking.
+  setTimeout(simulatePaste, 150)
 }
 
 function simulatePaste(): void {
@@ -107,6 +114,61 @@ function simulatePaste(): void {
       if (err) console.error('Auto-paste failed (grant Accessibility permission):', err.message)
     }
   )
+}
+
+function showItemMenu(id: string): void {
+  const item = store.get(id)
+  if (!item || !panel) return
+  const boardEntries = store.state().boards.map((board) => ({
+    label: board.name,
+    type: 'checkbox' as const,
+    checked: item.boardId === board.id,
+    click: () => {
+      store.assignToBoard(id, item.boardId === board.id ? null : board.id)
+      broadcastState()
+    }
+  }))
+
+  const menu = Menu.buildFromTemplate([
+    { label: 'Paste', click: () => pasteItem(item) },
+    { label: 'Copy', click: () => writeItemToClipboard(item) },
+    { label: 'Rename…', click: () => panel?.webContents.send('item:edit', id) },
+    { type: 'separator' },
+    {
+      label: item.pinned ? 'Unpin' : 'Pin',
+      click: () => {
+        store.setPinned(id, !item.pinned)
+        broadcastState()
+      }
+    },
+    ...(boardEntries.length > 0
+      ? [{ label: 'Pinboard', submenu: boardEntries } as const]
+      : []),
+    { type: 'separator' as const },
+    {
+      label: 'Delete',
+      click: () => {
+        store.delete(id)
+        broadcastState()
+      }
+    }
+  ])
+  menu.popup({ window: panel })
+}
+
+function showBoardMenu(id: string): void {
+  const board = store.getBoard(id)
+  if (!board || !panel) return
+  const menu = Menu.buildFromTemplate([
+    {
+      label: `Delete “${board.name}”`,
+      click: () => {
+        store.deleteBoard(id)
+        broadcastState()
+      }
+    }
+  ])
+  menu.popup({ window: panel })
 }
 
 function createTray(): void {
@@ -127,7 +189,7 @@ function createTray(): void {
         label: 'Clear History…',
         click: () => {
           store.clear()
-          broadcastHistory()
+          broadcastState()
         }
       },
       { type: 'separator' },
@@ -137,43 +199,62 @@ function createTray(): void {
 }
 
 function registerIpc(): void {
-  ipcMain.handle('history:get', () => store.all())
+  ipcMain.handle('state:get', () => store.state())
 
   ipcMain.handle('item:paste', (_e, id: unknown) => {
-    const item = store.get(asId(id))
-    if (!item) return
-    panel?.hide()
-    writeItemToClipboard(item)
-    // Give macOS a beat to return focus to the previous app before keystroking.
-    setTimeout(simulatePaste, 150)
+    const item = store.get(asString(id))
+    if (item) pasteItem(item)
   })
 
   ipcMain.handle('item:copy', (_e, id: unknown) => {
-    const item = store.get(asId(id))
-    if (!item) return
-    writeItemToClipboard(item)
+    const item = store.get(asString(id))
+    if (item) writeItemToClipboard(item)
   })
 
   ipcMain.handle('item:delete', (_e, id: unknown) => {
-    store.delete(asId(id))
-    broadcastHistory()
+    store.delete(asString(id))
+    broadcastState()
   })
 
   ipcMain.handle('item:pin', (_e, id: unknown, pinned: unknown) => {
-    store.setPinned(asId(id), pinned === true)
-    broadcastHistory()
+    store.setPinned(asString(id), pinned === true)
+    broadcastState()
   })
+
+  ipcMain.handle('item:rename', (_e, id: unknown, title: unknown) => {
+    store.rename(asString(id), asString(title))
+    broadcastState()
+  })
+
+  ipcMain.handle('item:assign', (_e, id: unknown, boardId: unknown) => {
+    store.assignToBoard(asString(id), boardId === null ? null : asString(boardId))
+    broadcastState()
+  })
+
+  ipcMain.handle('item:menu', (_e, id: unknown) => showItemMenu(asString(id)))
+
+  ipcMain.handle('board:create', (_e, name: unknown) => {
+    store.createBoard(asString(name))
+    broadcastState()
+  })
+
+  ipcMain.handle('board:delete', (_e, id: unknown) => {
+    store.deleteBoard(asString(id))
+    broadcastState()
+  })
+
+  ipcMain.handle('board:menu', (_e, id: unknown) => showBoardMenu(asString(id)))
 
   ipcMain.handle('history:clear', () => {
     store.clear()
-    broadcastHistory()
+    broadcastState()
   })
 
   ipcMain.handle('panel:hide', () => panel?.hide())
 }
 
-function asId(value: unknown): string {
-  if (typeof value !== 'string') throw new TypeError('Expected item id string')
+function asString(value: unknown): string {
+  if (typeof value !== 'string') throw new TypeError('Expected a string argument')
   return value
 }
 
@@ -185,7 +266,7 @@ if (!gotLock) {
     app.dock?.hide()
 
     store = new HistoryStore()
-    watcher = new ClipboardWatcher(store, broadcastHistory)
+    watcher = new ClipboardWatcher(store, broadcastState)
     watcher.start()
 
     panel = createPanel()
