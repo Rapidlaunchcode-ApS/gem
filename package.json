@@ -1,0 +1,50 @@
+{
+  "name": "pastefree",
+  "version": "0.1.0",
+  "description": "Free, context-aware clipboard manager for macOS inspired by Paste",
+  "main": "./out/main/index.js",
+  "type": "module",
+  "private": true,
+  "author": "Rapidlaunchcode",
+  "license": "MIT",
+  "scripts": {
+    "dev": "electron-vite dev",
+    "build": "electron-vite build",
+    "start": "electron-vite preview",
+    "typecheck": "tsc --noEmit -p tsconfig.node.json && tsc --noEmit -p tsconfig.web.json",
+    "dist": "electron-vite build && electron-builder --mac"
+  },
+  "dependencies": {
+    "dompurify": "^3.2.4",
+    "highlight.js": "^11.11.1",
+    "marked": "^15.0.7",
+    "react": "^19.0.0",
+    "react-dom": "^19.0.0",
+    "zod": "^3.24.2"
+  },
+  "devDependencies": {
+    "@types/node": "^22.13.10",
+    "@types/react": "^19.0.10",
+    "@types/react-dom": "^19.0.4",
+    "@vitejs/plugin-react": "^4.3.4",
+    "electron": "^35.0.1",
+    "electron-builder": "^25.1.8",
+    "electron-vite": "^3.0.0",
+    "typescript": "^5.8.2",
+    "vite": "^6.2.1"
+  },
+  "build": {
+    "appId": "app.rapidlaunchcode.pastefree",
+    "productName": "PasteFree",
+    "directories": {
+      "output": "dist"
+    },
+    "files": [
+      "out/**"
+    ],
+    "mac": {
+      "category": "public.app-category.productivity",
+      "target": "dir"
+    }
+  }
+}

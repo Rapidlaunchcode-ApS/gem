@@ -1,0 +1,22 @@
+# agent / IDE / tooling
+.cursor/
+.agents/
+.claude/
+plan.md
+.DS_Store
+.idea/
+.vscode/
+
+# secrets / local env
+.env
+.env.*
+!.env.example
+
+# noise
+*.log
+node_modules/
+
+# build output
+out/
+dist/
+*.tsbuildinfo
