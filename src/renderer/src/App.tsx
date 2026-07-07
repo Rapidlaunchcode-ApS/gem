@@ -402,7 +402,7 @@ function BoardTab({
       onDragLeave={onDragLeave}
       onDrop={(e) => {
         e.preventDefault()
-        const itemId = e.dataTransfer.getData('application/x-pastefree-item')
+        const itemId = e.dataTransfer.getData('application/x-gem-item')
         if (itemId) onDropItem(itemId)
       }}
     >

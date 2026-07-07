@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer } from 'electron'
-import type { AppState, PasteFreeApi, Settings } from '../shared/types'
+import type { AppState, GemApi, Settings } from '../shared/types'
 
 function subscribe<T>(channel: string, listener: (payload: T) => void): () => void {
   const handler = (_e: Electron.IpcRendererEvent, payload: T): void => listener(payload)
@@ -7,7 +7,7 @@ function subscribe<T>(channel: string, listener: (payload: T) => void): () => vo
   return () => ipcRenderer.removeListener(channel, handler)
 }
 
-const api: PasteFreeApi = {
+const api: GemApi = {
   getState: () => ipcRenderer.invoke('state:get') as Promise<AppState>,
   onStateChange: (listener) => subscribe<AppState>('state:changed', listener),
   pasteItem: (id) => ipcRenderer.invoke('item:paste', id) as Promise<void>,

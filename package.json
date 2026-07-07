@@ -1,7 +1,7 @@
 {
-  "name": "pastefree",
+  "name": "gem",
   "version": "0.1.0",
-  "description": "Free, context-aware clipboard manager for macOS inspired by Paste",
+  "description": "Gem — the context-aware clipboard for macOS. Every copy, kept and understood.",
   "main": "./out/main/index.js",
   "type": "module",
   "private": true,
@@ -34,8 +34,8 @@
     "vite": "^6.2.1"
   },
   "build": {
-    "appId": "app.rapidlaunchcode.pastefree",
-    "productName": "PasteFree",
+    "appId": "app.rapidlaunchcode.gem",
+    "productName": "Gem",
     "directories": {
       "output": "dist"
     },
@@ -44,7 +44,8 @@
     ],
     "mac": {
       "category": "public.app-category.productivity",
-      "target": "dir"
+      "target": "dir",
+      "icon": "build/icon.icns"
     }
   }
 }

@@ -1,11 +1,11 @@
 import { nativeImage } from 'electron'
 
-// Clipboard glyph, embedded so packaging needs no extra resources.
+// Gem glyph matching the app logo, embedded so packaging needs no extra resources.
 // Template image: macOS recolors it for the menu bar automatically.
 const ICON_18 =
-  'iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAAKUlEQVR4nGNgoBP4j4YpMggbmyxX4MIkuYISNaMGjRo0jA2iSl4bWAAAuXQv0ac/NYAAAAAASUVORK5CYII='
+  'iVBORw0KGgoAAAANSUhEUgAAABIAAAASCAYAAABWzo5XAAAARUlEQVR4nGNgGAWUgP84MMmGINO4xIgyhFg2QUOQxXCJ4zSEHEy0i8hWS4xhZAU42YZQ1SBcGkg2BJtGsg1BNoBiQ+gPAKIpLdPWb/EfAAAAAElFTkSuQmCC'
 const ICON_36 =
-  'iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAAAWElEQVR4nO3XwQkAIAwEwfTftFYgQTjPaPbA77jgywh2biM5BK0u7heUPc3O+TvotiHFCHIYUowghyHFCHIYUowghyHFCHIYUowghyHFegSV+3WUCWLsqU1E/rdJnw0sqQAAAABJRU5ErkJggg=='
+  'iVBORw0KGgoAAAANSUhEUgAAACQAAAAkCAYAAADhAJiYAAAAjElEQVR4nO2XUQrAIAxDvf+l3ddgH1NM0laFPJANSdOIbG6tGWPMfXRglIT5XlWdRB/cq1qKP9NRI0RLgTRm5iGQrWH0ECvFaKBVjVTEPFFQKOQ9o46cFRCkb1uZb3Qo2e+4QGEmgT4hZmXnWWZdinnpN1GULoTUQ5ThuECzplvCjJpvDfNS+pdhzHU8IQBeogANG5UAAAAASUVORK5CYII='
 
 export function createTrayIcon(): Electron.NativeImage {
   const icon = nativeImage.createEmpty()

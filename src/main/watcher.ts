@@ -30,7 +30,7 @@ export class ClipboardWatcher {
     this.timer = null
   }
 
-  /** Call after PasteFree itself writes to the clipboard so we don't re-capture it. */
+  /** Call after Gem itself writes to the clipboard so we don't re-capture it. */
   markOwnWrite(): void {
     this.lastHash = this.currentHash()
   }

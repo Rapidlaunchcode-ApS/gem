@@ -1,8 +1,8 @@
-import type { PasteFreeApi } from '../shared/types'
+import type { GemApi } from '../shared/types'
 
 declare global {
   interface Window {
-    api: PasteFreeApi
+    api: GemApi
   }
 }
 

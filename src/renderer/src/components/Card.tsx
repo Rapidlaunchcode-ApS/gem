@@ -42,7 +42,7 @@ export const Card = memo(function Card({
       data-id={item.id}
       draggable={!editing}
       onDragStart={(e) => {
-        e.dataTransfer.setData('application/x-pastefree-item', item.id)
+        e.dataTransfer.setData('application/x-gem-item', item.id)
         e.dataTransfer.effectAllowed = 'copy'
       }}
       onClick={onSelect}

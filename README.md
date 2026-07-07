@@ -1,6 +1,6 @@
-# PasteFree
+# Gem
 
-A free, context-aware clipboard manager for macOS inspired by [Paste](https://pasteapp.io/).
+A free, context-aware clipboard manager for macOS — every copy, kept and understood.
 Everything stays local — no account, no sync, no subscription.
 
 ![Electron](https://img.shields.io/badge/Electron-React%20%2B%20TypeScript-blue)
@@ -32,12 +32,12 @@ pnpm dist         # build a .app bundle into dist/
 
 ## macOS permissions
 
-- **Paste into the frontmost app** uses System Events keystrokes — grant PasteFree
+- **Paste into the frontmost app** uses System Events keystrokes — grant Gem
   (or Electron during development) **Accessibility** permission in
   System Settings → Privacy & Security. Without it, selecting an item still copies it,
   you just press ⌘V yourself.
 
 ## Storage
 
-History is stored locally in `~/Library/Application Support/pastefree/`
+History is stored locally in `~/Library/Application Support/Gem/`
 (`history.json` + `images/`). Delete the folder to reset everything.

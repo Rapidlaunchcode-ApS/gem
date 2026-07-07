@@ -67,7 +67,7 @@ export interface AppState {
   boards: Board[]
 }
 
-export interface PasteFreeApi {
+export interface GemApi {
   getState: () => Promise<AppState>
   onStateChange: (listener: (state: AppState) => void) => () => void
   pasteItem: (id: string) => Promise<void>

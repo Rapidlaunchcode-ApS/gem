@@ -1,4 +1,4 @@
-import type { AppState, Board, ClipItem, PasteFreeApi, Settings } from '../../shared/types'
+import type { AppState, Board, ClipItem, GemApi, Settings } from '../../shared/types'
 
 // 8x5 orange PNG so the image card has something to show.
 const DEMO_THUMB =
@@ -49,7 +49,7 @@ const demoItems: ClipItem[] = [
     id: 'demo-code',
     kind: 'code',
     content:
-      "export function greet(name: string): string {\n  const message = `Hello, ${name}!`\n  return message\n}\n\ngreet('PasteFree')",
+      "export function greet(name: string): string {\n  const message = `Hello, ${name}!`\n  return message\n}\n\ngreet('Gem')",
     chars: 118,
     pinned: true,
     copiedAt: now - 40_000
@@ -101,7 +101,7 @@ const demoItems: ClipItem[] = [
 ]
 
 /** Browser-only stand-in so the renderer can be developed at localhost:5173 without Electron. */
-export function createMockApi(): PasteFreeApi {
+export function createMockApi(): GemApi {
   let items = [...demoItems]
   let boards = [...demoBoards]
   let notify: ((state: AppState) => void) | null = null

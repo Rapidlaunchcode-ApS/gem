@@ -10,6 +10,7 @@ import {
   Tray
 } from 'electron'
 import { execFile } from 'node:child_process'
+import { existsSync, mkdirSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { themeSchema, type ClipItem } from '../shared/types'
 import { SettingsStore } from './settings'
@@ -19,6 +20,32 @@ import { ClipboardWatcher } from './watcher'
 
 const PANEL_HEIGHT = 380
 const isDev = !app.isPackaged && process.env['ELECTRON_RENDERER_URL'] !== undefined
+
+// One stable data dir regardless of dev/packaged process name.
+app.setPath('userData', join(app.getPath('appData'), 'Gem'))
+
+/** Move data captured under the app's previous name (PasteFree) into place. */
+function migrateLegacyUserData(): void {
+  const newDir = app.getPath('userData')
+  const oldDir = join(app.getPath('appData'), 'pastefree')
+  if (existsSync(join(newDir, 'history.json')) || !existsSync(join(oldDir, 'history.json'))) {
+    return
+  }
+  try {
+    mkdirSync(newDir, { recursive: true })
+    for (const name of ['history.json', 'settings.json', 'images']) {
+      const from = join(oldDir, name)
+      const to = join(newDir, name)
+      if (existsSync(from) && !existsSync(to)) renameSync(from, to)
+    }
+    // Stored image entries carry absolute paths — point them at the new dir.
+    const historyPath = join(newDir, 'history.json')
+    writeFileSync(historyPath, readFileSync(historyPath, 'utf8').split(oldDir).join(newDir))
+    rmSync(oldDir, { recursive: true, force: true })
+  } catch (err) {
+    console.error('Legacy data migration failed:', err)
+  }
+}
 
 let panel: BrowserWindow | null = null
 let tray: Tray | null = null
@@ -176,10 +203,10 @@ function showBoardMenu(id: string): void {
 
 function createTray(): void {
   tray = new Tray(createTrayIcon())
-  tray.setToolTip('PasteFree')
+  tray.setToolTip('Gem')
   tray.setContextMenu(
     Menu.buildFromTemplate([
-      { label: 'Open PasteFree  ⌘⇧V', click: () => showPanel() },
+      { label: 'Open Gem  ⌘⇧V', click: () => showPanel() },
       { type: 'separator' },
       {
         label: 'Launch at Login',
@@ -195,7 +222,7 @@ function createTray(): void {
         }
       },
       { type: 'separator' },
-      { label: 'Quit PasteFree', click: () => app.quit() }
+      { label: 'Quit Gem', click: () => app.quit() }
     ])
   )
 }
@@ -273,6 +300,7 @@ if (!gotLock) {
   void app.whenReady().then(() => {
     app.dock?.hide()
 
+    migrateLegacyUserData()
     store = new HistoryStore()
     settings = new SettingsStore()
     watcher = new ClipboardWatcher(store, broadcastState)
