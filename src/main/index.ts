@@ -21,6 +21,8 @@ import { createTrayIcon } from './trayIcon'
 import { ClipboardWatcher } from './watcher'
 
 const PANEL_HEIGHT = 380
+/** Gap between the floating panel and the screen edges. */
+const PANEL_MARGIN = 14
 const isDev = !app.isPackaged && process.env['ELECTRON_RENDERER_URL'] !== undefined
 const isMac = process.platform === 'darwin'
 
@@ -74,7 +76,7 @@ function createPanel(): BrowserWindow {
           transparent: true,
           vibrancy: 'hud' as const,
           visualEffectState: 'active' as const,
-          roundedCorners: false
+          roundedCorners: true
         }
       : {
           backgroundColor: '#1c1917',
@@ -107,9 +109,9 @@ function showPanel(): void {
   const cursor = screen.getCursorScreenPoint()
   const { workArea } = screen.getDisplayNearestPoint(cursor)
   panel.setBounds({
-    x: workArea.x,
-    y: workArea.y + workArea.height - PANEL_HEIGHT,
-    width: workArea.width,
+    x: workArea.x + PANEL_MARGIN,
+    y: workArea.y + workArea.height - PANEL_HEIGHT - PANEL_MARGIN,
+    width: workArea.width - PANEL_MARGIN * 2,
     height: PANEL_HEIGHT
   })
   panel.show()

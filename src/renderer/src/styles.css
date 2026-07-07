@@ -77,8 +77,12 @@ body {
   display: flex;
   flex-direction: column;
   background: var(--bg);
-  border-top: 1px solid var(--glass-highlight);
+  /* The window itself is inset from the screen edges and natively rounded —
+     the panel renders as a floating card, so it gets a full hairline. */
+  border: 1px solid var(--glass-highlight);
+  border-radius: 10px;
   box-shadow: inset 0 1px 0 var(--glass-highlight);
+  overflow: hidden;
 }
 
 /* ── Header ─────────────────────────────────────────── */
