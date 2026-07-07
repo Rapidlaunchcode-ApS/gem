@@ -1,3 +1,4 @@
+import { DemoScene } from '../components/demo-scene'
 import { FadeIn } from '../components/fade-in'
 import { HeroPanel } from '../components/hero-panel'
 import { KeyPress } from '../components/keys'
@@ -71,6 +72,20 @@ export default function Page() {
         </header>
 
         <Scrolly />
+
+        <section className="demo shell" id="demo">
+          <FadeIn>
+            <div className="kicker">In action</div>
+            <h2 className="h2">Pop up. Grab. Gone.</h2>
+            <p className="section-lede">
+              One shortcut over whatever you&apos;re doing, pick a clip, and it warps away —
+              exactly like it never left your keyboard.
+            </p>
+          </FadeIn>
+          <FadeIn delay={0.1}>
+            <DemoScene />
+          </FadeIn>
+        </section>
 
         <section className="pinboards shell">
           <div className="split">

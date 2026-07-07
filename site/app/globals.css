@@ -607,6 +607,197 @@ a {
   box-shadow: 0 10px 26px rgba(28, 21, 16, 0.22);
 }
 
+/* ── Live demo scene ────────────────────────────────── */
+
+.demo {
+  padding: clamp(4rem, 9vw, 7rem) 0 0;
+}
+
+.demoscene {
+  position: relative;
+  margin-top: 2.4rem;
+  aspect-ratio: 16 / 9.4;
+  border-radius: 22px;
+  overflow: hidden;
+  border: 1px solid var(--line);
+  box-shadow: 0 2px 4px rgba(28, 21, 16, 0.06), 0 30px 70px rgba(28, 21, 16, 0.16);
+  background:
+    radial-gradient(60% 80% at 85% 10%, rgba(255, 214, 92, 0.55), transparent 60%),
+    radial-gradient(70% 90% at 10% 90%, rgba(168, 56, 95, 0.5), transparent 65%),
+    linear-gradient(135deg, #ffb45c 0%, #ff7e4f 48%, #b8446a 100%);
+}
+
+.demoscene__menubar {
+  display: flex;
+  align-items: center;
+  gap: 1rem;
+  padding: 0.35rem 1rem;
+  font-size: 0.72rem;
+  font-weight: 500;
+  color: rgba(255, 255, 255, 0.92);
+  background: rgba(30, 18, 12, 0.35);
+  backdrop-filter: blur(8px);
+}
+
+.demoscene__menu-app {
+  font-weight: 700;
+}
+
+.demoscene__clock {
+  margin-left: auto;
+}
+
+.demoscene__editor {
+  position: absolute;
+  top: 12%;
+  left: 6%;
+  width: 52%;
+  border-radius: 12px;
+  background: rgba(28, 20, 15, 0.88);
+  border: 1px solid rgba(255, 255, 255, 0.12);
+  box-shadow: 0 18px 44px rgba(28, 21, 16, 0.35);
+  overflow: hidden;
+}
+
+.demoscene__editor-bar {
+  display: flex;
+  gap: 6px;
+  padding: 9px 12px;
+  background: rgba(255, 255, 255, 0.06);
+}
+
+.demoscene__editor-bar i {
+  width: 10px;
+  height: 10px;
+  border-radius: 50%;
+  background: rgba(255, 255, 255, 0.22);
+}
+
+.demoscene__editor-bar i:first-child {
+  background: #ff5f57;
+}
+
+.demoscene__editor-bar i:nth-child(2) {
+  background: #febc2e;
+}
+
+.demoscene__editor-bar i:nth-child(3) {
+  background: #28c840;
+}
+
+.demoscene__editor-code {
+  padding: 0.9rem 1.1rem 1.2rem;
+  font-family: 'SF Mono', ui-monospace, Menlo, monospace;
+  font-size: clamp(0.55rem, 1.15vw, 0.82rem);
+  line-height: 1.8;
+  white-space: nowrap;
+}
+
+.demoscene__panel {
+  position: absolute;
+  left: 2.5%;
+  right: 2.5%;
+  bottom: 3.5%;
+  border-radius: 14px;
+  background: rgba(252, 249, 244, 0.82);
+  backdrop-filter: blur(16px);
+  border: 1px solid rgba(255, 255, 255, 0.5);
+  box-shadow: 0 20px 50px rgba(28, 21, 16, 0.3);
+  padding: 0.6rem 0.8rem 0.8rem;
+}
+
+.demoscene__bar {
+  display: flex;
+  align-items: center;
+  gap: 0.7rem;
+  padding-bottom: 0.55rem;
+  font-size: clamp(0.55rem, 1.1vw, 0.8rem);
+  color: var(--ink-dim);
+  white-space: nowrap;
+  overflow: hidden;
+}
+
+.demoscene__search {
+  flex-shrink: 0;
+  width: 18%;
+  background: rgba(28, 21, 16, 0.06);
+  border: 1px solid var(--line);
+  border-radius: 7px;
+  padding: 0.22rem 0.55rem;
+  color: var(--ink-faint);
+}
+
+.demoscene__cards {
+  display: grid;
+  grid-template-columns: repeat(4, 1fr);
+  gap: 0.7rem;
+}
+
+.democard {
+  border-radius: 10px;
+  background: var(--card);
+  border: 1px solid var(--line);
+  overflow: hidden;
+}
+
+.democard__head {
+  padding: 0.32rem 0.6rem;
+  font-size: clamp(0.55rem, 1.05vw, 0.78rem);
+  font-weight: 650;
+  color: #fff;
+  white-space: nowrap;
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
+.democard__body {
+  height: clamp(3.2rem, 9vw, 6.2rem);
+  padding: 0.5rem 0.6rem;
+  font-size: clamp(0.52rem, 1vw, 0.74rem);
+  line-height: 1.65;
+  color: var(--ink-dim);
+  overflow: hidden;
+  display: block;
+}
+
+.democard__body--dark {
+  background: var(--code-bg);
+  color: var(--code-ink);
+  font-family: 'SF Mono', ui-monospace, Menlo, monospace;
+}
+
+.democard__body[style*='background'] {
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.demoscene__cursor {
+  position: absolute;
+  z-index: 10;
+  pointer-events: none;
+  filter: drop-shadow(0 2px 4px rgba(0, 0, 0, 0.35));
+}
+
+.demoscene__ripple {
+  position: absolute;
+  top: -6px;
+  left: -6px;
+  width: 34px;
+  height: 34px;
+  border-radius: 50%;
+  border: 2.5px solid #fff;
+}
+
+@media (max-width: 640px) {
+  .demoscene__tab-hide {
+    display: none;
+  }
+  .demoscene__editor {
+    width: 70%;
+  }
+}
+
 /* ── Pinboards demo ─────────────────────────────────── */
 
 .pinboards {
