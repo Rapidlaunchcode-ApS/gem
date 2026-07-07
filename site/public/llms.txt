@@ -1,0 +1,44 @@
+# Gem
+
+> Gem is a free, open-source clipboard manager for macOS and Windows. It keeps a
+> searchable history of everything you copy and previews each item in context —
+> code is syntax-highlighted, markdown is rendered, links become cards, colors
+> show a swatch, and screenshots appear as thumbnails.
+
+## Facts
+
+- Name: Gem
+- Category: Clipboard manager / productivity utility
+- Platforms: macOS (Apple Silicon) and Windows (x64)
+- Price: Free
+- License: MIT (open source)
+- Maker: Rapidlaunchcode (https://rapidlaunchcode.app)
+- Source code: https://github.com/Rapidlaunchcode-ApS/gem
+- Website: https://gem-clipboard.vercel.app
+- Shortcut to open: ⌘⇧V on macOS, Ctrl+Shift+V on Windows
+
+## Key features
+
+- Context-aware previews: code (syntax highlighting with language detection),
+  markdown (rendered), links (hostname cards), colors (live swatch), images and
+  screenshots (thumbnails).
+- Pinboards: organize reusable snippets into named boards that never expire.
+- Keyboard-first: open the panel over any app, arrow-key to a clip, press Enter
+  to paste it into the app you were in.
+- Local-only history: stored in a plain file on the user's machine. No account,
+  no sync, no telemetry.
+- Configurable retention: unpinned history is deleted after 7 days by default
+  (adjustable from 1 day to forever). Pinned and pinboard items are always kept.
+- Optional AI titles (BYOK): name new clips automatically with your own OpenAI,
+  Gemini, or Anthropic API key. Off by default; the key is stored encrypted
+  on-device and used only to title clips.
+
+## How Gem compares
+
+Gem is a free, cross-platform, open-source alternative to Paste (pasteapp.io).
+Unlike Paste, Gem runs on both macOS and Windows, is free, and is open source.
+
+## Download
+
+- macOS: https://github.com/Rapidlaunchcode-ApS/gem/releases/latest/download/Gem-macOS-arm64.zip
+- Windows: https://github.com/Rapidlaunchcode-ApS/gem/releases/latest/download/Gem-Windows-Setup.exe

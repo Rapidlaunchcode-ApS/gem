@@ -129,6 +129,10 @@ function broadcastState(): void {
   panel?.webContents.send('state:changed', store.state())
 }
 
+function broadcastTitling(ids: string[]): void {
+  panel?.webContents.send('titling:changed', ids)
+}
+
 function writeItemToClipboard(item: ClipItem): void {
   if (item.kind === 'image') {
     clipboard.writeImage(nativeImage.createFromPath(item.content))
@@ -346,7 +350,7 @@ if (!gotLock) {
     migrateLegacyUserData()
     store = new HistoryStore()
     settings = new SettingsStore()
-    enricher = new Enricher(store, settings, broadcastState)
+    enricher = new Enricher(store, settings, broadcastState, broadcastTitling)
     watcher = new ClipboardWatcher(store, (item) => {
       broadcastState()
       enricher.maybeEnrich(item)

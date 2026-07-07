@@ -971,6 +971,74 @@ a {
   max-width: 58ch;
 }
 
+/* ── FAQ ────────────────────────────────────────────── */
+
+.faq {
+  padding: clamp(4rem, 9vw, 7rem) 0 0;
+}
+
+.faq__list {
+  margin-top: 2.2rem;
+  border-top: 1px solid var(--line);
+}
+
+.faq__item {
+  border-bottom: 1px solid var(--line);
+}
+
+.faq__q {
+  display: flex;
+  align-items: center;
+  justify-content: space-between;
+  gap: 1rem;
+  padding: 1.35rem 0;
+  font-family: var(--font-display);
+  font-size: clamp(1.05rem, 2.2vw, 1.3rem);
+  font-weight: 650;
+  cursor: pointer;
+  list-style: none;
+}
+
+.faq__q::-webkit-details-marker {
+  display: none;
+}
+
+.faq__chevron {
+  position: relative;
+  width: 16px;
+  height: 16px;
+  flex-shrink: 0;
+}
+
+.faq__chevron::before,
+.faq__chevron::after {
+  content: '';
+  position: absolute;
+  top: 50%;
+  left: 50%;
+  width: 14px;
+  height: 2.5px;
+  border-radius: 2px;
+  background: var(--emerald-deep);
+  transform: translate(-50%, -50%);
+  transition: transform 0.25s ease;
+}
+
+.faq__chevron::after {
+  transform: translate(-50%, -50%) rotate(90deg);
+}
+
+.faq__item[open] .faq__chevron::after {
+  transform: translate(-50%, -50%) rotate(0deg);
+}
+
+.faq__a {
+  padding: 0 0 1.5rem;
+  max-width: 68ch;
+  color: var(--ink-dim);
+  font-size: 1rem;
+}
+
 /* ── Download ───────────────────────────────────────── */
 
 .download {

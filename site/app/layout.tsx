@@ -1,6 +1,7 @@
 import type { Metadata, Viewport } from 'next'
 import { Bricolage_Grotesque, Instrument_Sans } from 'next/font/google'
 import type { ReactNode } from 'react'
+import { DESCRIPTION, FAQ, MAC_URL, REPO_URL, SITE_URL, VERSION } from '../lib/site'
 import './globals.css'
 
 const display = Bricolage_Grotesque({
@@ -14,14 +15,47 @@ const body = Instrument_Sans({
 })
 
 export const metadata: Metadata = {
-  title: 'Gem — the context-aware clipboard for macOS & Windows',
-  description:
-    'Free, open-source clipboard manager. Every copy classified and previewed — code, markdown, links, colors, screenshots — with pinboards and optional BYOK AI titles.',
+  metadataBase: new URL(SITE_URL),
+  title: {
+    default: 'Gem — the context-aware clipboard for macOS & Windows',
+    template: '%s · Gem'
+  },
+  description: DESCRIPTION,
+  applicationName: 'Gem',
+  keywords: [
+    'clipboard manager',
+    'clipboard manager for Mac',
+    'Windows clipboard manager',
+    'clipboard history',
+    'free Paste alternative',
+    'open source clipboard manager',
+    'pinboards',
+    'copy paste manager',
+    'macOS clipboard',
+    'context-aware clipboard'
+  ],
+  authors: [{ name: 'Rapidlaunchcode', url: 'https://rapidlaunchcode.app' }],
+  creator: 'Rapidlaunchcode',
+  publisher: 'Rapidlaunchcode',
+  category: 'productivity',
+  alternates: { canonical: '/' },
+  robots: {
+    index: true,
+    follow: true,
+    googleBot: { index: true, follow: true, 'max-image-preview': 'large' }
+  },
   openGraph: {
-    title: 'Gem — the context-aware clipboard',
-    description:
-      'Free, open-source clipboard manager for macOS and Windows. Code, markdown, links, colors and screenshots — kept and understood.',
-    type: 'website'
+    type: 'website',
+    siteName: 'Gem',
+    url: SITE_URL,
+    title: 'Gem — the context-aware clipboard for macOS & Windows',
+    description: DESCRIPTION,
+    locale: 'en_US'
+  },
+  twitter: {
+    card: 'summary_large_image',
+    title: 'Gem — the context-aware clipboard for macOS & Windows',
+    description: DESCRIPTION
   }
 }
 
@@ -29,10 +63,58 @@ export const viewport: Viewport = {
   themeColor: '#faf6f0'
 }
 
+const softwareLd = {
+  '@context': 'https://schema.org',
+  '@type': 'SoftwareApplication',
+  name: 'Gem',
+  description: DESCRIPTION,
+  applicationCategory: 'ProductivityApplication',
+  operatingSystem: 'macOS, Windows',
+  softwareVersion: VERSION,
+  url: SITE_URL,
+  downloadUrl: MAC_URL,
+  softwareHelp: REPO_URL,
+  license: 'https://opensource.org/licenses/MIT',
+  isAccessibleForFree: true,
+  offers: { '@type': 'Offer', price: '0', priceCurrency: 'USD' },
+  author: {
+    '@type': 'Organization',
+    name: 'Rapidlaunchcode',
+    url: 'https://rapidlaunchcode.app'
+  },
+  featureList: [
+    'Context-aware previews for code, markdown, links, colors and images',
+    'Pinboards for reusable snippets',
+    'Keyboard-first panel (⌘⇧V / Ctrl+Shift+V)',
+    'Local-only history with configurable retention',
+    'Optional bring-your-own-key AI titles (OpenAI, Gemini, Anthropic)'
+  ]
+}
+
+const faqLd = {
+  '@context': 'https://schema.org',
+  '@type': 'FAQPage',
+  mainEntity: FAQ.map(({ q, a }) => ({
+    '@type': 'Question',
+    name: q,
+    acceptedAnswer: { '@type': 'Answer', text: a }
+  }))
+}
+
 export default function RootLayout({ children }: { children: ReactNode }) {
   return (
     <html lang="en" className={`${display.variable} ${body.variable}`}>
-      <body>{children}</body>
+      <body>
+        {children}
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(faqLd) }}
+        />
+      </body>
     </html>
   )
 }

@@ -4,7 +4,7 @@ import { marked } from 'marked'
 import { memo, useMemo } from 'react'
 import type { ClipItem } from '../../../shared/types'
 import { KIND_META, timeAgo } from '../kinds'
-import { KindIcon, LinkIcon, PinIcon } from './Icons'
+import { KindIcon, LinkIcon, PinIcon, SparkleIcon } from './Icons'
 
 const PREVIEW_CHARS = 1200
 
@@ -14,6 +14,8 @@ interface CardProps {
   boardColor: string | null
   selected: boolean
   editing: boolean
+  /** True while an AI title is being generated for this clip. */
+  titling: boolean
   onSelect: () => void
   onPaste: () => void
   onTogglePin: () => void
@@ -27,6 +29,7 @@ export const Card = memo(function Card({
   boardColor,
   selected,
   editing,
+  titling,
   onSelect,
   onPaste,
   onTogglePin,
@@ -38,7 +41,7 @@ export const Card = memo(function Card({
 
   return (
     <div
-      className={`card${selected ? ' card--selected' : ''}`}
+      className={`card${selected ? ' card--selected' : ''}${titling && !item.title ? ' card--titling' : ''}`}
       data-id={item.id}
       draggable={!editing}
       onDragStart={(e) => {
@@ -70,6 +73,11 @@ export const Card = memo(function Card({
               else if (e.key === 'Escape') onEditCancel()
             }}
           />
+        ) : titling && !item.title ? (
+          <span className="card__kind card__naming">
+            <SparkleIcon size={12} className="card__naming-icon" />
+            Naming…
+          </span>
         ) : (
           <span className="card__kind" title={item.title ?? undefined}>
             {!item.title && <KindIcon kind={item.kind} size={12} className="card__kind-icon" />}

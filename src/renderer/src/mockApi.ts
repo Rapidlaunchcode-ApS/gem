@@ -170,6 +170,7 @@ export function createMockApi(): GemApi {
     showItemMenu: () => Promise.resolve(),
     showBoardMenu: () => Promise.resolve(),
     onItemEdit: () => () => undefined,
+    onTitlingChange: () => () => undefined,
     getSettings: () =>
       Promise.resolve<SettingsView>({
         theme: 'system',

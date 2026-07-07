@@ -41,6 +41,7 @@ export function App() {
   const [editingItemId, setEditingItemId] = useState<string | null>(null)
   const [dragOverBoardId, setDragOverBoardId] = useState<string | null>(null)
   const [settingsOpen, setSettingsOpen] = useState(false)
+  const [titlingIds, setTitlingIds] = useState<ReadonlySet<string>>(() => new Set())
   const [settings, setSettings] = useState<SettingsView>({
     theme: 'system',
     retentionDays: 7,
@@ -51,6 +52,8 @@ export function App() {
 
   const { items, boards } = state
   const activeBoard = boards.find((b) => b.id === activeBoardId) ?? null
+
+  useEffect(() => window.api.onTitlingChange((ids) => setTitlingIds(new Set(ids))), [])
 
   useEffect(() => {
     void window.api.getState().then(setState)
@@ -361,6 +364,7 @@ export function App() {
               boardColor={activeBoard?.color ?? null}
               selected={i === Math.min(selectedIndex, filtered.length - 1)}
               editing={editingItemId === item.id}
+              titling={titlingIds.has(item.id)}
               onSelect={() => setSelectedIndex(i)}
               onPaste={() => paste(item)}
               onTogglePin={() => void window.api.setPinned(item.id, !item.pinned)}

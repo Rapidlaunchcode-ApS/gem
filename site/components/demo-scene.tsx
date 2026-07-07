@@ -1,7 +1,7 @@
 'use client'
 
 import { AnimatePresence, motion } from 'motion/react'
-import { useEffect, useState } from 'react'
+import { useEffect, useRef, useState } from 'react'
 
 type Phase =
   | 'closed'
@@ -30,24 +30,26 @@ const TIMELINE: [Phase, number][] = [
 
 const PANEL_OPEN = ['opening', 'idle', 'toTab', 'clickTab', 'board', 'toCard', 'clickCard', 'selected']
 const BOARD_MODE = ['board', 'toCard', 'clickCard', 'selected']
+const AT_TAB = ['toTab', 'clickTab', 'board']
+const AT_CARD = ['toCard', 'clickCard', 'selected']
 
-const CURSOR: Record<Phase, { left: string; top: string; opacity: number }> = {
-  closed: { left: '62%', top: '92%', opacity: 0 },
-  opening: { left: '62%', top: '92%', opacity: 0 },
-  idle: { left: '60%', top: '86%', opacity: 1 },
-  toTab: { left: '47.5%', top: '64.5%', opacity: 1 },
-  clickTab: { left: '47.5%', top: '64.5%', opacity: 1 },
-  board: { left: '47.5%', top: '64.5%', opacity: 1 },
-  toCard: { left: '17%', top: '80%', opacity: 1 },
-  clickCard: { left: '17%', top: '80%', opacity: 1 },
-  selected: { left: '17%', top: '80%', opacity: 1 },
-  closing: { left: '17%', top: '80%', opacity: 0 }
+interface Point {
+  left: number
+  top: number
+  opacity: number
 }
+
+const RESTING: Point = { left: 60, top: 86, opacity: 0 }
 
 export function DemoScene() {
   const [step, setStep] = useState(0)
   const entry = TIMELINE[step % TIMELINE.length]
   const phase: Phase = entry ? entry[0] : 'closed'
+
+  const sceneRef = useRef<HTMLDivElement>(null)
+  const regexRef = useRef<HTMLSpanElement>(null)
+  const firstCardRef = useRef<HTMLDivElement>(null)
+  const [cursor, setCursor] = useState<Point>(RESTING)
 
   useEffect(() => {
     const duration = TIMELINE[step % TIMELINE.length]?.[1] ?? 1000
@@ -58,10 +60,39 @@ export function DemoScene() {
   const open = PANEL_OPEN.includes(phase)
   const board = BOARD_MODE.includes(phase)
   const cardSelected = phase === 'clickCard' || phase === 'selected'
-  const cursor = CURSOR[phase]
+
+  // Anchor the cursor to the real Regex pill / first card so the click always
+  // lands exactly on the target, at any viewport width.
+  useEffect(() => {
+    const scene = sceneRef.current
+    if (!scene) return
+    const centerOf = (el: HTMLElement | null): Point | null => {
+      if (!el) return null
+      const s = scene.getBoundingClientRect()
+      const r = el.getBoundingClientRect()
+      return {
+        left: ((r.left + r.width / 2 - s.left) / s.width) * 100,
+        top: ((r.top + r.height / 2 - s.top) / s.height) * 100,
+        opacity: 1
+      }
+    }
+    if (phase === 'closed' || phase === 'opening') {
+      setCursor(RESTING)
+    } else if (phase === 'idle') {
+      setCursor({ left: 58, top: 78, opacity: 1 })
+    } else if (AT_TAB.includes(phase)) {
+      const p = centerOf(regexRef.current)
+      if (p) setCursor(p)
+    } else if (AT_CARD.includes(phase)) {
+      const p = centerOf(firstCardRef.current)
+      if (p) setCursor(p)
+    } else if (phase === 'closing') {
+      setCursor((c) => ({ ...c, opacity: 0 }))
+    }
+  }, [phase, board])
 
   return (
-    <div className="demoscene" aria-hidden="true">
+    <div className="demoscene" aria-hidden="true" ref={sceneRef}>
       {/* menu bar */}
       <div className="demoscene__menubar">
         <span></span>
@@ -120,7 +151,7 @@ export function DemoScene() {
             <span className="tab__dot" style={{ background: '#8e8e93' }} />
             Clipboard History
           </span>
-          <span className={`tab${board ? ' tab--active' : ''}`}>
+          <span className={`tab${board ? ' tab--active' : ''}`} ref={regexRef}>
             <span className="tab__dot" style={{ background: '#af52de' }} />
             Regex
           </span>
@@ -135,6 +166,7 @@ export function DemoScene() {
             {(board ? BOARD_CARDS : HISTORY_CARDS).map((card, i) => (
               <motion.div
                 key={card.title}
+                ref={i === 0 ? firstCardRef : undefined}
                 className="democard"
                 initial={{ opacity: 0, y: 26, scale: 0.95 }}
                 animate={{
@@ -168,7 +200,7 @@ export function DemoScene() {
       <motion.div
         className="demoscene__cursor"
         initial={false}
-        animate={cursor}
+        animate={{ left: `${cursor.left}%`, top: `${cursor.top}%`, opacity: cursor.opacity }}
         transition={{ duration: 0.75, ease: [0.3, 0.1, 0.25, 1] }}
       >
         <svg width="22" height="22" viewBox="0 0 24 24">

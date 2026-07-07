@@ -8,7 +8,7 @@ const ANTHROPIC_MODEL = 'claude-haiku-4-5'
 const OPENAI_MODEL = 'gpt-5-mini'
 const GEMINI_MODEL = 'gemini-2.5-flash-lite'
 
-const MIN_CHARS = 80
+const MIN_CHARS = 20
 const CONTENT_SNIPPET = 1500
 const TIMEOUT_MS = 20_000
 
@@ -24,11 +24,14 @@ const PROMPT =
  */
 export class Enricher {
   private queue: Promise<void> = Promise.resolve()
+  /** Item ids with an in-flight titling request, for the "naming…" indicator. */
+  private readonly inFlight = new Set<string>()
 
   constructor(
     private readonly store: HistoryStore,
     private readonly settings: SettingsStore,
-    private readonly onTitled: () => void
+    private readonly onTitled: () => void,
+    private readonly onTitlingChange: (ids: string[]) => void
   ) {}
 
   maybeEnrich(item: ClipItem): void {
@@ -37,13 +40,21 @@ export class Enricher {
     if (item.kind !== 'text' && item.kind !== 'code' && item.kind !== 'markdown') return
     if (item.content.length < MIN_CHARS) return
 
+    // Mark it immediately so the card shows a "naming…" shimmer even while the
+    // request waits in the queue behind an earlier clip.
+    this.inFlight.add(item.id)
+    this.emitTitling()
+
     // One request at a time — clipboard bursts shouldn't fan out.
     this.queue = this.queue.then(() => this.enrich(item.id, item.content))
   }
 
   private async enrich(itemId: string, content: string): Promise<void> {
     const key = this.settings.aiKey()
-    if (!key) return
+    if (!key) {
+      this.finish(itemId)
+      return
+    }
     try {
       const raw = await this.requestTitle(key, content.slice(0, CONTENT_SNIPPET))
       const title = sanitizeTitle(raw)
@@ -55,7 +66,17 @@ export class Enricher {
       this.onTitled()
     } catch (err) {
       console.error('AI titling failed:', err instanceof Error ? err.message : err)
+    } finally {
+      this.finish(itemId)
     }
+  }
+
+  private finish(itemId: string): void {
+    if (this.inFlight.delete(itemId)) this.emitTitling()
+  }
+
+  private emitTitling(): void {
+    this.onTitlingChange([...this.inFlight])
   }
 
   private async requestTitle(key: string, snippet: string): Promise<string> {

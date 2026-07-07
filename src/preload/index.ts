@@ -22,6 +22,7 @@ const api: GemApi = {
   showItemMenu: (id) => ipcRenderer.invoke('item:menu', id) as Promise<void>,
   showBoardMenu: (id) => ipcRenderer.invoke('board:menu', id) as Promise<void>,
   onItemEdit: (listener) => subscribe<string>('item:edit', listener),
+  onTitlingChange: (listener) => subscribe<string[]>('titling:changed', listener),
   getSettings: () => ipcRenderer.invoke('settings:get') as Promise<SettingsView>,
   setTheme: (theme) => ipcRenderer.invoke('settings:set-theme', theme) as Promise<void>,
   setRetentionDays: (days) =>

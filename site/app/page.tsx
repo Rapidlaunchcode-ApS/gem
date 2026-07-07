@@ -4,12 +4,7 @@ import { HeroPanel } from '../components/hero-panel'
 import { KeyPress } from '../components/keys'
 import { PinboardDemo } from '../components/pinboard-demo'
 import { Scrolly } from '../components/scrolly'
-
-const MAC_URL =
-  'https://github.com/Rapidlaunchcode-ApS/gem/releases/latest/download/Gem-macOS-arm64.zip'
-const WIN_URL =
-  'https://github.com/Rapidlaunchcode-ApS/gem/releases/latest/download/Gem-Windows-Setup.exe'
-const REPO_URL = 'https://github.com/Rapidlaunchcode-ApS/gem'
+import { FAQ, MAC_URL, REPO_URL, WIN_URL } from '../lib/site'
 
 export default function Page() {
   return (
@@ -26,6 +21,9 @@ export default function Page() {
             </a>
             <a className="nav__link" href="#trust">
               Privacy
+            </a>
+            <a className="nav__link" href="#faq">
+              FAQ
             </a>
             <a className="nav__link" href={REPO_URL}>
               GitHub
@@ -167,6 +165,26 @@ export default function Page() {
                 </p>
               </div>
             </FadeIn>
+          </div>
+        </section>
+
+        <section className="faq shell" id="faq">
+          <FadeIn>
+            <div className="kicker">FAQ</div>
+            <h2 className="h2">Questions, answered</h2>
+          </FadeIn>
+          <div className="faq__list">
+            {FAQ.map(({ q, a }) => (
+              <FadeIn key={q}>
+                <details className="faq__item">
+                  <summary className="faq__q">
+                    {q}
+                    <span className="faq__chevron" aria-hidden="true" />
+                  </summary>
+                  <p className="faq__a">{a}</p>
+                </details>
+              </FadeIn>
+            ))}
           </div>
         </section>
 

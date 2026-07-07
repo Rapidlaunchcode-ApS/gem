@@ -130,6 +130,8 @@ export interface GemApi {
   showBoardMenu: (id: string) => Promise<void>
   /** Fired when the user picks “Rename” in the native menu. */
   onItemEdit: (listener: (id: string) => void) => () => void
+  /** Fired with the ids of items currently getting an AI title. */
+  onTitlingChange: (listener: (ids: string[]) => void) => () => void
   getSettings: () => Promise<SettingsView>
   setTheme: (theme: Theme) => Promise<void>
   setRetentionDays: (days: number) => Promise<void>

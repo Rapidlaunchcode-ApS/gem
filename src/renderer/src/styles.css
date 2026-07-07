@@ -370,6 +370,54 @@ body {
   opacity: 0.9;
 }
 
+/* AI titling in progress — shimmering "Naming…" label + gentle card glow. */
+.card--titling {
+  border-color: color-mix(in srgb, var(--accent) 55%, transparent);
+  box-shadow:
+    0 0 0 2px color-mix(in srgb, var(--accent) 22%, transparent),
+    0 8px 24px rgba(0, 0, 0, 0.18);
+}
+
+.card__naming {
+  background: linear-gradient(
+    100deg,
+    rgba(255, 255, 255, 0.55) 20%,
+    rgba(255, 255, 255, 1) 42%,
+    rgba(255, 255, 255, 0.55) 64%
+  );
+  background-size: 220% 100%;
+  -webkit-background-clip: text;
+  background-clip: text;
+  color: transparent;
+  animation: gem-shimmer 1.25s linear infinite;
+}
+
+.card__naming-icon {
+  color: rgba(255, 255, 255, 0.95);
+  animation: gem-sparkle 1.25s ease-in-out infinite;
+}
+
+@keyframes gem-shimmer {
+  from {
+    background-position: 140% 0;
+  }
+  to {
+    background-position: -40% 0;
+  }
+}
+
+@keyframes gem-sparkle {
+  0%,
+  100% {
+    opacity: 0.55;
+    transform: scale(0.9) rotate(0deg);
+  }
+  50% {
+    opacity: 1;
+    transform: scale(1.1) rotate(12deg);
+  }
+}
+
 .card__title-input {
   flex: 1;
   min-width: 0;
