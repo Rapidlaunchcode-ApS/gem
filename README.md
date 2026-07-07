@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://gem-clipboard.vercel.app/opengraph-image" alt="Gem — the context-aware clipboard for macOS and Windows" width="680">
+  <img src="https://raw.githubusercontent.com/Rapidlaunchcode-ApS/gem/main/build/icon-1024.png" alt="Gem app icon" width="128" height="128">
 </p>
 
 <h1 align="center">Gem</h1>
@@ -12,14 +12,15 @@
 <p align="center">
   <a href="https://github.com/Rapidlaunchcode-ApS/gem/releases/latest/download/Gem-macOS-arm64.zip"><b>Download for Mac</b></a> ·
   <a href="https://github.com/Rapidlaunchcode-ApS/gem/releases/latest/download/Gem-Windows-Setup.exe"><b>Download for Windows</b></a> ·
-  <a href="https://gem-clipboard.vercel.app"><b>Website</b></a>
+  <a href="https://gem-clipboard.vercel.app"><b>Gem Clipboard website</b></a>
 </p>
 
 <p align="center">
   <img src="https://img.shields.io/github/v/release/Rapidlaunchcode-ApS/gem?color=2fbf71&label=release" alt="Latest release">
+  <img src="https://img.shields.io/github/stars/Rapidlaunchcode-ApS/gem?color=2fbf71" alt="GitHub stars">
+  <img src="https://img.shields.io/github/downloads/Rapidlaunchcode-ApS/gem/total?color=2fbf71&label=downloads" alt="Downloads">
   <img src="https://img.shields.io/badge/platform-macOS%20%7C%20Windows-2f8f5b" alt="Platforms">
   <img src="https://img.shields.io/badge/license-MIT-2fbf71" alt="MIT license">
-  <img src="https://img.shields.io/badge/price-free-2fbf71" alt="Free">
 </p>
 
 ---

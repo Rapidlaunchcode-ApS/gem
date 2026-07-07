@@ -6,7 +6,7 @@ export const VERSION = '0.2.3'
 
 export const TAGLINE = 'Every copy, kept and understood.'
 export const DESCRIPTION =
-  'Gem is a free, open-source clipboard manager for macOS and Windows. Every copy is classified and previewed — highlighted code, rendered markdown, link cards, color swatches, screenshot thumbnails — with pinboards, retention control, and optional bring-your-own-key AI titles. History stays local.'
+  'Looking for a free alternative to Paste? Gem is an open-source (MIT), local-first clipboard manager for macOS and Windows — with code syntax highlighting, Markdown rendering, link cards, and color-swatch previews, plus pinboards and optional AI titles. Free, no account, no subscription.'
 
 /** Short, extractable Q&A — powers both the visible FAQ and FAQPage JSON-LD (GEO). */
 export const FAQ: { q: string; a: string }[] = [
@@ -41,5 +41,9 @@ export const FAQ: { q: string; a: string }[] = [
   {
     q: 'How long does Gem keep my clipboard history?',
     a: 'By default Gem deletes unpinned history after 7 days, and you can set anything from 1 day to forever in Settings. Pinned items and anything saved to a pinboard are always kept.'
+  },
+  {
+    q: 'macOS says “Gem is damaged and can’t be opened” — how do I fix it?',
+    a: 'That is macOS Gatekeeper blocking an app that isn’t notarized yet, not an actual problem with the download. Move Gem to your Applications folder, then right-click it and choose Open. If macOS still refuses, open Terminal and run: xattr -dr com.apple.quarantine /Applications/Gem.app — then open Gem again. This clears the download “quarantine” flag; you only need to do it once.'
   }
 ]

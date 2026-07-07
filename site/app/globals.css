@@ -265,6 +265,34 @@ a {
   text-underline-offset: 2px;
 }
 
+.stats {
+  display: flex;
+  justify-content: center;
+  gap: 2.2rem;
+  margin-top: 1.6rem;
+}
+
+.stats__item {
+  display: flex;
+  flex-direction: column;
+  align-items: center;
+  gap: 0.1rem;
+}
+
+.stats__num {
+  font-family: var(--font-display);
+  font-size: 1.5rem;
+  font-weight: 700;
+  color: var(--ink);
+  line-height: 1;
+}
+
+.stats__label {
+  font-size: 0.78rem;
+  color: var(--ink-faint);
+  letter-spacing: 0.02em;
+}
+
 /* ── Panel mock (light) ─────────────────────────────── */
 
 .stage {

@@ -6,23 +6,23 @@ import { useRef, useState } from 'react'
 const STEPS = [
   {
     key: 'code',
-    title: 'Code is highlighted',
+    title: 'Code with syntax highlighting',
     caption: 'Language auto-detected, syntax colored, long lines wrapped. Snippets stay legible.'
   },
   {
     key: 'link',
-    title: 'Links become cards',
+    title: 'Links as rich cards',
     caption: 'The hostname up front, the full URL preserved. No more mystery strings.'
   },
   {
     key: 'color',
-    title: 'Colors show themselves',
-    caption: 'Copy #hex, rgb() or hsl() and you get the swatch, not the string.'
+    title: 'Color hex-code swatches',
+    caption: 'Copy #hex, rgb() or hsl() and you see the swatch, not the string.'
   },
   {
     key: 'shot',
-    title: 'Screenshots are previewed',
-    caption: 'Thumbnails in the panel, originals kept at full quality for pasting.'
+    title: 'Screenshot thumbnails',
+    caption: 'Image and screenshot previews in the panel, originals kept at full quality.'
   }
 ]
 
@@ -45,9 +45,9 @@ export function Scrolly() {
           <div className="shell" style={{ width: '100%' }}>
             <div className="scrolly__grid">
               <div>
-                <div className="kicker">Context-aware</div>
+                <div className="kicker">Context-aware previews</div>
                 <h2 className="h2" style={{ marginBottom: '1.6rem' }}>
-                  It knows what you copied
+                  A clipboard history that previews what you copied
                 </h2>
                 <div className="scrolly__steps">
                   {STEPS.map((step, i) => (

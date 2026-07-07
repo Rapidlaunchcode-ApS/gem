@@ -17,7 +17,7 @@ const body = Instrument_Sans({
 export const metadata: Metadata = {
   metadataBase: new URL(SITE_URL),
   title: {
-    default: 'Gem — the context-aware clipboard for macOS & Windows',
+    default: 'Gem — Free Open-Source Clipboard Manager for Mac & Windows',
     template: '%s · Gem'
   },
   description: DESCRIPTION,
@@ -52,13 +52,13 @@ export const metadata: Metadata = {
     type: 'website',
     siteName: 'Gem',
     url: SITE_URL,
-    title: 'Gem — the context-aware clipboard for macOS & Windows',
+    title: 'Gem — Free Open-Source Clipboard Manager for Mac & Windows',
     description: DESCRIPTION,
     locale: 'en_US'
   },
   twitter: {
     card: 'summary_large_image',
-    title: 'Gem — the context-aware clipboard for macOS & Windows',
+    title: 'Gem — Free Open-Source Clipboard Manager for Mac & Windows',
     description: DESCRIPTION
   }
 }

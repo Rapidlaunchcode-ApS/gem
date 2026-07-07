@@ -5,9 +5,12 @@ import { HeroPanel } from '../components/hero-panel'
 import { KeyPress } from '../components/keys'
 import { PinboardDemo } from '../components/pinboard-demo'
 import { Scrolly } from '../components/scrolly'
+import { Stats } from '../components/stats'
 import { FAQ, MAC_URL, REPO_URL, WIN_URL } from '../lib/site'
+import { getRepoStats } from '../lib/stats'
 
-export default function Page() {
+export default async function Page() {
+  const stats = await getRepoStats()
   return (
     <>
       <nav className="nav">
@@ -79,6 +82,7 @@ export default function Page() {
                 See how Gem compares →
               </Link>
             </p>
+            <Stats stats={stats} />
           </FadeIn>
           <HeroPanel />
         </header>
