@@ -38,7 +38,13 @@ export default function Page() {
       <main>
         <header className="hero shell">
           <FadeIn>
-            <div className="hero__eyebrow">Free &amp; open source · macOS + Windows</div>
+            <p className="hero__eyebrow">
+              <span className="hero__free">Free forever</span>
+              <span className="hero__sep" aria-hidden="true" />
+              Open source
+              <span className="hero__sep" aria-hidden="true" />
+              Mac &amp; Windows
+            </p>
           </FadeIn>
           <FadeIn delay={0.08}>
             <h1>
