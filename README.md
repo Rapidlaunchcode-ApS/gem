@@ -1,5 +1,7 @@
 # Gem
 
+**[Download for macOS](https://github.com/Rapidlaunchcode-ApS/gem/releases/latest/download/Gem-macOS-arm64.zip)** · **[Website](https://gem-clipboard.vercel.app)** · MIT
+
 A free, context-aware clipboard manager for macOS — every copy, kept and understood.
 Everything stays local — no account, no sync, no subscription. The only network
 calls are the optional BYOK AI titles, made directly to the provider you configure.
