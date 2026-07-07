@@ -11,6 +11,9 @@ const { join } = require('node:path')
 
 exports.default = async function afterPack(context) {
   if (context.electronPlatformName !== 'darwin') return
+  // A real signed build (APPLE_TEAM_ID set) is signed by electron-builder with a
+  // Developer ID cert + hardened runtime — don't clobber it with an ad-hoc pass.
+  if (process.env.APPLE_TEAM_ID) return
   const appName = `${context.packager.appInfo.productFilename}.app`
   const appPath = join(context.appOutDir, appName)
   execFileSync(

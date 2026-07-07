@@ -225,8 +225,9 @@ export default async function Page() {
               </div>
               <p className="download__note">
                 Gem isn&apos;t notarized yet, so the OS asks once. On <b>macOS</b>: move Gem to
-                Applications, then right-click it → <em>Open</em>. If macOS still blocks it, run{' '}
-                <code>xattr -dr com.apple.quarantine /Applications/Gem.app</code> and reopen. On{' '}
+                Applications and open it, then click <em>Done</em> and go to{' '}
+                <em>System Settings → Privacy &amp; Security → Open Anyway</em> (or run{' '}
+                <code>xattr -dr com.apple.quarantine /Applications/Gem.app</code>). On{' '}
                 <b>Windows</b>: choose <em>More info → Run anyway</em> if SmartScreen appears.
                 Everything is inspectable on <a href={REPO_URL}>GitHub</a>.
               </p>

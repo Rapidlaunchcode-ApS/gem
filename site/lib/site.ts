@@ -43,7 +43,7 @@ export const FAQ: { q: string; a: string }[] = [
     a: 'By default Gem deletes unpinned history after 7 days, and you can set anything from 1 day to forever in Settings. Pinned items and anything saved to a pinboard are always kept.'
   },
   {
-    q: 'macOS says “Gem is damaged and can’t be opened” — how do I fix it?',
-    a: 'That is macOS Gatekeeper blocking an app that isn’t notarized yet, not an actual problem with the download. Move Gem to your Applications folder, then right-click it and choose Open. If macOS still refuses, open Terminal and run: xattr -dr com.apple.quarantine /Applications/Gem.app — then open Gem again. This clears the download “quarantine” flag; you only need to do it once.'
+    q: 'macOS won’t open Gem (“damaged” or “Apple could not verify”) — how do I fix it?',
+    a: 'That is macOS Gatekeeper blocking an app that isn’t notarized yet — not an actual problem with the download. Move Gem to your Applications folder and try to open it. On recent macOS you’ll get a dialog with only a Done button: click Done, then open System Settings → Privacy & Security, scroll down, and click “Open Anyway” next to Gem. On older macOS, right-click Gem and choose Open. If neither works, open Terminal and run: xattr -dr com.apple.quarantine /Applications/Gem.app — then open Gem again. You only need to do this once.'
   }
 ]

@@ -25,6 +25,7 @@
     "zod": "^3.24.2"
   },
   "devDependencies": {
+    "@electron/notarize": "^3.1.1",
     "@types/node": "^22.13.10",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
@@ -39,6 +40,7 @@
     "appId": "app.rapidlaunchcode.gem",
     "productName": "Gem",
     "afterPack": "build/afterPack.cjs",
+    "afterSign": "build/notarize.cjs",
     "directories": {
       "output": "dist"
     },
@@ -48,10 +50,21 @@
     "mac": {
       "category": "public.app-category.productivity",
       "target": "dir",
-      "icon": "build/icon.icns"
+      "icon": "build/icon.icns",
+      "hardenedRuntime": true,
+      "gatekeeperAssess": false,
+      "entitlements": "build/entitlements.mac.plist",
+      "entitlementsInherit": "build/entitlements.mac.plist"
     },
     "win": {
-      "target": [{ "target": "nsis", "arch": ["x64"] }],
+      "target": [
+        {
+          "target": "nsis",
+          "arch": [
+            "x64"
+          ]
+        }
+      ],
       "icon": "build/icon-1024.png",
       "signAndEditExecutable": false,
       "artifactName": "Gem-Windows-Setup.${ext}"
