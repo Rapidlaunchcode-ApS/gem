@@ -10,7 +10,7 @@
 </p>
 
 <p align="center">
-  <a href="https://github.com/Rapidlaunchcode-ApS/gem/releases/latest/download/Gem-macOS-arm64.zip"><b>Download for Mac</b></a> ·
+  <a href="https://github.com/Rapidlaunchcode-ApS/gem/releases/latest/download/Gem-macOS-universal.zip"><b>Download for Mac</b></a> ·
   <a href="https://github.com/Rapidlaunchcode-ApS/gem/releases/latest/download/Gem-Windows-Setup.exe"><b>Download for Windows</b></a> ·
   <a href="https://gem-clipboard.vercel.app"><b>Gem Clipboard website</b></a>
 </p>
@@ -36,10 +36,13 @@ ever makes are the optional AI titles, and only if you turn them on with your ow
 
 ## Download
 
-**macOS (Apple Silicon)** — [`Gem-macOS-arm64.zip`](https://github.com/Rapidlaunchcode-ApS/gem/releases/latest/download/Gem-macOS-arm64.zip)
-Unzip and move **Gem.app** to Applications, then open it. The build is signed with a
-**Developer ID** certificate and **notarized by Apple**, so it opens straight away with no
-security warning.
+**macOS (Universal — Intel & Apple Silicon)** — [`Gem-macOS-universal.zip`](https://github.com/Rapidlaunchcode-ApS/gem/releases/latest/download/Gem-macOS-universal.zip)
+Unzip and move **Gem.app** to Applications, then open it. The build is a universal binary
+signed with a **Developer ID** certificate and **notarized by Apple**, so it runs natively on
+both Intel and Apple Silicon and opens straight away with no security warning.
+
+> Gem is a menu-bar app: after it opens there's no window or Dock icon — look for the **gem
+> icon in the menu bar** and press **⌘⇧V** to open the clipboard panel.
 
 > Maintainers: see [SIGNING.md](SIGNING.md) for how the signed + notarized build is produced
 > (needs an Apple Developer account).
