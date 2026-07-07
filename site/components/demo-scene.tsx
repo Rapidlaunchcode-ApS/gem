@@ -48,7 +48,7 @@ export function DemoScene() {
 
   const sceneRef = useRef<HTMLDivElement>(null)
   const regexRef = useRef<HTMLSpanElement>(null)
-  const firstCardRef = useRef<HTMLDivElement>(null)
+  const cardsRef = useRef<HTMLDivElement>(null)
   const [cursor, setCursor] = useState<Point>(RESTING)
 
   useEffect(() => {
@@ -84,7 +84,17 @@ export function DemoScene() {
       const p = centerOf(regexRef.current)
       if (p) setCursor(p)
     } else if (AT_CARD.includes(phase)) {
-      const p = centerOf(firstCardRef.current)
+      // Query the live DOM rather than a ref: AnimatePresence swaps the cards,
+      // and a shared ref gets nulled by the exiting card's cleanup. Skip any
+      // exiting card (popLayout gives it position:absolute) and take the first
+      // in-flow card.
+      const cards = cardsRef.current
+      const first = cards
+        ? ([...cards.children] as HTMLElement[]).find(
+            (c) => getComputedStyle(c).position !== 'absolute'
+          )
+        : null
+      const p = centerOf(first ?? null)
       if (p) setCursor(p)
     } else if (phase === 'closing') {
       setCursor((c) => ({ ...c, opacity: 0 }))
@@ -161,12 +171,11 @@ export function DemoScene() {
           </span>
         </div>
 
-        <div className="demoscene__cards">
+        <div className="demoscene__cards" ref={cardsRef}>
           <AnimatePresence mode="popLayout" initial={false}>
             {(board ? BOARD_CARDS : HISTORY_CARDS).map((card, i) => (
               <motion.div
                 key={card.title}
-                ref={i === 0 ? firstCardRef : undefined}
                 className="democard"
                 initial={{ opacity: 0, y: 26, scale: 0.95 }}
                 animate={{
