@@ -220,10 +220,11 @@ export default function Page() {
                 </a>
               </div>
               <p className="download__note">
-                Unsigned builds while we&apos;re young: on macOS right-click → Open the first time
-                (or <code>xattr -d com.apple.quarantine /Applications/Gem.app</code>); on Windows
-                choose <em>More info → Run anyway</em> if SmartScreen asks. Source on{' '}
-                <a href={REPO_URL}>GitHub</a>.
+                Gem isn&apos;t notarized yet, so the OS asks once. On <b>macOS</b>: move Gem to
+                Applications, then right-click it → <em>Open</em>. If macOS still blocks it, run{' '}
+                <code>xattr -dr com.apple.quarantine /Applications/Gem.app</code> and reopen. On{' '}
+                <b>Windows</b>: choose <em>More info → Run anyway</em> if SmartScreen appears.
+                Everything is inspectable on <a href={REPO_URL}>GitHub</a>.
               </p>
             </div>
           </FadeIn>

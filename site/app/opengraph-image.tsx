@@ -1,4 +1,5 @@
 import { ImageResponse } from 'next/og'
+import { BRICOLAGE_400_B64, BRICOLAGE_700_B64 } from './og-fonts'
 
 export const alt = 'Gem — the context-aware clipboard for macOS & Windows'
 export const size = { width: 1200, height: 630 }
@@ -8,14 +9,10 @@ const GEM_SVG = `<svg xmlns="http://www.w3.org/2000/svg" width="120" height="120
 
 const gemDataUri = `data:image/svg+xml;base64,${Buffer.from(GEM_SVG).toString('base64')}`
 
-const CARDS = [
-  { title: 'Code', color: '#af52de' },
-  { title: 'Markdown', color: '#ff9f0a' },
-  { title: 'Link', color: '#34c759' },
-  { title: 'Color', color: '#ff6b2c' }
-]
-
 export default function OpengraphImage() {
+  const bold = Buffer.from(BRICOLAGE_700_B64, 'base64')
+  const regular = Buffer.from(BRICOLAGE_400_B64, 'base64')
+
   return new ImageResponse(
     (
       <div
@@ -25,96 +22,64 @@ export default function OpengraphImage() {
           display: 'flex',
           flexDirection: 'column',
           justifyContent: 'space-between',
-          padding: 72,
+          padding: '80px 88px',
           background: '#faf6f0',
           backgroundImage:
-            'radial-gradient(900px 500px at 88% -8%, rgba(255,214,92,0.5), transparent 60%), radial-gradient(800px 520px at 6% 108%, rgba(47,191,113,0.28), transparent 62%)',
-          fontFamily: 'sans-serif',
-          color: '#1c1510'
+            'radial-gradient(1000px 560px at 92% -12%, rgba(255,214,92,0.42), transparent 60%), radial-gradient(760px 520px at -6% 112%, rgba(47,191,113,0.22), transparent 60%)',
+          color: '#1c1510',
+          fontFamily: 'Bricolage'
         }}
       >
-        <div style={{ display: 'flex', alignItems: 'center', gap: 20 }}>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 18 }}>
           {/* eslint-disable-next-line @next/next/no-img-element */}
-          <img src={gemDataUri} width={64} height={64} alt="" />
-          <div style={{ fontSize: 40, fontWeight: 800, letterSpacing: -1 }}>Gem</div>
+          <img src={gemDataUri} width={58} height={58} alt="" />
+          <div style={{ fontSize: 38, fontWeight: 700 }}>Gem</div>
         </div>
 
         <div style={{ display: 'flex', flexDirection: 'column' }}>
-          <div style={{ display: 'flex', fontSize: 82, fontWeight: 800, letterSpacing: -3, lineHeight: 1.02 }}>
+          <div style={{ display: 'flex', fontSize: 96, fontWeight: 700, lineHeight: 1.05, letterSpacing: -3 }}>
             Every copy, kept
           </div>
-          <div style={{ display: 'flex', fontSize: 82, fontWeight: 800, letterSpacing: -3, lineHeight: 1.02 }}>
+          <div style={{ display: 'flex', fontSize: 96, fontWeight: 700, lineHeight: 1.05, letterSpacing: -3 }}>
             and{' '}
             <span
               style={{
-                marginLeft: 20,
-                paddingBottom: 4,
-                borderBottom: '10px solid rgba(47,191,113,0.55)'
+                marginLeft: 24,
+                paddingBottom: 6,
+                borderBottom: '12px solid rgba(47,191,113,0.5)'
               }}
             >
               understood.
             </span>
           </div>
-          <div style={{ display: 'flex', marginTop: 26, fontSize: 32, color: 'rgba(28,21,16,0.66)' }}>
-            The context-aware clipboard for macOS &amp; Windows.
+          <div
+            style={{
+              display: 'flex',
+              marginTop: 34,
+              fontSize: 34,
+              fontWeight: 400,
+              color: 'rgba(28,21,16,0.6)'
+            }}
+          >
+            A free, open-source clipboard manager for Mac &amp; Windows.
           </div>
         </div>
 
-        <div style={{ display: 'flex', alignItems: 'flex-end', justifyContent: 'space-between' }}>
-          <div style={{ display: 'flex', gap: 14 }}>
-            {['Free & open source', 'macOS', 'Windows', 'MIT'].map((t) => (
-              <div
-                key={t}
-                style={{
-                  display: 'flex',
-                  fontSize: 24,
-                  fontWeight: 600,
-                  color: '#0b7e57',
-                  background: 'rgba(47,191,113,0.12)',
-                  border: '1px solid rgba(47,191,113,0.32)',
-                  borderRadius: 999,
-                  padding: '10px 22px'
-                }}
-              >
-                {t}
-              </div>
-            ))}
-          </div>
-          <div style={{ display: 'flex', gap: 10 }}>
-            {CARDS.map((c) => (
-              <div
-                key={c.title}
-                style={{
-                  display: 'flex',
-                  flexDirection: 'column',
-                  width: 96,
-                  height: 118,
-                  borderRadius: 12,
-                  overflow: 'hidden',
-                  background: '#fff',
-                  border: '1px solid rgba(28,21,16,0.1)',
-                  boxShadow: '0 10px 24px rgba(28,21,16,0.12)'
-                }}
-              >
-                <div
-                  style={{
-                    display: 'flex',
-                    background: c.color,
-                    color: '#fff',
-                    fontSize: 16,
-                    fontWeight: 700,
-                    padding: '8px 10px'
-                  }}
-                >
-                  {c.title}
-                </div>
-                <div style={{ display: 'flex', flex: 1, background: c.title === 'Color' ? '#ff6b2c' : '#fff' }} />
-              </div>
-            ))}
-          </div>
+        <div style={{ display: 'flex', alignItems: 'center', gap: 18, fontSize: 26, fontWeight: 400 }}>
+          <span style={{ display: 'flex', color: '#0b7e57', fontWeight: 700 }}>Free forever</span>
+          <span style={{ display: 'flex', color: 'rgba(28,21,16,0.28)' }}>•</span>
+          <span style={{ display: 'flex', color: 'rgba(28,21,16,0.6)' }}>Open source</span>
+          <span style={{ display: 'flex', color: 'rgba(28,21,16,0.28)' }}>•</span>
+          <span style={{ display: 'flex', color: 'rgba(28,21,16,0.6)' }}>gem-clipboard.vercel.app</span>
         </div>
       </div>
     ),
-    size
+    {
+      ...size,
+      fonts: [
+        { name: 'Bricolage', data: bold, weight: 700, style: 'normal' },
+        { name: 'Bricolage', data: regular, weight: 400, style: 'normal' }
+      ]
+    }
   )
 }

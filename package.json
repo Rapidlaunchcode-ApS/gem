@@ -1,6 +1,6 @@
 {
   "name": "gem",
-  "version": "0.2.2",
+  "version": "0.2.3",
   "description": "Gem — the context-aware clipboard for macOS. Every copy, kept and understood.",
   "main": "./out/main/index.js",
   "type": "module",
@@ -38,6 +38,7 @@
   "build": {
     "appId": "app.rapidlaunchcode.gem",
     "productName": "Gem",
+    "afterPack": "build/afterPack.cjs",
     "directories": {
       "output": "dist"
     },
