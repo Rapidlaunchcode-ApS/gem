@@ -14,10 +14,10 @@ export type Board = z.infer<typeof boardSchema>
 export const BOARD_COLORS = [
   '#ff453a',
   '#bf5af2',
-  '#0a84ff',
+  '#ffd60a',
   '#30d158',
   '#ff9f0a',
-  '#64d2ff',
+  '#66d4a3',
   '#ff375f'
 ] as const
 

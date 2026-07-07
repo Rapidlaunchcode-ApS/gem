@@ -1,6 +1,6 @@
 {
   "name": "gem",
-  "version": "0.1.0",
+  "version": "0.2.0",
   "description": "Gem — the context-aware clipboard for macOS. Every copy, kept and understood.",
   "main": "./out/main/index.js",
   "type": "module",
@@ -12,7 +12,8 @@
     "build": "electron-vite build",
     "start": "electron-vite preview",
     "typecheck": "tsc --noEmit -p tsconfig.node.json && tsc --noEmit -p tsconfig.web.json",
-    "dist": "electron-vite build && electron-builder --mac"
+    "dist": "electron-vite build && electron-builder --mac",
+    "dist:win": "electron-vite build && electron-builder --win"
   },
   "dependencies": {
     "@anthropic-ai/sdk": "^0.110.0",
@@ -47,6 +48,16 @@
       "category": "public.app-category.productivity",
       "target": "dir",
       "icon": "build/icon.icns"
+    },
+    "win": {
+      "target": [{ "target": "nsis", "arch": ["x64"] }],
+      "icon": "build/icon-1024.png",
+      "signAndEditExecutable": false,
+      "artifactName": "Gem-Windows-Setup.${ext}"
+    },
+    "nsis": {
+      "oneClick": true,
+      "deleteAppDataOnUninstall": false
     }
   }
 }

@@ -16,6 +16,9 @@ import { KIND_META } from './kinds'
 
 type TypeFilter = 'all' | 'pinned' | ClipKind
 
+const IS_MAC =
+  typeof navigator !== 'undefined' && navigator.platform.toUpperCase().includes('MAC')
+
 const TYPE_FILTERS: { key: TypeFilter; label: string }[] = [
   { key: 'all', label: 'All' },
   { key: 'pinned', label: 'Pinned' },
@@ -199,13 +202,13 @@ export function App() {
           else void window.api.hidePanel()
           break
         case 'Backspace':
-          if (e.metaKey) {
+          if (e.metaKey || e.ctrlKey) {
             e.preventDefault()
             if (selected) void window.api.deleteItem(selected.id)
           }
           break
         case 'p':
-          if (e.metaKey) {
+          if (e.metaKey || e.ctrlKey) {
             e.preventDefault()
             if (selected) void window.api.setPinned(selected.id, !selected.pinned)
           }
@@ -376,8 +379,8 @@ export function App() {
         <span><kbd>↵</kbd> Paste</span>
         <span><kbd>Space</kbd> Preview</span>
         <span><kbd>⇥</kbd> Boards</span>
-        <span><kbd>⌘P</kbd> Pin</span>
-        <span><kbd>⌘⌫</kbd> Delete</span>
+        <span><kbd>{IS_MAC ? '⌘P' : 'Ctrl+P'}</kbd> Pin</span>
+        <span><kbd>{IS_MAC ? '⌘⌫' : 'Ctrl+⌫'}</kbd> Delete</span>
         <span><kbd>Esc</kbd> Close</span>
       </footer>
 

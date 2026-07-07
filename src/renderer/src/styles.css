@@ -17,7 +17,7 @@
   --text: rgba(255, 255, 255, 0.94);
   --text-dim: rgba(255, 255, 255, 0.58);
   --text-faint: rgba(255, 255, 255, 0.36);
-  --accent: #0a84ff;
+  --accent: #2fbf71;
   --overlay-bg: rgba(28, 28, 34, 0.72);
   --code-bg: rgba(10, 10, 14, 0.45);
   --radius: 16px;
@@ -33,7 +33,7 @@
     --text: rgba(22, 22, 27, 0.92);
     --text-dim: rgba(22, 22, 27, 0.55);
     --text-faint: rgba(22, 22, 27, 0.38);
-    --accent: #007aff;
+    --accent: #1f9d55;
     --overlay-bg: rgba(248, 248, 250, 0.78);
     --code-bg: #1f1f26;
   }
@@ -48,7 +48,7 @@
   --text: rgba(22, 22, 27, 0.92);
   --text-dim: rgba(22, 22, 27, 0.55);
   --text-faint: rgba(22, 22, 27, 0.38);
-  --accent: #007aff;
+  --accent: #1f9d55;
   --overlay-bg: rgba(248, 248, 250, 0.78);
   --code-bg: #1f1f26;
 }
@@ -598,12 +598,12 @@ body {
 .hljs-class .hljs-title,
 .hljs-section,
 .hljs-name {
-  color: #6db3ff;
+  color: #fc9867;
 }
 
 .hljs-title,
 .hljs-title.function_ {
-  color: #7cc4ff;
+  color: #a9dc76;
 }
 
 .hljs-string,

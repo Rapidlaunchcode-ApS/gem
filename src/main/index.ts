@@ -22,6 +22,7 @@ import { ClipboardWatcher } from './watcher'
 
 const PANEL_HEIGHT = 380
 const isDev = !app.isPackaged && process.env['ELECTRON_RENDERER_URL'] !== undefined
+const isMac = process.platform === 'darwin'
 
 // One stable data dir regardless of dev/packaged process name.
 app.setPath('userData', join(app.getPath('appData'), 'Gem'))
@@ -60,7 +61,6 @@ function createPanel(): BrowserWindow {
   const win = new BrowserWindow({
     show: false,
     frame: false,
-    transparent: true,
     resizable: false,
     movable: false,
     minimizable: false,
@@ -68,9 +68,18 @@ function createPanel(): BrowserWindow {
     fullscreenable: false,
     skipTaskbar: true,
     hasShadow: true,
-    vibrancy: 'hud',
-    visualEffectState: 'active',
-    roundedCorners: false,
+    // macOS gets real vibrancy; Windows 11 gets acrylic, older Windows the solid fallback.
+    ...(isMac
+      ? {
+          transparent: true,
+          vibrancy: 'hud' as const,
+          visualEffectState: 'active' as const,
+          roundedCorners: false
+        }
+      : {
+          backgroundColor: '#1c1917',
+          backgroundMaterial: 'acrylic' as const
+        }),
     webPreferences: {
       preload: join(import.meta.dirname, '../preload/index.mjs'),
       sandbox: false
@@ -138,15 +147,25 @@ function pasteItem(item: ClipItem): void {
 }
 
 function simulatePaste(): void {
-  // Requires Accessibility permission; if denied the item is still on the
-  // clipboard so the user can Cmd+V manually.
-  execFile(
-    'osascript',
-    ['-e', 'tell application "System Events" to keystroke "v" using command down'],
-    (err) => {
-      if (err) console.error('Auto-paste failed (grant Accessibility permission):', err.message)
-    }
-  )
+  if (isMac) {
+    // Requires Accessibility permission; if denied the item is still on the
+    // clipboard so the user can Cmd+V manually.
+    execFile(
+      'osascript',
+      ['-e', 'tell application "System Events" to keystroke "v" using command down'],
+      (err) => {
+        if (err) console.error('Auto-paste failed (grant Accessibility permission):', err.message)
+      }
+    )
+  } else if (process.platform === 'win32') {
+    execFile(
+      'powershell',
+      ['-NoProfile', '-Command', "$w = New-Object -ComObject wscript.shell; $w.SendKeys('^v')"],
+      (err) => {
+        if (err) console.error('Auto-paste failed:', err.message)
+      }
+    )
+  }
 }
 
 function showItemMenu(id: string): void {
@@ -209,7 +228,7 @@ function createTray(): void {
   tray.setToolTip('Gem')
   tray.setContextMenu(
     Menu.buildFromTemplate([
-      { label: 'Open Gem  ⌘⇧V', click: () => showPanel() },
+      { label: `Open Gem  ${isMac ? '⌘⇧V' : 'Ctrl+Shift+V'}`, click: () => showPanel() },
       { type: 'separator' },
       {
         label: 'Launch at Login',

@@ -139,12 +139,12 @@ export function Settings({
             }}
           />
           <div className="settings__hint">
-            Your own key (BYOK), stored encrypted on this Mac and only used to title clips.
+            Your own key (BYOK), stored encrypted on this device and only used to title clips.
           </div>
         </div>
 
         <div className="settings__footnote">
-          History is stored locally and never leaves this Mac unless AI titles are enabled.
+          History is stored locally and never leaves this device unless AI titles are enabled.
         </div>
       </div>
     </div>

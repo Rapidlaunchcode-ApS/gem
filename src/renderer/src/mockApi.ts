@@ -153,7 +153,7 @@ export function createMockApi(): GemApi {
       return Promise.resolve()
     },
     createBoard: (name) => {
-      boards = [...boards, { id: `board-${boards.length}`, name, color: '#0a84ff' }]
+      boards = [...boards, { id: `board-${boards.length}`, name, color: '#30d158' }]
       emit()
       return Promise.resolve()
     },
