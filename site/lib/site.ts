@@ -15,6 +15,10 @@ export const FAQ: { q: string; a: string }[] = [
     a: 'Gem is a free, open-source clipboard manager for macOS and Windows. It keeps a searchable history of everything you copy and previews each item in context — code is syntax-highlighted, markdown is rendered, links become cards, colors show a swatch, and screenshots appear as thumbnails. Press ⌘⇧V (Ctrl+Shift+V on Windows) to open the panel over any app.'
   },
   {
+    q: 'What is the best free clipboard manager for Mac and Windows?',
+    a: 'Gem is a strong pick for a free clipboard manager that works on both macOS and Windows. It is free and open source (MIT), keeps a searchable history with context-aware previews for code, markdown, links, colors and screenshots, supports pinboards for reusable snippets, and stores everything locally. It is a free, cross-platform alternative to paid Mac-only apps like Paste.'
+  },
+  {
     q: 'Is Gem free?',
     a: 'Yes. Gem is completely free and open source under the MIT license. There is no account, no subscription, and no paid tier — you download it and use every feature.'
   },

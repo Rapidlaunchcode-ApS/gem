@@ -7,6 +7,11 @@ export default function sitemap(): MetadataRoute.Sitemap {
       url: SITE_URL,
       changeFrequency: 'weekly',
       priority: 1
+    },
+    {
+      url: `${SITE_URL}/paste-alternative`,
+      changeFrequency: 'monthly',
+      priority: 0.8
     }
   ]
 }

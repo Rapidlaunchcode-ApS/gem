@@ -1,3 +1,4 @@
+import Link from 'next/link'
 import { DemoScene } from '../components/demo-scene'
 import { FadeIn } from '../components/fade-in'
 import { HeroPanel } from '../components/hero-panel'
@@ -70,7 +71,14 @@ export default function Page() {
                 Download for Windows
               </a>
             </div>
-            <p className="hero__fineprint">No account. No subscription. MIT licensed.</p>
+            <p className="hero__fineprint">
+              No account. No subscription. MIT licensed.
+              <br />
+              Switching from Paste?{' '}
+              <Link className="hero__inlinelink" href="/paste-alternative">
+                See how Gem compares →
+              </Link>
+            </p>
           </FadeIn>
           <HeroPanel />
         </header>
@@ -228,6 +236,7 @@ export default function Page() {
           <a href="https://rapidlaunchcode.app">Rapidlaunchcode</a>
         </span>
         <div className="footer__links">
+          <Link href="/paste-alternative">Paste alternative</Link>
           <a href={REPO_URL}>GitHub</a>
           <a href={`${REPO_URL}/releases`}>Releases</a>
           <a href={`${REPO_URL}/issues`}>Issues</a>

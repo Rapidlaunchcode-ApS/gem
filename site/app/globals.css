@@ -251,6 +251,18 @@ a {
   margin-top: 1.15rem;
   font-size: 0.84rem;
   color: var(--ink-faint);
+  line-height: 1.9;
+}
+
+.hero__inlinelink {
+  color: var(--emerald-deep);
+  text-decoration: none;
+  font-weight: 600;
+}
+
+.hero__inlinelink:hover {
+  text-decoration: underline;
+  text-underline-offset: 2px;
 }
 
 /* ── Panel mock (light) ─────────────────────────────── */
@@ -993,6 +1005,149 @@ a {
   color: var(--ink-dim);
   font-size: 0.97rem;
   max-width: 58ch;
+}
+
+/* ── Article / comparison page ──────────────────────── */
+
+.article {
+  padding: clamp(2rem, 5vw, 3.5rem) 0 0;
+  max-width: 56rem;
+}
+
+.article__crumb {
+  font-size: 0.85rem;
+  color: var(--ink-faint);
+  margin-bottom: 1.6rem;
+}
+
+.article__crumb a {
+  color: var(--ink-dim);
+  text-decoration: none;
+}
+
+.article__crumb a:hover {
+  color: var(--ink);
+}
+
+.article__h1 {
+  font-size: clamp(2.1rem, 5.2vw, 3.4rem);
+  line-height: 1.05;
+  font-weight: 750;
+  max-width: 18ch;
+  margin-bottom: 1.2rem;
+}
+
+.article__h1 .u {
+  position: relative;
+  white-space: nowrap;
+}
+
+.article__h1 .u::after {
+  content: '';
+  position: absolute;
+  left: 0;
+  right: 0;
+  bottom: 0.06em;
+  height: 0.12em;
+  background: var(--emerald);
+  opacity: 0.5;
+  border-radius: 99px;
+  z-index: -1;
+}
+
+.article__lede {
+  font-size: clamp(1.02rem, 2vw, 1.2rem);
+  color: var(--ink-dim);
+  max-width: 62ch;
+  margin-bottom: 1.6rem;
+}
+
+.article__lede a {
+  color: var(--emerald-deep);
+  text-decoration: underline;
+  text-underline-offset: 2px;
+}
+
+.article__lede strong {
+  color: var(--ink);
+}
+
+.article__list {
+  margin: 1.2rem 0 0;
+  padding-left: 1.2rem;
+  max-width: 60ch;
+}
+
+.article__list li {
+  margin-bottom: 0.7rem;
+  color: var(--ink-dim);
+}
+
+.article__list strong {
+  color: var(--ink);
+}
+
+.cmp {
+  margin-top: 1.5rem;
+  overflow-x: auto;
+  border: 1px solid var(--line);
+  border-radius: 16px;
+}
+
+.cmp table {
+  width: 100%;
+  border-collapse: collapse;
+  font-size: 0.98rem;
+}
+
+.cmp thead th {
+  text-align: left;
+  font-family: var(--font-display);
+  font-size: 1.05rem;
+  font-weight: 700;
+  padding: 1rem 1.2rem;
+  background: var(--paper-deep);
+  border-bottom: 1px solid var(--line);
+}
+
+.cmp thead th:nth-child(2) {
+  color: var(--emerald-deep);
+}
+
+.cmp tbody th {
+  text-align: left;
+  font-weight: 600;
+  color: var(--ink);
+  padding: 0.85rem 1.2rem;
+}
+
+.cmp tbody td {
+  padding: 0.85rem 1.2rem;
+  color: var(--ink-dim);
+}
+
+.cmp tbody tr:not(:last-child) th,
+.cmp tbody tr:not(:last-child) td {
+  border-bottom: 1px solid var(--line);
+}
+
+.cmp tbody td:nth-child(2) {
+  background: color-mix(in srgb, var(--emerald) 5%, transparent);
+  color: var(--ink);
+  font-weight: 500;
+}
+
+.cmp__yes {
+  color: var(--green);
+  font-weight: 700;
+}
+
+.cmp__yes--brand {
+  color: var(--emerald-deep);
+}
+
+.cmp__no {
+  color: var(--ink-faint);
 }
 
 /* ── FAQ ────────────────────────────────────────────── */
