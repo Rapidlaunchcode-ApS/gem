@@ -224,12 +224,11 @@ export default async function Page() {
                 </a>
               </div>
               <p className="download__note">
-                Gem isn&apos;t notarized yet, so the OS asks once. On <b>macOS</b>: move Gem to
-                Applications and open it, then click <em>Done</em> and go to{' '}
-                <em>System Settings → Privacy &amp; Security → Open Anyway</em> (or run{' '}
-                <code>xattr -dr com.apple.quarantine /Applications/Gem.app</code>). On{' '}
-                <b>Windows</b>: choose <em>More info → Run anyway</em> if SmartScreen appears.
-                Everything is inspectable on <a href={REPO_URL}>GitHub</a>.
+                The <b>macOS</b> build is signed with a Developer ID and notarized by Apple, so
+                it opens with no warning &mdash; just move Gem to Applications and open it. On{' '}
+                <b>Windows</b>: the installer isn&apos;t code-signed yet, so choose{' '}
+                <em>More info → Run anyway</em> if SmartScreen appears. Everything is inspectable
+                on <a href={REPO_URL}>GitHub</a>.
               </p>
             </div>
           </FadeIn>

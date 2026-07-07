@@ -2,7 +2,7 @@ export const SITE_URL = 'https://gem-clipboard.vercel.app'
 export const REPO_URL = 'https://github.com/Rapidlaunchcode-ApS/gem'
 export const MAC_URL = `${REPO_URL}/releases/latest/download/Gem-macOS-arm64.zip`
 export const WIN_URL = `${REPO_URL}/releases/latest/download/Gem-Windows-Setup.exe`
-export const VERSION = '0.2.3'
+export const VERSION = '0.2.4'
 
 export const TAGLINE = 'Every copy, kept and understood.'
 export const DESCRIPTION =
@@ -43,7 +43,7 @@ export const FAQ: { q: string; a: string }[] = [
     a: 'By default Gem deletes unpinned history after 7 days, and you can set anything from 1 day to forever in Settings. Pinned items and anything saved to a pinboard are always kept.'
   },
   {
-    q: 'macOS won’t open Gem (“damaged” or “Apple could not verify”) — how do I fix it?',
-    a: 'That is macOS Gatekeeper blocking an app that isn’t notarized yet — not an actual problem with the download. Move Gem to your Applications folder and try to open it. On recent macOS you’ll get a dialog with only a Done button: click Done, then open System Settings → Privacy & Security, scroll down, and click “Open Anyway” next to Gem. On older macOS, right-click Gem and choose Open. If neither works, open Terminal and run: xattr -dr com.apple.quarantine /Applications/Gem.app — then open Gem again. You only need to do this once.'
+    q: 'Is the macOS build of Gem signed and notarized?',
+    a: 'Yes. The current macOS build is signed with a Developer ID certificate and notarized by Apple, so it opens straight away with no “damaged” or “Apple could not verify” warning — just move Gem to your Applications folder and open it. If you are on a much older build and still see a Gatekeeper warning, open System Settings → Privacy & Security and click “Open Anyway”, or run xattr -dr com.apple.quarantine /Applications/Gem.app in Terminal, then reopen Gem.'
   }
 ]

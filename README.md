@@ -37,17 +37,12 @@ ever makes are the optional AI titles, and only if you turn them on with your ow
 ## Download
 
 **macOS (Apple Silicon)** — [`Gem-macOS-arm64.zip`](https://github.com/Rapidlaunchcode-ApS/gem/releases/latest/download/Gem-macOS-arm64.zip)
-Unzip and move **Gem.app** to Applications. The build is ad-hoc signed but not notarized
-yet, so macOS asks once. Open Gem, click **Done**, then go to **System Settings → Privacy &
-Security** and click **Open Anyway** next to Gem (on older macOS, right-click Gem → **Open**).
-If that doesn't appear, clear the download quarantine and reopen:
+Unzip and move **Gem.app** to Applications, then open it. The build is signed with a
+**Developer ID** certificate and **notarized by Apple**, so it opens straight away with no
+security warning.
 
-```bash
-xattr -dr com.apple.quarantine /Applications/Gem.app
-```
-
-> Maintainers: see [SIGNING.md](SIGNING.md) to produce a fully signed + notarized build that
-> opens with no warning (needs an Apple Developer account).
+> Maintainers: see [SIGNING.md](SIGNING.md) for how the signed + notarized build is produced
+> (needs an Apple Developer account).
 
 **Windows (x64)** — [`Gem-Windows-Setup.exe`](https://github.com/Rapidlaunchcode-ApS/gem/releases/latest/download/Gem-Windows-Setup.exe)
 Run the installer. It isn't code-signed yet, so if SmartScreen warns, choose
