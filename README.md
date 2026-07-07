@@ -1,7 +1,8 @@
 # Gem
 
 A free, context-aware clipboard manager for macOS — every copy, kept and understood.
-Everything stays local — no account, no sync, no subscription.
+Everything stays local — no account, no sync, no subscription. The only network
+calls are the optional BYOK AI titles, made directly to the provider you configure.
 
 ![Electron](https://img.shields.io/badge/Electron-React%20%2B%20TypeScript-blue)
 
@@ -15,11 +16,17 @@ Everything stays local — no account, no sync, no subscription.
   - **Links** → hostname + URL card
   - **Colors** (`#hex`, `rgb()`, `hsl()`) → live swatch
   - Plain text otherwise
+- **Pinboards** — named boards as tabs; drag a card onto a tab or use the right-click
+  menu. Boarded items are kept forever.
+- **AI titles (BYOK)** — optionally name new clips automatically with your own
+  OpenAI, Gemini or Anthropic API key. The key is stored encrypted via macOS
+  `safeStorage` and only ever used from the local app.
+- **Retention** — history is deleted after 7 days by default; choose 1 day → 1 year
+  or Forever in Settings. Pinned and boarded items are always kept.
 - **Search & filter** — type to search, filter chips per content type.
 - **Keyboard-first** — `←/→` navigate, `↵` paste into the frontmost app, `Space` quick-look
-  preview, `⌘P` pin, `⌘⌫` delete, `Esc` close.
-- **Pins** — pinned items survive the 500-item history cap and Clear History.
-- **Menu-bar app** — lives in the tray (📋), optional launch at login, no dock icon.
+  preview, `⇥` cycle boards, `⌘P` pin, `⌘⌫` delete, `Esc` close.
+- **Menu-bar app** — gem icon in the tray, optional launch at login, no dock icon.
 
 ## Development
 

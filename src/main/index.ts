@@ -12,7 +12,9 @@ import {
 import { execFile } from 'node:child_process'
 import { existsSync, mkdirSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { themeSchema, type ClipItem } from '../shared/types'
+import { z } from 'zod'
+import { aiProviderSchema, themeSchema, type ClipItem } from '../shared/types'
+import { Enricher } from './enricher'
 import { SettingsStore } from './settings'
 import { HistoryStore } from './store'
 import { createTrayIcon } from './trayIcon'
@@ -52,6 +54,7 @@ let tray: Tray | null = null
 let store: HistoryStore
 let settings: SettingsStore
 let watcher: ClipboardWatcher
+let enricher: Enricher
 
 function createPanel(): BrowserWindow {
   const win = new BrowserWindow({
@@ -279,10 +282,29 @@ function registerIpc(): void {
     broadcastState()
   })
 
-  ipcMain.handle('settings:get', () => settings.get())
+  ipcMain.handle('settings:get', () => settings.view())
 
   ipcMain.handle('settings:set-theme', (_e, theme: unknown) => {
     settings.setTheme(themeSchema.parse(theme))
+  })
+
+  ipcMain.handle('settings:set-retention', (_e, days: unknown) => {
+    if (typeof days !== 'number' || !Number.isFinite(days)) {
+      throw new TypeError('Expected a number of days')
+    }
+    settings.setRetentionDays(days)
+    if (store.purgeExpired(settings.retentionDays())) broadcastState()
+  })
+
+  ipcMain.handle('settings:set-ai', (_e, update: unknown) => {
+    const { apiKey, ...rest } = z
+      .object({
+        enabled: z.boolean(),
+        provider: aiProviderSchema,
+        apiKey: z.string().optional()
+      })
+      .parse(update)
+    settings.setAi(apiKey === undefined ? rest : { ...rest, apiKey })
   })
 
   ipcMain.handle('panel:hide', () => panel?.hide())
@@ -303,8 +325,18 @@ if (!gotLock) {
     migrateLegacyUserData()
     store = new HistoryStore()
     settings = new SettingsStore()
-    watcher = new ClipboardWatcher(store, broadcastState)
+    enricher = new Enricher(store, settings, broadcastState)
+    watcher = new ClipboardWatcher(store, (item) => {
+      broadcastState()
+      enricher.maybeEnrich(item)
+    })
     watcher.start()
+
+    // Retention: purge at startup and hourly while running.
+    if (store.purgeExpired(settings.retentionDays())) broadcastState()
+    setInterval(() => {
+      if (store.purgeExpired(settings.retentionDays())) broadcastState()
+    }, 3_600_000)
 
     panel = createPanel()
     createTray()

@@ -57,10 +57,56 @@ export const legacyHistoryFileSchema = z.object({
 export const themeSchema = z.enum(['system', 'light', 'dark'])
 export type Theme = z.infer<typeof themeSchema>
 
-export const settingsSchema = z.object({
-  theme: themeSchema
-})
-export type Settings = z.infer<typeof settingsSchema>
+export const aiProviderSchema = z.enum(['openai', 'gemini', 'anthropic'])
+export type AiProvider = z.infer<typeof aiProviderSchema>
+
+/** Days to keep unpinned, unboarded history. 0 = forever. */
+export const RETENTION_OPTIONS: { days: number; label: string }[] = [
+  { days: 1, label: '1 day' },
+  { days: 3, label: '3 days' },
+  { days: 7, label: '7 days' },
+  { days: 14, label: '14 days' },
+  { days: 30, label: '30 days' },
+  { days: 90, label: '90 days' },
+  { days: 365, label: '1 year' },
+  { days: 0, label: 'Forever' }
+]
+
+const DEFAULT_AI = { enabled: false, provider: 'anthropic' as const, encryptedKey: '' }
+
+/** On-disk settings; the API key is stored encrypted and never sent to the renderer. */
+export const settingsFileSchema = z
+  .object({
+    theme: themeSchema.catch('system'),
+    retentionDays: z.number().int().min(0).max(3650).catch(7),
+    ai: z
+      .object({
+        enabled: z.boolean().catch(false),
+        provider: aiProviderSchema.catch('anthropic'),
+        encryptedKey: z.string().catch('')
+      })
+      .catch(DEFAULT_AI)
+  })
+  .catch({ theme: 'system', retentionDays: 7, ai: DEFAULT_AI })
+export type SettingsFile = z.infer<typeof settingsFileSchema>
+
+/** What the renderer sees — no key material. */
+export interface SettingsView {
+  theme: Theme
+  retentionDays: number
+  ai: {
+    enabled: boolean
+    provider: AiProvider
+    hasKey: boolean
+  }
+}
+
+export interface AiUpdate {
+  enabled: boolean
+  provider: AiProvider
+  /** New key to store (encrypted); omit to keep the existing one. */
+  apiKey?: string
+}
 
 export interface AppState {
   items: ClipItem[]
@@ -84,8 +130,10 @@ export interface GemApi {
   showBoardMenu: (id: string) => Promise<void>
   /** Fired when the user picks “Rename” in the native menu. */
   onItemEdit: (listener: (id: string) => void) => () => void
-  getSettings: () => Promise<Settings>
+  getSettings: () => Promise<SettingsView>
   setTheme: (theme: Theme) => Promise<void>
+  setRetentionDays: (days: number) => Promise<void>
+  setAiSettings: (update: AiUpdate) => Promise<void>
   clearHistory: () => Promise<void>
   hidePanel: () => Promise<void>
   onPanelShown: (listener: () => void) => () => void

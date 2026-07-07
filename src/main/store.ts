@@ -163,6 +163,19 @@ export class HistoryStore {
     this.scheduleSave()
   }
 
+  /** Delete unpinned, unboarded items older than the retention window. 0 = keep forever. */
+  purgeExpired(retentionDays: number): boolean {
+    if (retentionDays <= 0) return false
+    const cutoff = Date.now() - retentionDays * 86_400_000
+    const expired = this.items.filter((i) => !this.isProtected(i) && i.copiedAt < cutoff)
+    if (expired.length === 0) return false
+    const ids = new Set(expired.map((i) => i.id))
+    for (const item of expired) this.removeImageFile(item)
+    this.items = this.items.filter((i) => !ids.has(i.id))
+    this.scheduleSave()
+    return true
+  }
+
   private removeImageFile(item: ClipItem): void {
     if (item.kind !== 'image') return
     try {

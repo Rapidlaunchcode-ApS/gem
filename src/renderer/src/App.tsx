@@ -1,5 +1,13 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import type { AppState, Board, ClipItem, ClipKind, Theme } from '../../shared/types'
+import type {
+  AiUpdate,
+  AppState,
+  Board,
+  ClipItem,
+  ClipKind,
+  SettingsView,
+  Theme
+} from '../../shared/types'
 import { Card } from './components/Card'
 import { ClipboardIcon, PinIcon, SearchIcon, SettingsIcon } from './components/Icons'
 import { Preview } from './components/Preview'
@@ -30,7 +38,11 @@ export function App() {
   const [editingItemId, setEditingItemId] = useState<string | null>(null)
   const [dragOverBoardId, setDragOverBoardId] = useState<string | null>(null)
   const [settingsOpen, setSettingsOpen] = useState(false)
-  const [theme, setTheme] = useState<Theme>('system')
+  const [settings, setSettings] = useState<SettingsView>({
+    theme: 'system',
+    retentionDays: 7,
+    ai: { enabled: false, provider: 'anthropic', hasKey: false }
+  })
   const searchRef = useRef<HTMLInputElement>(null)
   const stripRef = useRef<HTMLDivElement>(null)
 
@@ -45,19 +57,31 @@ export function App() {
   useEffect(() => window.api.onItemEdit(setEditingItemId), [])
 
   useEffect(() => {
-    void window.api.getSettings().then((s) => setTheme(s.theme))
+    void window.api.getSettings().then(setSettings)
   }, [])
 
   // data-theme lets an explicit choice win over prefers-color-scheme
   // (and makes the toggle work in the browser-mock renderer too).
   useEffect(() => {
-    if (theme === 'system') delete document.documentElement.dataset['theme']
-    else document.documentElement.dataset['theme'] = theme
-  }, [theme])
+    if (settings.theme === 'system') delete document.documentElement.dataset['theme']
+    else document.documentElement.dataset['theme'] = settings.theme
+  }, [settings.theme])
 
   const changeTheme = useCallback((next: Theme) => {
-    setTheme(next)
+    setSettings((s) => ({ ...s, theme: next }))
     void window.api.setTheme(next)
+  }, [])
+
+  const changeRetention = useCallback((days: number) => {
+    setSettings((s) => ({ ...s, retentionDays: days }))
+    void window.api.setRetentionDays(days)
+  }, [])
+
+  const changeAi = useCallback((update: AiUpdate) => {
+    void window.api
+      .setAiSettings(update)
+      .then(() => window.api.getSettings())
+      .then(setSettings)
   }, [])
 
   useEffect(() => {
@@ -362,7 +386,13 @@ export function App() {
       )}
 
       {settingsOpen && (
-        <Settings theme={theme} onThemeChange={changeTheme} onClose={() => setSettingsOpen(false)} />
+        <Settings
+          settings={settings}
+          onThemeChange={changeTheme}
+          onRetentionChange={changeRetention}
+          onAiChange={changeAi}
+          onClose={() => setSettingsOpen(false)}
+        />
       )}
     </div>
   )

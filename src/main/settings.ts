@@ -1,40 +1,113 @@
-import { app, nativeTheme } from 'electron'
+import { app, nativeTheme, safeStorage } from 'electron'
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
-import { settingsSchema, type Settings, type Theme } from '../shared/types'
+import {
+  settingsFileSchema,
+  type AiProvider,
+  type AiUpdate,
+  type SettingsFile,
+  type SettingsView,
+  type Theme
+} from '../shared/types'
+
+const PLAIN_PREFIX = 'plain:'
 
 export class SettingsStore {
-  private settings: Settings = { theme: 'system' }
+  private settings: SettingsFile
   private readonly filePath: string
 
   constructor() {
     this.filePath = join(app.getPath('userData'), 'settings.json')
+    let raw: unknown = {}
     if (existsSync(this.filePath)) {
       try {
-        this.settings = settingsSchema.parse(JSON.parse(readFileSync(this.filePath, 'utf8')))
+        raw = JSON.parse(readFileSync(this.filePath, 'utf8'))
       } catch {
-        // Fall back to defaults on a corrupt file.
+        // Corrupt file — fall through to schema defaults.
       }
     }
+    this.settings = settingsFileSchema.parse(raw)
     this.applyTheme()
   }
 
-  get(): Settings {
-    return this.settings
+  view(): SettingsView {
+    return {
+      theme: this.settings.theme,
+      retentionDays: this.settings.retentionDays,
+      ai: {
+        enabled: this.settings.ai.enabled,
+        provider: this.settings.ai.provider,
+        hasKey: this.settings.ai.encryptedKey.length > 0
+      }
+    }
+  }
+
+  retentionDays(): number {
+    return this.settings.retentionDays
+  }
+
+  aiEnabled(): boolean {
+    return this.settings.ai.enabled && this.settings.ai.encryptedKey.length > 0
+  }
+
+  aiProvider(): AiProvider {
+    return this.settings.ai.provider
+  }
+
+  aiKey(): string | null {
+    const stored = this.settings.ai.encryptedKey
+    if (stored.length === 0) return null
+    try {
+      if (stored.startsWith(PLAIN_PREFIX)) {
+        return Buffer.from(stored.slice(PLAIN_PREFIX.length), 'base64').toString('utf8')
+      }
+      return safeStorage.decryptString(Buffer.from(stored, 'base64'))
+    } catch (err) {
+      console.error('Failed to decrypt API key:', err)
+      return null
+    }
   }
 
   setTheme(theme: Theme): void {
     this.settings = { ...this.settings, theme }
     this.applyTheme()
-    try {
-      writeFileSync(this.filePath, JSON.stringify(this.settings))
-    } catch (err) {
-      console.error('Failed to save settings:', err)
+    this.save()
+  }
+
+  setRetentionDays(days: number): void {
+    this.settings = { ...this.settings, retentionDays: Math.max(0, Math.floor(days)) }
+    this.save()
+  }
+
+  setAi(update: AiUpdate): void {
+    let encryptedKey = this.settings.ai.encryptedKey
+    if (update.apiKey !== undefined) {
+      const key = update.apiKey.trim()
+      if (key.length === 0) {
+        encryptedKey = ''
+      } else if (safeStorage.isEncryptionAvailable()) {
+        encryptedKey = safeStorage.encryptString(key).toString('base64')
+      } else {
+        encryptedKey = PLAIN_PREFIX + Buffer.from(key, 'utf8').toString('base64')
+      }
     }
+    this.settings = {
+      ...this.settings,
+      ai: { enabled: update.enabled, provider: update.provider, encryptedKey }
+    }
+    this.save()
   }
 
   private applyTheme(): void {
     // Drives both the window vibrancy material and prefers-color-scheme in the renderer.
     nativeTheme.themeSource = this.settings.theme
+  }
+
+  private save(): void {
+    try {
+      writeFileSync(this.filePath, JSON.stringify(this.settings))
+    } catch (err) {
+      console.error('Failed to save settings:', err)
+    }
   }
 }

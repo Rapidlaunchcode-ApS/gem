@@ -1,4 +1,4 @@
-import type { AppState, Board, ClipItem, GemApi, Settings } from '../../shared/types'
+import type { AppState, Board, ClipItem, GemApi, SettingsView } from '../../shared/types'
 
 // 8x5 orange PNG so the image card has something to show.
 const DEMO_THUMB =
@@ -170,8 +170,15 @@ export function createMockApi(): GemApi {
     showItemMenu: () => Promise.resolve(),
     showBoardMenu: () => Promise.resolve(),
     onItemEdit: () => () => undefined,
-    getSettings: () => Promise.resolve<Settings>({ theme: 'system' }),
+    getSettings: () =>
+      Promise.resolve<SettingsView>({
+        theme: 'system',
+        retentionDays: 7,
+        ai: { enabled: false, provider: 'anthropic', hasKey: false }
+      }),
     setTheme: () => Promise.resolve(),
+    setRetentionDays: () => Promise.resolve(),
+    setAiSettings: () => Promise.resolve(),
     clearHistory: () => {
       items = items.filter((i) => i.pinned || i.boardId !== undefined)
       emit()

@@ -15,6 +15,7 @@
     "dist": "electron-vite build && electron-builder --mac"
   },
   "dependencies": {
+    "@anthropic-ai/sdk": "^0.110.0",
     "dompurify": "^3.2.4",
     "highlight.js": "^11.11.1",
     "marked": "^15.0.7",

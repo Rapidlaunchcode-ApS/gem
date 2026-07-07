@@ -16,7 +16,7 @@ export class ClipboardWatcher {
 
   constructor(
     private readonly store: HistoryStore,
-    private readonly onItem: () => void
+    private readonly onItem: (item: ClipItem) => void
   ) {}
 
   start(): void {
@@ -78,7 +78,7 @@ export class ClipboardWatcher {
       copiedAt: Date.now()
     }
     this.store.add(item)
-    this.onItem()
+    this.onItem(item)
   }
 
   private captureImage(png: Buffer): void {
@@ -102,7 +102,7 @@ export class ClipboardWatcher {
       copiedAt: Date.now()
     }
     this.store.add(item)
-    this.onItem()
+    this.onItem(item)
   }
 }
 
