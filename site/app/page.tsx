@@ -1,230 +1,189 @@
-const DOWNLOAD_URL =
+import { FadeIn } from '../components/fade-in'
+import { HeroPanel } from '../components/hero-panel'
+import { KeyPress } from '../components/keys'
+import { PinboardDemo } from '../components/pinboard-demo'
+import { Scrolly } from '../components/scrolly'
+
+const MAC_URL =
   'https://github.com/Rapidlaunchcode-ApS/gem/releases/latest/download/Gem-macOS-arm64.zip'
+const WIN_URL =
+  'https://github.com/Rapidlaunchcode-ApS/gem/releases/latest/download/Gem-Windows-Setup.exe'
 const REPO_URL = 'https://github.com/Rapidlaunchcode-ApS/gem'
 
 export default function Page() {
   return (
-    <div className="shell">
-      <header className="header">
-        <a className="brand" href="#">
-          <GemMark />
-          Gem
-        </a>
-        <nav className="header__nav">
-          <a className="header__link" href="#features">
-            Features
+    <>
+      <nav className="nav">
+        <div className="shell nav__inner">
+          <a className="brand" href="#">
+            <GemMark />
+            Gem
           </a>
-          <a className="header__link" href="#install">
-            Install
-          </a>
-          <a className="header__link" href={REPO_URL}>
-            GitHub
-          </a>
-        </nav>
-      </header>
+          <div className="nav__links">
+            <a className="nav__link" href="#how">
+              How it works
+            </a>
+            <a className="nav__link" href="#trust">
+              Privacy
+            </a>
+            <a className="nav__link" href={REPO_URL}>
+              GitHub
+            </a>
+            <a className="nav__cta" href="#download">
+              Download
+            </a>
+          </div>
+        </div>
+      </nav>
 
       <main>
-        <section className="hero">
-          <div className="hero__badge">
-            <span className="hero__badge-dot" />
-            Free &amp; open source — MIT
-          </div>
-          <h1>
-            Every copy, <em>kept and understood.</em>
-          </h1>
-          <p className="hero__lede">
-            Gem is a context-aware clipboard manager for macOS. Code, markdown, links, colors and
-            screenshots are classified the moment you copy them — and stay one ⌘⇧V away.
-          </p>
-          <div className="cta">
-            <a className="cta__primary" href={DOWNLOAD_URL}>
-              <DownloadIcon />
-              Download for macOS
-            </a>
-            <a className="cta__secondary" href={REPO_URL}>
-              <GitHubIcon />
-              View on GitHub
-            </a>
-          </div>
-          <p className="hero__fineprint">Apple Silicon · macOS 12+ · no account, no subscription</p>
+        <header className="hero shell">
+          <FadeIn>
+            <div className="hero__eyebrow">Free &amp; open source · macOS + Windows</div>
+          </FadeIn>
+          <FadeIn delay={0.08}>
+            <h1>
+              Every copy, <span className="u">kept</span> and{' '}
+              <span className="u">understood</span>.
+            </h1>
+          </FadeIn>
+          <FadeIn delay={0.16}>
+            <p className="hero__lede">
+              Gem watches your clipboard and turns every copy into something you can actually see —
+              highlighted code, rendered markdown, link cards, color swatches, screenshot
+              thumbnails.
+            </p>
+          </FadeIn>
+          <FadeIn delay={0.24}>
+            <div className="cta">
+              <a className="btn btn--primary" href={MAC_URL}>
+                <AppleIcon />
+                Download for Mac
+              </a>
+              <a className="btn btn--ghost" href={WIN_URL}>
+                <WindowsIcon />
+                Download for Windows
+              </a>
+            </div>
+            <p className="hero__fineprint">No account. No subscription. MIT licensed.</p>
+          </FadeIn>
+          <HeroPanel />
+        </header>
 
-          <div className="mock" aria-hidden="true">
-            <div className="mock__bar">
-              <span className="mock__search">Type to search…</span>
-              <span className="mock__tab mock__tab--active">
-                <span className="mock__dot" style={{ background: '#8e8e93' }} />
-                Clipboard History
-              </span>
-              <span className="mock__tab">
-                <span className="mock__dot" style={{ background: '#bf5af2' }} />
-                Regex
-              </span>
-              <span className="mock__tab">
-                <span className="mock__dot" style={{ background: '#30d158' }} />
-                Email Templates
-              </span>
-            </div>
-            <div className="mock__cards">
-              <div className="mock__card">
-                <div className="mock__head" style={{ background: '#af52de' }}>
-                  Validate Email
-                </div>
-                <div className="mock__body mock__body--code">
-                  <span className="tok-k">const</span> check = <span className="tok-k">new</span>{' '}
-                  <span className="tok-t">RegExp</span>(
-                  <span className="tok-s">{'/^[^\\s@]+@[^\\s@]+$/'}</span>)
-                  {'\n\n'}
-                  <span className="tok-k">function</span> <span className="tok-t">validate</span>
-                  (email) {'{'}
-                  {'\n  '}
-                  <span className="tok-k">return</span> check.test(email)
-                  {'\n'}
-                  {'}'}
-                </div>
+        <Scrolly />
+
+        <section className="pinboards shell">
+          <div className="split">
+            <FadeIn>
+              <div>
+                <div className="kicker">Pinboards</div>
+                <h2 className="h2">Keep the ones you reuse</h2>
+                <p className="section-lede">
+                  Drag a card onto a board and it&apos;s saved for good — regexes, signatures,
+                  answers to the same five emails. Boards live as tabs, one keystroke away, and
+                  never expire.
+                </p>
               </div>
-              <div className="mock__card">
-                <div className="mock__head" style={{ background: '#ff9f0a' }}>
-                  Markdown
-                </div>
-                <div className="mock__body">
-                  <div className="mock__md-title">Release notes</div>
-                  <div>
-                    <span className="mock__check">✓</span>Clipboard watcher
-                  </div>
-                  <div>
-                    <span className="mock__check">✓</span>Context-aware previews
-                  </div>
-                  <div>
-                    <span className="mock__check">✓</span>Pinboards
-                  </div>
-                </div>
-              </div>
-              <div className="mock__card">
-                <div className="mock__head" style={{ background: '#0a84ff' }}>
-                  Link
-                </div>
-                <div className="mock__body mock__link">
-                  <span className="mock__link-badge">
-                    <LinkIcon />
-                  </span>
-                  <span className="mock__link-host">github.com</span>
-                  <span>Rapidlaunchcode-ApS/gem</span>
-                </div>
-              </div>
-              <div className="mock__card">
-                <div className="mock__head" style={{ background: '#ff6b2c' }}>
-                  Color
-                </div>
-                <div className="mock__body mock__body--color">
-                  <span className="mock__hex">#ff6b2c</span>
-                </div>
-              </div>
-            </div>
+            </FadeIn>
+            <FadeIn delay={0.12}>
+              <PinboardDemo />
+            </FadeIn>
           </div>
         </section>
 
-        <section className="features" id="features">
-          <div className="section-kicker">Why Gem</div>
-          <h2 className="section-title">A clipboard that knows what you copied</h2>
-          <div className="features__grid">
-            <div className="feature">
-              <div className="feature__icon">
-                <CodeIcon />
-              </div>
-              <h3>Context-aware cards</h3>
-              <p>
-                Code gets syntax highlighting with language detection, markdown renders, links and
-                colors preview, screenshots get thumbnails. Automatically.
-              </p>
+        <section className="keys">
+          <div className="shell" style={{ textAlign: 'center' }}>
+            <FadeIn>
+              <div className="kicker">Keyboard-first</div>
+              <h2 className="h2" style={{ margin: '0 auto' }}>
+                Your hands never leave the keys
+              </h2>
+            </FadeIn>
+            <KeyPress />
+            <div className="keys__hintrow">
+              <span>
+                <kbd>↵</kbd> paste into the app you came from
+              </span>
+              <span>
+                <kbd>Space</kbd> quick-look
+              </span>
+              <span>
+                <kbd>⇥</kbd> switch boards
+              </span>
+              <span>
+                <kbd>Esc</kbd> gone
+              </span>
             </div>
-            <div className="feature">
-              <div className="feature__icon">
-                <BoardIcon />
-              </div>
-              <h3>Pinboards</h3>
-              <p>
-                Keep snippets you reuse — regexes, signatures, templates — on named boards. Drag a
-                card onto a tab and it&apos;s saved forever.
-              </p>
-            </div>
-            <div className="feature">
-              <div className="feature__icon">
-                <SparkIcon />
-              </div>
-              <h3>AI titles, your key</h3>
-              <p>
-                Optionally name clips automatically with your own OpenAI, Gemini or Anthropic API
-                key. Stored encrypted on your Mac; off by default.
-              </p>
-            </div>
-            <div className="feature">
-              <div className="feature__icon">
-                <KeyboardIcon />
-              </div>
-              <h3>Keyboard-first</h3>
-              <p>
-                ⌘⇧V opens the panel, arrows navigate, ↵ pastes straight into the app you came from,
-                Space quick-looks. Your hands never leave the keys.
-              </p>
-            </div>
-            <div className="feature">
-              <div className="feature__icon">
-                <LockIcon />
-              </div>
-              <h3>Private by design</h3>
-              <p>
-                History lives in a local file on your Mac. No account, no sync, no telemetry — the
-                only network calls are the optional AI titles to your provider.
-              </p>
-            </div>
-            <div className="feature">
-              <div className="feature__icon">
-                <ClockIcon />
-              </div>
-              <h3>Tidies itself</h3>
-              <p>
-                History expires after 7 days by default — dial it from 1 day to forever. Pinned
-                items and pinboards always stay.
-              </p>
-            </div>
+            <p className="keys__note">⌘⇧V on Mac · Ctrl+Shift+V on Windows</p>
           </div>
         </section>
 
-        <section className="install" id="install">
-          <div className="section-kicker">Install</div>
-          <h2 className="section-title">Running in under a minute</h2>
-          <div className="install__steps">
-            <div className="step">
-              <p>
-                <a href={DOWNLOAD_URL}>
-                  <strong>Download Gem</strong>
+        <section className="trust shell" id="trust">
+          <FadeIn>
+            <div className="kicker">Boring on purpose</div>
+            <h2 className="h2">Your clipboard is none of our business</h2>
+          </FadeIn>
+          <div className="trust__rows">
+            <FadeIn>
+              <div className="trust__row">
+                <h3>Local-only history</h3>
+                <p>
+                  Everything lives in a plain file on your machine. No account, no sync, no
+                  telemetry — the code is open if you want to check.
+                </p>
+              </div>
+            </FadeIn>
+            <FadeIn>
+              <div className="trust__row">
+                <h3>Tidies itself</h3>
+                <p>
+                  History is deleted after 7 days by default — set anything from 1 day to forever.
+                  Pinned items and pinboards always stay.
+                </p>
+              </div>
+            </FadeIn>
+            <FadeIn>
+              <div className="trust__row">
+                <h3>AI titles, your key</h3>
+                <p>
+                  Optional: name clips automatically with your own OpenAI, Gemini or Anthropic API
+                  key. Stored encrypted on-device, off by default, and the only network calls the
+                  app ever makes.
+                </p>
+              </div>
+            </FadeIn>
+          </div>
+        </section>
+
+        <section className="download shell" id="download">
+          <FadeIn>
+            <div className="download__card">
+              <div className="kicker">Get Gem</div>
+              <h2 className="h2" style={{ margin: '0 auto' }}>
+                Copy something worth keeping
+              </h2>
+              <div className="download__buttons">
+                <a className="btn btn--primary" href={MAC_URL}>
+                  <AppleIcon />
+                  Mac (Apple Silicon)
                 </a>
-                , unzip, and drag <strong>Gem.app</strong> into Applications.
+                <a className="btn btn--ghost" href={WIN_URL}>
+                  <WindowsIcon />
+                  Windows (x64)
+                </a>
+              </div>
+              <p className="download__note">
+                Unsigned builds while we&apos;re young: on macOS right-click → Open the first time
+                (or <code>xattr -d com.apple.quarantine /Applications/Gem.app</code>); on Windows
+                choose <em>More info → Run anyway</em> if SmartScreen asks. Source on{' '}
+                <a href={REPO_URL}>GitHub</a>.
               </p>
             </div>
-            <div className="step">
-              <p>
-                First launch: right-click Gem.app → <strong>Open</strong>. Gem is open source but
-                not yet notarized, so macOS asks once. Or run{' '}
-                <code>xattr -d com.apple.quarantine /Applications/Gem.app</code>
-              </p>
-            </div>
-            <div className="step">
-              <p>
-                Grant <strong>Accessibility</strong> permission (System Settings → Privacy &amp;
-                Security) so ↵ can paste into the frontmost app. Then copy something and press{' '}
-                <strong>⌘⇧V</strong>.
-              </p>
-            </div>
-          </div>
-          <p className="install__note">
-            Gem is a menu-bar app — look for the gem icon. Everything about it is inspectable in{' '}
-            <a href={REPO_URL}>the source</a>.
-          </p>
+          </FadeIn>
         </section>
       </main>
 
-      <footer className="footer">
+      <footer className="footer shell">
         <span>
           MIT © {new Date().getFullYear()}{' '}
           <a href="https://rapidlaunchcode.app">Rapidlaunchcode</a>
@@ -235,121 +194,38 @@ export default function Page() {
           <a href={`${REPO_URL}/issues`}>Issues</a>
         </div>
       </footer>
-    </div>
+    </>
   )
 }
 
 function GemMark() {
   return (
     <svg className="brand__mark" viewBox="0 0 1024 1024" aria-hidden="true">
-      <rect width="1024" height="1024" rx="228" fill="#191542" />
+      <rect width="1024" height="1024" rx="228" fill="#181310" />
       <g stroke="#fff" strokeOpacity="0.55" strokeWidth="14" strokeLinejoin="round">
-        <polygon points="392,336 632,336 512,476" fill="#9fd9ff" />
-        <polygon points="392,336 272,476 512,476" fill="#4f8cf7" />
-        <polygon points="632,336 752,476 512,476" fill="#8b7bff" />
-        <polygon points="272,476 432,476 512,796" fill="#2a3fae" />
-        <polygon points="432,476 592,476 512,796" fill="#3d63e8" />
-        <polygon points="592,476 752,476 512,796" fill="#312a96" />
+        <polygon points="392,336 632,336 512,476" fill="#c9f7db" />
+        <polygon points="392,336 272,476 512,476" fill="#6fe3a4" />
+        <polygon points="632,336 752,476 512,476" fill="#2fbf71" />
+        <polygon points="272,476 432,476 512,796" fill="#128a4f" />
+        <polygon points="432,476 592,476 512,796" fill="#3ecf7d" />
+        <polygon points="592,476 752,476 512,796" fill="#0c6b3c" />
       </g>
     </svg>
   )
 }
 
-function Icon({ children }: { children: React.ReactNode }) {
+function AppleIcon() {
   return (
-    <svg
-      width="18"
-      height="18"
-      viewBox="0 0 24 24"
-      fill="none"
-      stroke="currentColor"
-      strokeWidth="2"
-      strokeLinecap="round"
-      strokeLinejoin="round"
-      aria-hidden="true"
-    >
-      {children}
+    <svg width="17" height="17" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M17.05 12.54c-.03-2.89 2.36-4.27 2.47-4.34-1.35-1.97-3.44-2.24-4.18-2.27-1.78-.18-3.47 1.05-4.37 1.05-.9 0-2.29-1.02-3.77-1-1.94.03-3.72 1.13-4.72 2.86-2.01 3.49-.51 8.66 1.45 11.49.96 1.39 2.1 2.94 3.6 2.88 1.45-.06 1.99-.93 3.74-.93s2.24.93 3.77.9c1.56-.03 2.54-1.41 3.49-2.81 1.1-1.61 1.55-3.17 1.58-3.25-.04-.01-3.03-1.16-3.06-4.58zM14.16 4.06c.8-.97 1.34-2.32 1.19-3.66-1.15.05-2.55.77-3.38 1.73-.74.86-1.39 2.23-1.22 3.55 1.29.1 2.6-.65 3.41-1.62z" />
     </svg>
   )
 }
 
-function DownloadIcon() {
+function WindowsIcon() {
   return (
-    <Icon>
-      <path d="M12 3v12m0 0 4.5-4.5M12 15l-4.5-4.5" />
-      <path d="M4 17v2a2 2 0 0 0 2 2h12a2 2 0 0 0 2-2v-2" />
-    </Icon>
-  )
-}
-
-function GitHubIcon() {
-  return (
-    <svg width="17" height="17" viewBox="0 0 16 16" fill="currentColor" aria-hidden="true">
-      <path d="M8 0C3.58 0 0 3.58 0 8c0 3.54 2.29 6.53 5.47 7.59.4.07.55-.17.55-.38 0-.19-.01-.82-.01-1.49-2.01.37-2.53-.49-2.69-.94-.09-.23-.48-.94-.82-1.13-.28-.15-.68-.52-.01-.53.63-.01 1.08.58 1.23.82.72 1.21 1.87.87 2.33.66.07-.52.28-.87.51-1.07-1.78-.2-3.64-.89-3.64-3.95 0-.87.31-1.59.82-2.15-.08-.2-.36-1.02.08-2.12 0 0 .67-.21 2.2.82a7.5 7.5 0 0 1 4 0c1.53-1.04 2.2-.82 2.2-.82.44 1.1.16 1.92.08 2.12.51.56.82 1.27.82 2.15 0 3.07-1.87 3.75-3.65 3.95.29.25.54.73.54 1.48 0 1.07-.01 1.93-.01 2.2 0 .21.15.46.55.38A8.01 8.01 0 0 0 16 8c0-4.42-3.58-8-8-8z" />
+    <svg width="16" height="16" viewBox="0 0 24 24" fill="currentColor" aria-hidden="true">
+      <path d="M3 5.5 10.5 4.4v7.1H3V5.5zm0 13 7.5 1.1v-7H3v5.9zM11.5 4.25 21 3v8.5h-9.5v-7.25zm0 15.5L21 21v-8.5h-9.5v7.25z" />
     </svg>
-  )
-}
-
-function LinkIcon() {
-  return (
-    <Icon>
-      <path d="M10 13a5 5 0 0 0 7.07 0l2.83-2.83a5 5 0 0 0-7.07-7.07L11.5 4.43" />
-      <path d="M14 11a5 5 0 0 0-7.07 0L4.1 13.83a5 5 0 0 0 7.07 7.07l1.33-1.33" />
-    </Icon>
-  )
-}
-
-function CodeIcon() {
-  return (
-    <Icon>
-      <path d="m8 6-5 6 5 6" />
-      <path d="m16 6 5 6-5 6" />
-    </Icon>
-  )
-}
-
-function BoardIcon() {
-  return (
-    <Icon>
-      <rect x="3" y="4" width="18" height="16" rx="2" />
-      <path d="M3 9h18" />
-      <path d="M9 9v11" />
-    </Icon>
-  )
-}
-
-function SparkIcon() {
-  return (
-    <Icon>
-      <path d="M12 3l1.9 5.6L19.5 10l-5.6 1.9L12 17.5l-1.9-5.6L4.5 10l5.6-1.4z" />
-      <path d="M19 16l.8 2.2L22 19l-2.2.8L19 22l-.8-2.2L16 19l2.2-.8z" />
-    </Icon>
-  )
-}
-
-function KeyboardIcon() {
-  return (
-    <Icon>
-      <rect x="2.5" y="6" width="19" height="12" rx="2" />
-      <path d="M6 10h.01M10 10h.01M14 10h.01M18 10h.01M7 14h10" />
-    </Icon>
-  )
-}
-
-function LockIcon() {
-  return (
-    <Icon>
-      <rect x="5" y="10" width="14" height="10" rx="2" />
-      <path d="M8 10V7a4 4 0 0 1 8 0v3" />
-    </Icon>
-  )
-}
-
-function ClockIcon() {
-  return (
-    <Icon>
-      <circle cx="12" cy="12" r="9" />
-      <path d="M12 7v5l3 3" />
-    </Icon>
   )
 }
