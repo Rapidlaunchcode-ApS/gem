@@ -1,0 +1,27 @@
+version: 2
+updates:
+  # Desktop app dependencies
+  - package-ecosystem: npm
+    directory: /
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      app-deps:
+        patterns: ['*']
+
+  # Website dependencies
+  - package-ecosystem: npm
+    directory: /site
+    schedule:
+      interval: weekly
+    open-pull-requests-limit: 5
+    groups:
+      site-deps:
+        patterns: ['*']
+
+  # GitHub Actions (pinned by SHA — Dependabot proposes SHA bumps)
+  - package-ecosystem: github-actions
+    directory: /
+    schedule:
+      interval: weekly
