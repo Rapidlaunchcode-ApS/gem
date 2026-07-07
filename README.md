@@ -1,5 +1,5 @@
 <p align="center">
-  <img src="https://raw.githubusercontent.com/Rapidlaunchcode-ApS/gem/main/build/icon-1024.png" alt="Gem app icon" width="128" height="128">
+  <img src="https://raw.githubusercontent.com/Rapidlaunchcode-ApS/gem/main/build/logo.png" alt="Gem logo" width="132" height="132">
 </p>
 
 <h1 align="center">Gem</h1>

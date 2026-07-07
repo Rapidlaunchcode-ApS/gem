@@ -1,0 +1,36 @@
+<svg width="560" height="560" viewBox="232 286 560 560" xmlns="http://www.w3.org/2000/svg">
+  <defs>
+    <linearGradient id="fTable" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#eafff2"/>
+      <stop offset="1" stop-color="#9ff0c0"/>
+    </linearGradient>
+    <linearGradient id="fLeft" x1="0" y1="0" x2="1" y2="1">
+      <stop offset="0" stop-color="#b2f5cd"/>
+      <stop offset="1" stop-color="#3ecf7d"/>
+    </linearGradient>
+    <linearGradient id="fRight" x1="1" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#57e097"/>
+      <stop offset="1" stop-color="#17a45c"/>
+    </linearGradient>
+    <linearGradient id="pLeft" x1="0" y1="0" x2="0.6" y2="1">
+      <stop offset="0" stop-color="#2fbf71"/>
+      <stop offset="1" stop-color="#0e7a44"/>
+    </linearGradient>
+    <linearGradient id="pMid" x1="0" y1="0" x2="0" y2="1">
+      <stop offset="0" stop-color="#a5f3c4"/>
+      <stop offset="1" stop-color="#16a05a"/>
+    </linearGradient>
+    <linearGradient id="pRight" x1="1" y1="0" x2="0.4" y2="1">
+      <stop offset="0" stop-color="#27b368"/>
+      <stop offset="1" stop-color="#0a5c33"/>
+    </linearGradient>
+  </defs>
+  <g stroke="#ffffff" stroke-opacity="0.5" stroke-width="7" stroke-linejoin="round">
+    <polygon points="392,336 632,336 512,476" fill="url(#fTable)"/>
+    <polygon points="392,336 272,476 512,476" fill="url(#fLeft)"/>
+    <polygon points="632,336 752,476 512,476" fill="url(#fRight)"/>
+    <polygon points="272,476 432,476 512,796" fill="url(#pLeft)"/>
+    <polygon points="432,476 592,476 512,796" fill="url(#pMid)"/>
+    <polygon points="592,476 752,476 512,796" fill="url(#pRight)"/>
+  </g>
+</svg>
