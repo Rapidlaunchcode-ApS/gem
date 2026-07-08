@@ -1,5 +1,5 @@
 import { contextBridge, ipcRenderer } from 'electron'
-import type { AppState, GemApi, SettingsView } from '../shared/types'
+import type { AppState, GemApi, SettingsView, UpdateState } from '../shared/types'
 
 function subscribe<T>(channel: string, listener: (payload: T) => void): () => void {
   const handler = (_e: Electron.IpcRendererEvent, payload: T): void => listener(payload)
@@ -30,7 +30,13 @@ const api: GemApi = {
   setAiSettings: (update) => ipcRenderer.invoke('settings:set-ai', update) as Promise<void>,
   clearHistory: () => ipcRenderer.invoke('history:clear') as Promise<void>,
   hidePanel: () => ipcRenderer.invoke('panel:hide') as Promise<void>,
-  onPanelShown: (listener) => subscribe<void>('panel:shown', () => listener())
+  onPanelShown: (listener) => subscribe<void>('panel:shown', () => listener()),
+  appVersion: () => ipcRenderer.invoke('app:version') as Promise<string>,
+  onboardingPending: () => ipcRenderer.invoke('onboarding:pending') as Promise<boolean>,
+  checkForUpdate: () => ipcRenderer.invoke('update:check') as Promise<void>,
+  downloadUpdate: () => ipcRenderer.invoke('update:download') as Promise<void>,
+  installUpdate: () => ipcRenderer.invoke('update:install') as Promise<void>,
+  onUpdateStatus: (listener) => subscribe<UpdateState>('update:status', listener)
 }
 
 contextBridge.exposeInMainWorld('api', api)

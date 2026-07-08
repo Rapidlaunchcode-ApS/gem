@@ -4,15 +4,21 @@ import {
   type AiProvider,
   type AiUpdate,
   type SettingsView,
-  type Theme
+  type Theme,
+  type UpdateState
 } from '../../../shared/types'
 import { MonitorIcon, MoonIcon, SunIcon } from './Icons'
 
 interface SettingsProps {
   settings: SettingsView
+  version: string
+  update: UpdateState
   onThemeChange: (theme: Theme) => void
   onRetentionChange: (days: number) => void
   onAiChange: (update: AiUpdate) => void
+  onCheckUpdate: () => void
+  onDownloadUpdate: () => void
+  onInstallUpdate: () => void
   onClose: () => void
 }
 
@@ -30,9 +36,14 @@ const PROVIDERS: { value: AiProvider; label: string }[] = [
 
 export function Settings({
   settings,
+  version,
+  update,
   onThemeChange,
   onRetentionChange,
   onAiChange,
+  onCheckUpdate,
+  onDownloadUpdate,
+  onInstallUpdate,
   onClose
 }: SettingsProps) {
   const keyRef = useRef<HTMLInputElement>(null)
@@ -143,6 +154,22 @@ export function Settings({
           </div>
         </div>
 
+        <div className="settings__section">
+          <div className="settings__label">Updates</div>
+          <div className="settings__row">
+            <span>{updateLine(update, version)}</span>
+            <UpdateButton
+              update={update}
+              onCheck={onCheckUpdate}
+              onDownload={onDownloadUpdate}
+              onInstall={onInstallUpdate}
+            />
+          </div>
+          {update.status === 'error' && (
+            <div className="settings__hint">{update.message}</div>
+          )}
+        </div>
+
         <div className="settings__footnote">
           History is stored locally and never leaves this device unless AI titles are enabled.
         </div>
@@ -153,4 +180,65 @@ export function Settings({
 
 function providerLabel(provider: AiProvider): string {
   return PROVIDERS.find((p) => p.value === provider)?.label ?? provider
+}
+
+function updateLine(update: UpdateState, version: string): string {
+  switch (update.status) {
+    case 'checking':
+      return 'Checking for updates…'
+    case 'available':
+      return `Version ${update.version} is available`
+    case 'downloading':
+      return `Downloading… ${update.percent}%`
+    case 'downloaded':
+      return `Version ${update.version} ready to install`
+    case 'not-available':
+      return `Gem ${version} — up to date`
+    case 'error':
+      return `Gem ${version} — couldn’t check`
+    default:
+      return version ? `Gem ${version}` : 'Gem'
+  }
+}
+
+interface UpdateButtonProps {
+  update: UpdateState
+  onCheck: () => void
+  onDownload: () => void
+  onInstall: () => void
+}
+
+function UpdateButton({ update, onCheck, onDownload, onInstall }: UpdateButtonProps) {
+  switch (update.status) {
+    case 'checking':
+      return (
+        <button className="settings__btn" disabled>
+          Checking…
+        </button>
+      )
+    case 'available':
+      return (
+        <button className="settings__btn settings__btn--accent" onClick={onDownload}>
+          Download
+        </button>
+      )
+    case 'downloading':
+      return (
+        <button className="settings__btn" disabled>
+          Downloading…
+        </button>
+      )
+    case 'downloaded':
+      return (
+        <button className="settings__btn settings__btn--accent" onClick={onInstall}>
+          Restart &amp; update
+        </button>
+      )
+    default:
+      return (
+        <button className="settings__btn" onClick={onCheck}>
+          Check for updates
+        </button>
+      )
+  }
 }

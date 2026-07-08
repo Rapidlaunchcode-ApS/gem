@@ -6,10 +6,12 @@ import type {
   ClipItem,
   ClipKind,
   SettingsView,
-  Theme
+  Theme,
+  UpdateState
 } from '../../shared/types'
 import { Card } from './components/Card'
 import { ClipboardIcon, PinIcon, SearchIcon, SettingsIcon } from './components/Icons'
+import { Onboarding } from './components/Onboarding'
 import { Preview } from './components/Preview'
 import { Settings } from './components/Settings'
 import { KIND_META } from './kinds'
@@ -41,6 +43,9 @@ export function App() {
   const [editingItemId, setEditingItemId] = useState<string | null>(null)
   const [dragOverBoardId, setDragOverBoardId] = useState<string | null>(null)
   const [settingsOpen, setSettingsOpen] = useState(false)
+  const [showOnboarding, setShowOnboarding] = useState(false)
+  const [appVersion, setAppVersion] = useState('')
+  const [update, setUpdate] = useState<UpdateState>({ status: 'idle' })
   const [titlingIds, setTitlingIds] = useState<ReadonlySet<string>>(() => new Set())
   const [settings, setSettings] = useState<SettingsView>({
     theme: 'system',
@@ -64,6 +69,14 @@ export function App() {
 
   useEffect(() => {
     void window.api.getSettings().then(setSettings)
+  }, [])
+
+  useEffect(() => {
+    void window.api.appVersion().then(setAppVersion)
+    void window.api.onboardingPending().then((pending) => {
+      if (pending) setShowOnboarding(true)
+    })
+    return window.api.onUpdateStatus(setUpdate)
   }, [])
 
   // data-theme lets an explicit choice win over prefers-color-scheme
@@ -395,12 +408,19 @@ export function App() {
       {settingsOpen && (
         <Settings
           settings={settings}
+          version={appVersion}
+          update={update}
           onThemeChange={changeTheme}
           onRetentionChange={changeRetention}
           onAiChange={changeAi}
+          onCheckUpdate={() => void window.api.checkForUpdate()}
+          onDownloadUpdate={() => void window.api.downloadUpdate()}
+          onInstallUpdate={() => void window.api.installUpdate()}
           onClose={() => setSettingsOpen(false)}
         />
       )}
+
+      {showOnboarding && <Onboarding onDone={() => setShowOnboarding(false)} />}
     </div>
   )
 }

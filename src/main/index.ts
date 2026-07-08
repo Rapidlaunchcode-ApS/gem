@@ -14,11 +14,12 @@ import { execFile } from 'node:child_process'
 import { existsSync, mkdirSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { z } from 'zod'
-import { aiProviderSchema, themeSchema, type ClipItem } from '../shared/types'
+import { aiProviderSchema, themeSchema, type ClipItem, type UpdateState } from '../shared/types'
 import { Enricher } from './enricher'
 import { SettingsStore } from './settings'
 import { HistoryStore } from './store'
 import { createTrayIcon } from './trayIcon'
+import { checkForUpdate, downloadUpdate, initUpdater, installUpdate } from './updater'
 import { ClipboardWatcher } from './watcher'
 
 const PANEL_HEIGHT = 380
@@ -55,6 +56,8 @@ function migrateLegacyUserData(): void {
 
 let panel: BrowserWindow | null = null
 let tray: Tray | null = null
+/** True after a first-launch welcome until the renderer picks it up once. */
+let onboardingPending = false
 let store: HistoryStore
 let settings: SettingsStore
 let watcher: ClipboardWatcher
@@ -140,6 +143,7 @@ function maybeShowWelcome(): void {
     // If we can't persist the marker, still show the welcome this once.
   }
   const shortcut = isMac ? '⌘⇧V' : 'Ctrl+Shift+V'
+  onboardingPending = true
   showPanel()
   if (Notification.isSupported()) {
     new Notification({
@@ -156,6 +160,10 @@ function broadcastState(): void {
 
 function broadcastTitling(ids: string[]): void {
   panel?.webContents.send('titling:changed', ids)
+}
+
+function broadcastUpdate(state: UpdateState): void {
+  panel?.webContents.send('update:status', state)
 }
 
 function writeItemToClipboard(item: ClipItem): void {
@@ -358,6 +366,16 @@ function registerIpc(): void {
   })
 
   ipcMain.handle('panel:hide', () => panel?.hide())
+
+  ipcMain.handle('app:version', () => app.getVersion())
+  ipcMain.handle('onboarding:pending', () => {
+    const pending = onboardingPending
+    onboardingPending = false
+    return pending
+  })
+  ipcMain.handle('update:check', () => checkForUpdate())
+  ipcMain.handle('update:download', () => downloadUpdate())
+  ipcMain.handle('update:install', () => installUpdate())
 }
 
 function asString(value: unknown): string {
@@ -397,6 +415,7 @@ if (!gotLock) {
     }
 
     maybeShowWelcome()
+    initUpdater(broadcastUpdate)
   })
 
   app.on('second-instance', () => showPanel())

@@ -113,6 +113,16 @@ export interface AppState {
   boards: Board[]
 }
 
+/** In-app update lifecycle, driven by electron-updater in the main process. */
+export type UpdateState =
+  | { status: 'idle' }
+  | { status: 'checking' }
+  | { status: 'available'; version: string }
+  | { status: 'not-available' }
+  | { status: 'downloading'; percent: number }
+  | { status: 'downloaded'; version: string }
+  | { status: 'error'; message: string }
+
 export interface GemApi {
   getState: () => Promise<AppState>
   onStateChange: (listener: (state: AppState) => void) => () => void
@@ -139,4 +149,16 @@ export interface GemApi {
   clearHistory: () => Promise<void>
   hidePanel: () => Promise<void>
   onPanelShown: (listener: () => void) => () => void
+  /** The running app version (e.g. "0.2.7"). */
+  appVersion: () => Promise<string>
+  /** Resolves true exactly once — on the very first launch — to show onboarding. */
+  onboardingPending: () => Promise<boolean>
+  /** Ask the main process to check GitHub for a newer release. */
+  checkForUpdate: () => Promise<void>
+  /** Download the available update in the background. */
+  downloadUpdate: () => Promise<void>
+  /** Quit and install a downloaded update. */
+  installUpdate: () => Promise<void>
+  /** Subscribe to update lifecycle changes. */
+  onUpdateStatus: (listener: (state: UpdateState) => void) => () => void
 }

@@ -186,6 +186,12 @@ export function createMockApi(): GemApi {
       return Promise.resolve()
     },
     hidePanel: () => Promise.resolve(),
-    onPanelShown: () => () => undefined
+    onPanelShown: () => () => undefined,
+    appVersion: () => Promise.resolve('0.0.0-dev'),
+    onboardingPending: () => Promise.resolve(false),
+    checkForUpdate: () => Promise.resolve(),
+    downloadUpdate: () => Promise.resolve(),
+    installUpdate: () => Promise.resolve(),
+    onUpdateStatus: () => () => undefined
   }
 }
