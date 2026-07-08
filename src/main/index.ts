@@ -6,6 +6,7 @@ import {
   ipcMain,
   Menu,
   nativeImage,
+  Notification,
   screen,
   Tray
 } from 'electron'
@@ -123,6 +124,30 @@ function togglePanel(): void {
   if (!panel) return
   if (panel.isVisible()) panel.hide()
   else showPanel()
+}
+
+/**
+ * First-launch onboarding. Gem is a menu-bar app with no window or Dock icon, so
+ * a cold start otherwise looks like "nothing happened". On the very first run we
+ * pop the panel once and fire a notification pointing at the menu bar + shortcut.
+ */
+function maybeShowWelcome(): void {
+  const marker = join(app.getPath('userData'), '.welcomed')
+  if (existsSync(marker)) return
+  try {
+    writeFileSync(marker, new Date().toISOString())
+  } catch {
+    // If we can't persist the marker, still show the welcome this once.
+  }
+  const shortcut = isMac ? '⌘⇧V' : 'Ctrl+Shift+V'
+  showPanel()
+  if (Notification.isSupported()) {
+    new Notification({
+      title: 'Gem is ready',
+      body: `Gem lives in your menu bar — press ${shortcut} anytime to open your clipboard.`,
+      silent: true
+    }).show()
+  }
 }
 
 function broadcastState(): void {
@@ -370,6 +395,8 @@ if (!gotLock) {
     if (!globalShortcut.register('CommandOrControl+Shift+V', togglePanel)) {
       console.error('Failed to register ⌘⇧V — is another clipboard manager running?')
     }
+
+    maybeShowWelcome()
   })
 
   app.on('second-instance', () => showPanel())

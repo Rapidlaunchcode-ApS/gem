@@ -1,65 +1,82 @@
 <svg width="1024" height="1024" viewBox="0 0 1024 1024" xmlns="http://www.w3.org/2000/svg">
   <defs>
     <linearGradient id="bg" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#2c241c"/>
-      <stop offset="0.55" stop-color="#181310"/>
-      <stop offset="1" stop-color="#0b0908"/>
+      <stop offset="0" stop-color="#22302a"/>
+      <stop offset="0.5" stop-color="#0f1714"/>
+      <stop offset="1" stop-color="#070b09"/>
     </linearGradient>
-    <radialGradient id="glow" cx="0.5" cy="0.46" r="0.5">
-      <stop offset="0" stop-color="#3ecf7d" stop-opacity="0.5"/>
-      <stop offset="0.6" stop-color="#2fbf71" stop-opacity="0.16"/>
-      <stop offset="1" stop-color="#2fbf71" stop-opacity="0"/>
+    <radialGradient id="glow" cx="0.5" cy="0.5" r="0.55">
+      <stop offset="0" stop-color="#3ee089" stop-opacity="0.55"/>
+      <stop offset="0.55" stop-color="#22c06f" stop-opacity="0.14"/>
+      <stop offset="1" stop-color="#22c06f" stop-opacity="0"/>
     </radialGradient>
-    <linearGradient id="fTable" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#eafff2"/>
-      <stop offset="1" stop-color="#9ff0c0"/>
+    <radialGradient id="vignette" cx="0.5" cy="0.42" r="0.75">
+      <stop offset="0.55" stop-color="#000000" stop-opacity="0"/>
+      <stop offset="1" stop-color="#000000" stop-opacity="0.45"/>
+    </radialGradient>
+
+    <linearGradient id="fTable" x1="0" y1="0" x2="0.2" y2="1">
+      <stop offset="0" stop-color="#f2fff8"/>
+      <stop offset="1" stop-color="#a9f0cb"/>
     </linearGradient>
-    <linearGradient id="fLeft" x1="0" y1="0" x2="1" y2="1">
-      <stop offset="0" stop-color="#b2f5cd"/>
-      <stop offset="1" stop-color="#3ecf7d"/>
+    <linearGradient id="fLeft" x1="0" y1="0.1" x2="0.9" y2="1">
+      <stop offset="0" stop-color="#b9f6d4"/>
+      <stop offset="1" stop-color="#2bbf74"/>
     </linearGradient>
-    <linearGradient id="fRight" x1="1" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#57e097"/>
-      <stop offset="1" stop-color="#17a45c"/>
+    <linearGradient id="fRight" x1="1" y1="0.1" x2="0.1" y2="1">
+      <stop offset="0" stop-color="#57dd98"/>
+      <stop offset="1" stop-color="#12924f"/>
     </linearGradient>
-    <linearGradient id="pLeft" x1="0" y1="0" x2="0.6" y2="1">
-      <stop offset="0" stop-color="#2fbf71"/>
-      <stop offset="1" stop-color="#0e7a44"/>
+    <linearGradient id="pLeft" x1="0.1" y1="0" x2="0.7" y2="1">
+      <stop offset="0" stop-color="#2fc276"/>
+      <stop offset="1" stop-color="#0a5e34"/>
     </linearGradient>
-    <linearGradient id="pMid" x1="0" y1="0" x2="0" y2="1">
-      <stop offset="0" stop-color="#a5f3c4"/>
-      <stop offset="1" stop-color="#16a05a"/>
+    <linearGradient id="pMid" x1="0.5" y1="0" x2="0.5" y2="1">
+      <stop offset="0" stop-color="#9ff0c2"/>
+      <stop offset="0.5" stop-color="#33bd76"/>
+      <stop offset="1" stop-color="#0c7040"/>
     </linearGradient>
-    <linearGradient id="pRight" x1="1" y1="0" x2="0.4" y2="1">
-      <stop offset="0" stop-color="#27b368"/>
-      <stop offset="1" stop-color="#0a5c33"/>
+    <linearGradient id="pRight" x1="0.9" y1="0" x2="0.4" y2="1">
+      <stop offset="0" stop-color="#25b268"/>
+      <stop offset="1" stop-color="#063f24"/>
     </linearGradient>
+
+    <filter id="softGlow" x="-40%" y="-40%" width="180%" height="180%">
+      <feGaussianBlur stdDeviation="22"/>
+    </filter>
+    <filter id="dropShadow" x="-50%" y="-50%" width="200%" height="200%">
+      <feGaussianBlur stdDeviation="26"/>
+    </filter>
   </defs>
 
-  <!-- macOS rounded-rect tile -->
+  <!-- squircle tile -->
   <rect x="0" y="0" width="1024" height="1024" rx="228" fill="url(#bg)"/>
   <rect x="0" y="0" width="1024" height="1024" rx="228" fill="url(#glow)"/>
-  <!-- glass top highlight -->
-  <path d="M228 2h568c125 0 226 101 226 226v40C842 180 672 132 512 132S182 180 2 268v-40C2 103 103 2 228 2z"
-        fill="#ffffff" opacity="0.06"/>
+
+  <!-- cast shadow beneath the gem for depth -->
+  <ellipse cx="512" cy="812" rx="150" ry="34" fill="#000000" opacity="0.55" filter="url(#dropShadow)"/>
+  <!-- caustic light pool under the point -->
+  <ellipse cx="512" cy="792" rx="120" ry="26" fill="#4be595" opacity="0.30" filter="url(#softGlow)"/>
 
   <!-- gem -->
-  <g stroke="#ffffff" stroke-opacity="0.55" stroke-width="7" stroke-linejoin="round">
+  <g stroke="#ffffff" stroke-opacity="0.5" stroke-width="6" stroke-linejoin="round">
     <!-- crown -->
-    <polygon points="392,336 632,336 512,476" fill="url(#fTable)"/>
-    <polygon points="392,336 272,476 512,476" fill="url(#fLeft)"/>
-    <polygon points="632,336 752,476 512,476" fill="url(#fRight)"/>
+    <polygon points="392,332 632,332 512,470" fill="url(#fTable)"/>
+    <polygon points="392,332 268,470 512,470" fill="url(#fLeft)"/>
+    <polygon points="632,332 756,470 512,470" fill="url(#fRight)"/>
     <!-- pavilion -->
-    <polygon points="272,476 432,476 512,796" fill="url(#pLeft)"/>
-    <polygon points="432,476 592,476 512,796" fill="url(#pMid)"/>
-    <polygon points="592,476 752,476 512,796" fill="url(#pRight)"/>
+    <polygon points="268,470 430,470 512,804" fill="url(#pLeft)"/>
+    <polygon points="430,470 594,470 512,804" fill="url(#pMid)"/>
+    <polygon points="594,470 756,470 512,804" fill="url(#pRight)"/>
   </g>
 
-  <!-- specular streak -->
-  <polygon points="404,352 470,352 330,468 296,468" fill="#ffffff" opacity="0.5"/>
-
-  <!-- sparkles -->
-  <path d="M742 268l10 34 34 10-34 10-10 34-10-34-34-10 34-10z" fill="#ffffff" opacity="0.9"/>
-  <path d="M306 648l6 20 20 6-20 6-6 20-6-20-20-6 20-6z" fill="#ffffff" opacity="0.7"/>
-  <path d="M666 760l5 16 16 5-16 5-5 16-5-16-16-5 16-5z" fill="#ffffff" opacity="0.55"/>
+  <!-- girdle rim light -->
+  <path d="M268,470 L756,470" stroke="#ffffff" stroke-opacity="0.6" stroke-width="4"/>
+  <!-- crisp specular on the table edge -->
+  <polygon points="404,346 476,346 344,462 300,462" fill="#ffffff" opacity="0.55"/>
+  <!-- subtle top glass highlight on the tile -->
+  <path d="M228 2h568c116 0 210 86 225 198C842 150 686 108 512 108S182 150 3 200C18 88 112 2 228 2z"
+        fill="#ffffff" opacity="0.05"/>
+  <!-- inner vignette to deepen corners -->
+  <rect x="0" y="0" width="1024" height="1024" rx="228" fill="url(#vignette)"/>
 </svg>
