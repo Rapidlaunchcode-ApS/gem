@@ -480,6 +480,26 @@ body {
   flex-shrink: 0;
 }
 
+/* Brief confirmation flash after a click copies the clip */
+.card--copied {
+  border-color: var(--accent);
+  animation: gem-copied 1s ease;
+}
+
+.card__copied {
+  color: var(--accent);
+  font-weight: 600;
+}
+
+@keyframes gem-copied {
+  0% {
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 55%, transparent);
+  }
+  100% {
+    box-shadow: 0 0 0 3px color-mix(in srgb, var(--accent) 0%, transparent);
+  }
+}
+
 /* ── Card content previews ──────────────────────────── */
 
 .card__text {

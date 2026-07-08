@@ -44,6 +44,8 @@ export function App() {
   const [dragOverBoardId, setDragOverBoardId] = useState<string | null>(null)
   const [settingsOpen, setSettingsOpen] = useState(false)
   const [showOnboarding, setShowOnboarding] = useState(false)
+  const [copiedId, setCopiedId] = useState<string | null>(null)
+  const copiedTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [appVersion, setAppVersion] = useState('')
   const [update, setUpdate] = useState<UpdateState>({ status: 'idle' })
   const [titlingIds, setTitlingIds] = useState<ReadonlySet<string>>(() => new Set())
@@ -66,6 +68,10 @@ export function App() {
   }, [])
 
   useEffect(() => window.api.onItemEdit(setEditingItemId), [])
+
+  useEffect(() => () => {
+    if (copiedTimer.current) clearTimeout(copiedTimer.current)
+  }, [])
 
   useEffect(() => {
     void window.api.getSettings().then(setSettings)
@@ -160,11 +166,14 @@ export function App() {
     void window.api.pasteItem(item.id)
   }, [])
 
-  // Single click: put the clip on the system clipboard and close the panel so the
-  // user lands back in their app and can paste it with ⌘V / Ctrl+V right away.
+  // Single click: put the clip on the system clipboard but keep the panel open.
+  // It auto-hides on blur, so switching back to your app returns focus and you can
+  // paste with ⌘V / Ctrl+V. A brief "Copied" flash confirms the click landed.
   const grab = useCallback((item: ClipItem) => {
     void window.api.copyItem(item.id)
-    void window.api.hidePanel()
+    setCopiedId(item.id)
+    if (copiedTimer.current) clearTimeout(copiedTimer.current)
+    copiedTimer.current = setTimeout(() => setCopiedId(null), 1000)
   }, [])
 
   const selectTab = useCallback((boardId: string | null) => {
@@ -385,6 +394,7 @@ export function App() {
               selected={i === Math.min(selectedIndex, filtered.length - 1)}
               editing={editingItemId === item.id}
               titling={titlingIds.has(item.id)}
+              copied={copiedId === item.id}
               onSelect={() => setSelectedIndex(i)}
               onActivate={() => grab(item)}
               onTogglePin={() => void window.api.setPinned(item.id, !item.pinned)}

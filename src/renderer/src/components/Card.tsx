@@ -16,6 +16,8 @@ interface CardProps {
   editing: boolean
   /** True while an AI title is being generated for this clip. */
   titling: boolean
+  /** Briefly true right after a click copies this clip, to flash a confirmation. */
+  copied: boolean
   onSelect: () => void
   /** Single click: copy the clip to the clipboard and close the panel. */
   onActivate: () => void
@@ -31,6 +33,7 @@ export const Card = memo(function Card({
   selected,
   editing,
   titling,
+  copied,
   onSelect,
   onActivate,
   onTogglePin,
@@ -42,7 +45,7 @@ export const Card = memo(function Card({
 
   return (
     <div
-      className={`card${selected ? ' card--selected' : ''}${titling && !item.title ? ' card--titling' : ''}`}
+      className={`card${selected ? ' card--selected' : ''}${titling && !item.title ? ' card--titling' : ''}${copied ? ' card--copied' : ''}`}
       data-id={item.id}
       draggable={!editing}
       onDragStart={(e) => {
@@ -100,7 +103,7 @@ export const Card = memo(function Card({
       </div>
       <div className="card__footer">
         <span>{timeAgo(item.copiedAt)}</span>
-        <span>{sizeLabel(item)}</span>
+        {copied ? <span className="card__copied">Copied ✓</span> : <span>{sizeLabel(item)}</span>}
       </div>
     </div>
   )
