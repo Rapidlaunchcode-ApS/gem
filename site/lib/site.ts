@@ -2,7 +2,7 @@ export const SITE_URL = 'https://gem-clipboard.vercel.app'
 export const REPO_URL = 'https://github.com/Rapidlaunchcode-ApS/gem'
 export const MAC_URL = `${REPO_URL}/releases/latest/download/Gem-macOS-universal.zip`
 export const WIN_URL = `${REPO_URL}/releases/latest/download/Gem-Windows-Setup.exe`
-export const VERSION = '0.2.7'
+export const VERSION = '0.2.8'
 
 export const TAGLINE = 'Every copy, kept and understood.'
 export const DESCRIPTION =

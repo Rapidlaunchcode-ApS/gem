@@ -160,6 +160,13 @@ export function App() {
     void window.api.pasteItem(item.id)
   }, [])
 
+  // Single click: put the clip on the system clipboard and close the panel so the
+  // user lands back in their app and can paste it with ⌘V / Ctrl+V right away.
+  const grab = useCallback((item: ClipItem) => {
+    void window.api.copyItem(item.id)
+    void window.api.hidePanel()
+  }, [])
+
   const selectTab = useCallback((boardId: string | null) => {
     setActiveBoardId(boardId)
     setSelectedIndex(0)
@@ -379,7 +386,7 @@ export function App() {
               editing={editingItemId === item.id}
               titling={titlingIds.has(item.id)}
               onSelect={() => setSelectedIndex(i)}
-              onPaste={() => paste(item)}
+              onActivate={() => grab(item)}
               onTogglePin={() => void window.api.setPinned(item.id, !item.pinned)}
               onContextMenu={() => void window.api.showItemMenu(item.id)}
               onRenamed={(title) => {
@@ -393,7 +400,8 @@ export function App() {
       )}
 
       <footer className="panel__hints">
-        <span><kbd>↵</kbd> Paste</span>
+        <span><kbd>Click</kbd> Copy</span>
+        <span><kbd>↵</kbd> Paste in place</span>
         <span><kbd>Space</kbd> Preview</span>
         <span><kbd>⇥</kbd> Boards</span>
         <span><kbd>{IS_MAC ? '⌘P' : 'Ctrl+P'}</kbd> Pin</span>

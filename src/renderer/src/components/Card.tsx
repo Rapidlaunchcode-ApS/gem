@@ -17,7 +17,8 @@ interface CardProps {
   /** True while an AI title is being generated for this clip. */
   titling: boolean
   onSelect: () => void
-  onPaste: () => void
+  /** Single click: copy the clip to the clipboard and close the panel. */
+  onActivate: () => void
   onTogglePin: () => void
   onContextMenu: () => void
   onRenamed: (title: string) => void
@@ -31,7 +32,7 @@ export const Card = memo(function Card({
   editing,
   titling,
   onSelect,
-  onPaste,
+  onActivate,
   onTogglePin,
   onContextMenu,
   onRenamed,
@@ -48,8 +49,7 @@ export const Card = memo(function Card({
         e.dataTransfer.setData('application/x-gem-item', item.id)
         e.dataTransfer.effectAllowed = 'copy'
       }}
-      onClick={onSelect}
-      onDoubleClick={onPaste}
+      onClick={onActivate}
       onContextMenu={(e) => {
         e.preventDefault()
         onSelect()
