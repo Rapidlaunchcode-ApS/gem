@@ -79,6 +79,14 @@ export function Scrolly() {
                 </AnimatePresence>
               </div>
             </div>
+
+            {/* Mobile: no scroll-jacking — every preview shown as a static stack. */}
+            <div className="scrolly__mobile">
+              <CodeCard />
+              <LinkCard />
+              <ColorCard />
+              <ShotCard />
+            </div>
           </div>
         </div>
       </div>

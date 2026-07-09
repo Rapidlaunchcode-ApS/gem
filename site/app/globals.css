@@ -130,15 +130,18 @@ a {
 /* ── Hero ───────────────────────────────────────────── */
 
 .hero {
-  padding: clamp(3.5rem, 9vw, 6.5rem) 0 0;
+  padding-block: clamp(2.75rem, 9vw, 6.5rem) 0;
   text-align: center;
 }
 
 .hero__eyebrow {
-  display: inline-flex;
+  display: flex;
+  flex-wrap: wrap;
   align-items: center;
-  gap: 0.75rem;
-  font-size: 0.95rem;
+  justify-content: center;
+  gap: 0.5rem 0.75rem;
+  max-width: 100%;
+  font-size: clamp(0.85rem, 3vw, 0.95rem);
   font-weight: 500;
   color: var(--ink-dim);
   letter-spacing: 0.01em;
@@ -552,10 +555,38 @@ a {
   width: 100%;
 }
 
+.scrolly__mobile {
+  display: none;
+}
+
 @media (max-width: 860px) {
+  /* Drop the sticky scroll-jacking: a normal, static, padded section instead. */
+  .scrolly__track {
+    height: auto;
+  }
+  .scrolly__viewport {
+    position: static;
+    height: auto;
+    overflow: visible;
+    display: block;
+    padding-block: clamp(3.5rem, 9vw, 6rem);
+  }
   .scrolly__grid {
     grid-template-columns: 1fr;
-    gap: 1.5rem;
+    gap: 1.25rem;
+  }
+  .scrolly__step {
+    opacity: 1 !important;
+  }
+  .scrolly__card-wrap {
+    display: none;
+  }
+  .scrolly__mobile {
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 1.4rem;
+    margin-top: 2rem;
   }
 }
 
@@ -674,7 +705,7 @@ a {
 /* ── Live demo scene ────────────────────────────────── */
 
 .demo {
-  padding: clamp(4rem, 9vw, 7rem) 0 0;
+  padding-block: clamp(3.5rem, 9vw, 7rem) 0;
 }
 
 .demoscene {
@@ -865,7 +896,7 @@ a {
 /* ── Pinboards demo ─────────────────────────────────── */
 
 .pinboards {
-  padding: clamp(4rem, 9vw, 7rem) 0;
+  padding-block: clamp(3.5rem, 9vw, 7rem);
 }
 
 .split {
@@ -873,6 +904,13 @@ a {
   grid-template-columns: minmax(16rem, 30rem) 1fr;
   gap: clamp(2rem, 6vw, 5rem);
   align-items: center;
+}
+
+/* Prevent grid/flex children from expanding to their content's min-content
+   width (which blew the pinboard demo past the viewport on mobile). */
+.split > *,
+.scrolly__grid > * {
+  min-width: 0;
 }
 
 @media (max-width: 860px) {
@@ -1001,7 +1039,7 @@ a {
 /* ── Trust rows ─────────────────────────────────────── */
 
 .trust {
-  padding: clamp(4rem, 9vw, 7rem) 0 clamp(2rem, 5vw, 3.5rem);
+  padding-block: clamp(3.5rem, 9vw, 7rem) clamp(2rem, 5vw, 3.5rem);
 }
 
 .trust__rows {
@@ -1181,7 +1219,7 @@ a {
 /* ── FAQ ────────────────────────────────────────────── */
 
 .faq {
-  padding: clamp(4rem, 9vw, 7rem) 0 0;
+  padding-block: clamp(3.5rem, 9vw, 7rem) 0;
 }
 
 .faq__list {
@@ -1249,7 +1287,7 @@ a {
 /* ── Download ───────────────────────────────────────── */
 
 .download {
-  padding: clamp(3rem, 8vw, 6rem) 0 clamp(4rem, 9vw, 7rem);
+  padding-block: clamp(3rem, 8vw, 6rem) clamp(4rem, 9vw, 7rem);
 }
 
 .download__card {
