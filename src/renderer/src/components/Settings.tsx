@@ -1,5 +1,6 @@
 import { useRef, useState } from 'react'
 import {
+  AI_MODELS,
   RETENTION_OPTIONS,
   type AiProvider,
   type AiUpdate,
@@ -67,10 +68,15 @@ export function Settings({
   }
 
   return (
-    <div className="overlay" onClick={onClose}>
-      <div className="settings" onClick={(e) => e.stopPropagation()}>
-        <div className="settings__header">Settings</div>
+    <div className="settings-win">
+      <header className="settings-win__bar">
+        <span className="settings-win__title">Settings</span>
+        <button className="settings-win__done" onClick={onClose}>
+          Done
+        </button>
+      </header>
 
+      <div className="settings-win__body">
         <div className="settings__section">
           <div className="settings__label">Appearance</div>
           <div className="settings__segments" role="radiogroup" aria-label="Theme">
@@ -132,23 +138,54 @@ export function Settings({
               </button>
             ))}
           </div>
-          <input
-            ref={keyRef}
-            type="password"
-            className="settings__key"
-            placeholder={
-              settings.ai.hasKey ? 'Key saved — type to replace' : `${providerLabel(settings.ai.provider)} API key`
-            }
-            spellCheck={false}
-            onChange={() => setKeyDirty(true)}
-            onBlur={() => {
-              if (keyDirty && (keyRef.current?.value.trim().length ?? 0) > 0) submitAi({})
-            }}
-            onKeyDown={(e) => {
-              e.stopPropagation()
-              if (e.key === 'Enter') submitAi({})
-            }}
-          />
+
+          <div className="settings__row">
+            <span>Model</span>
+            <select
+              className="settings__select"
+              value={settings.ai.model}
+              onChange={(e) => submitAi({ model: e.target.value })}
+            >
+              {AI_MODELS[settings.ai.provider].map((m) => (
+                <option key={m.id} value={m.id}>
+                  {m.label}
+                </option>
+              ))}
+            </select>
+          </div>
+
+          {settings.ai.hasKey && (
+            <div className="settings__key-saved">
+              <span>Saved key</span>
+              <code className="settings__key-mask">{settings.ai.keyHint}</code>
+            </div>
+          )}
+
+          <div className="settings__key-row">
+            <input
+              ref={keyRef}
+              type="password"
+              className="settings__key"
+              placeholder={
+                settings.ai.hasKey
+                  ? 'Type a new key to replace'
+                  : `${providerLabel(settings.ai.provider)} API key`
+              }
+              spellCheck={false}
+              onChange={() => setKeyDirty(true)}
+              onKeyDown={(e) => {
+                e.stopPropagation()
+                if (e.key === 'Enter') submitAi({})
+              }}
+            />
+            <button
+              className="settings__btn settings__btn--accent"
+              disabled={!keyDirty}
+              onClick={() => submitAi({})}
+            >
+              Save
+            </button>
+          </div>
           <div className="settings__hint">
             Your own key (BYOK), stored encrypted on this device and only used to title clips.
           </div>
@@ -165,9 +202,7 @@ export function Settings({
               onInstall={onInstallUpdate}
             />
           </div>
-          {update.status === 'error' && (
-            <div className="settings__hint">{update.message}</div>
-          )}
+          {update.status === 'error' && <div className="settings__hint">{update.message}</div>}
         </div>
 
         <div className="settings__footnote">

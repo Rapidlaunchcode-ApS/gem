@@ -3,11 +3,6 @@ import type { ClipItem } from '../shared/types'
 import type { SettingsStore } from './settings'
 import type { HistoryStore } from './store'
 
-// Cheap, fast tiers — titling is a two-second classification call.
-const ANTHROPIC_MODEL = 'claude-haiku-4-5'
-const OPENAI_MODEL = 'gpt-5-mini'
-const GEMINI_MODEL = 'gemini-2.5-flash-lite'
-
 const MIN_CHARS = 20
 const CONTENT_SNIPPET = 1500
 const TIMEOUT_MS = 20_000
@@ -93,7 +88,7 @@ export class Enricher {
   private async requestAnthropic(key: string, snippet: string): Promise<string> {
     const client = new Anthropic({ apiKey: key, timeout: TIMEOUT_MS, maxRetries: 1 })
     const response = await client.messages.create({
-      model: ANTHROPIC_MODEL,
+      model: this.settings.aiModel(),
       max_tokens: 256,
       messages: [{ role: 'user', content: PROMPT + snippet }]
     })
@@ -109,7 +104,7 @@ export class Enricher {
         'Content-Type': 'application/json'
       },
       body: JSON.stringify({
-        model: OPENAI_MODEL,
+        model: this.settings.aiModel(),
         reasoning_effort: 'minimal',
         max_completion_tokens: 256,
         messages: [{ role: 'user', content: PROMPT + snippet }]
@@ -125,7 +120,7 @@ export class Enricher {
 
   private async requestGemini(key: string, snippet: string): Promise<string> {
     const res = await fetch(
-      `https://generativelanguage.googleapis.com/v1beta/models/${GEMINI_MODEL}:generateContent`,
+      `https://generativelanguage.googleapis.com/v1beta/models/${this.settings.aiModel()}:generateContent`,
       {
         method: 'POST',
         headers: {

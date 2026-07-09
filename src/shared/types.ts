@@ -60,6 +60,41 @@ export type Theme = z.infer<typeof themeSchema>
 export const aiProviderSchema = z.enum(['openai', 'gemini', 'anthropic'])
 export type AiProvider = z.infer<typeof aiProviderSchema>
 
+/**
+ * Selectable models per provider, cheapest first. The first entry is the
+ * default. Titling is a tiny classification call, so the cheapest tier is
+ * plenty — pricier models are offered for anyone who wants sharper titles.
+ */
+export const AI_MODELS: Record<AiProvider, { id: string; label: string }[]> = {
+  anthropic: [
+    { id: 'claude-haiku-4-5', label: 'Haiku 4.5 · cheapest' },
+    { id: 'claude-sonnet-5', label: 'Sonnet 5' },
+    { id: 'claude-opus-4-8', label: 'Opus 4.8' }
+  ],
+  openai: [
+    { id: 'gpt-5-nano', label: 'GPT-5 nano · cheapest' },
+    { id: 'gpt-5-mini', label: 'GPT-5 mini' },
+    { id: 'gpt-5', label: 'GPT-5' }
+  ],
+  gemini: [
+    { id: 'gemini-2.5-flash-lite', label: 'Flash-Lite · cheapest' },
+    { id: 'gemini-2.5-flash', label: 'Flash' },
+    { id: 'gemini-2.5-pro', label: 'Pro' }
+  ]
+}
+
+/** The default (cheapest) model for each provider. */
+export const DEFAULT_MODEL: Record<AiProvider, string> = {
+  anthropic: AI_MODELS.anthropic[0]!.id,
+  openai: AI_MODELS.openai[0]!.id,
+  gemini: AI_MODELS.gemini[0]!.id
+}
+
+/** Resolve a stored model to a valid one for the provider (falls back to cheapest). */
+export function resolveModel(provider: AiProvider, model: string): string {
+  return AI_MODELS[provider].some((m) => m.id === model) ? model : DEFAULT_MODEL[provider]
+}
+
 /** Days to keep unpinned, unboarded history. 0 = forever. */
 export const RETENTION_OPTIONS: { days: number; label: string }[] = [
   { days: 1, label: '1 day' },
@@ -72,7 +107,7 @@ export const RETENTION_OPTIONS: { days: number; label: string }[] = [
   { days: 0, label: 'Forever' }
 ]
 
-const DEFAULT_AI = { enabled: false, provider: 'anthropic' as const, encryptedKey: '' }
+const DEFAULT_AI = { enabled: false, provider: 'anthropic' as const, encryptedKey: '', model: '' }
 
 /** On-disk settings; the API key is stored encrypted and never sent to the renderer. */
 export const settingsFileSchema = z
@@ -83,14 +118,15 @@ export const settingsFileSchema = z
       .object({
         enabled: z.boolean().catch(false),
         provider: aiProviderSchema.catch('anthropic'),
-        encryptedKey: z.string().catch('')
+        encryptedKey: z.string().catch(''),
+        model: z.string().catch('')
       })
       .catch(DEFAULT_AI)
   })
   .catch({ theme: 'system', retentionDays: 7, ai: DEFAULT_AI })
 export type SettingsFile = z.infer<typeof settingsFileSchema>
 
-/** What the renderer sees — no key material. */
+/** What the renderer sees — no full key material, only a masked hint. */
 export interface SettingsView {
   theme: Theme
   retentionDays: number
@@ -98,6 +134,10 @@ export interface SettingsView {
     enabled: boolean
     provider: AiProvider
     hasKey: boolean
+    /** Masked preview of the saved key, e.g. "sk-ant••••" ("" when none). */
+    keyHint: string
+    /** Chosen model id for the active provider (resolved to the cheapest default). */
+    model: string
   }
 }
 
@@ -106,6 +146,8 @@ export interface AiUpdate {
   provider: AiProvider
   /** New key to store (encrypted); omit to keep the existing one. */
   apiKey?: string
+  /** Model id to use for the provider; omit to keep the current choice. */
+  model?: string
 }
 
 export interface AppState {
@@ -149,6 +191,10 @@ export interface GemApi {
   clearHistory: () => Promise<void>
   hidePanel: () => Promise<void>
   onPanelShown: (listener: () => void) => () => void
+  /** Open the standalone, screen-centered Settings window. */
+  openSettings: () => Promise<void>
+  /** Close the Settings window (from inside it). */
+  closeSettings: () => Promise<void>
   /** The running app version (e.g. "0.2.7"). */
   appVersion: () => Promise<string>
   /** Resolves true exactly once — on the very first launch — to show onboarding. */

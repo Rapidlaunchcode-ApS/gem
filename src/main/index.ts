@@ -55,6 +55,7 @@ function migrateLegacyUserData(): void {
 }
 
 let panel: BrowserWindow | null = null
+let settingsWin: BrowserWindow | null = null
 let tray: Tray | null = null
 /** True after a first-launch welcome until the renderer picks it up once. */
 let onboardingPending = false
@@ -106,6 +107,49 @@ function createPanel(): BrowserWindow {
     void win.loadFile(join(import.meta.dirname, '../renderer/index.html'))
   }
   return win
+}
+
+/** Standalone, screen-centered Settings window (the same renderer at #settings). */
+function openSettings(): void {
+  if (settingsWin && !settingsWin.isDestroyed()) {
+    settingsWin.show()
+    settingsWin.focus()
+    return
+  }
+  const win = new BrowserWindow({
+    width: 460,
+    height: 640,
+    center: true,
+    resizable: false,
+    minimizable: false,
+    maximizable: false,
+    fullscreenable: false,
+    frame: false,
+    skipTaskbar: true,
+    show: false,
+    ...(isMac
+      ? { transparent: true, vibrancy: 'sidebar' as const, visualEffectState: 'active' as const, roundedCorners: true }
+      : { backgroundColor: '#1c1917', backgroundMaterial: 'acrylic' as const }),
+    webPreferences: { preload: join(import.meta.dirname, '../preload/index.mjs'), sandbox: false }
+  })
+  win.once('ready-to-show', () => {
+    win.show()
+    win.focus()
+  })
+  win.on('closed', () => {
+    settingsWin = null
+  })
+  const rendererUrl = process.env['ELECTRON_RENDERER_URL']
+  if (isDev && rendererUrl) {
+    void win.loadURL(`${rendererUrl}#settings`)
+  } else {
+    void win.loadFile(join(import.meta.dirname, '../renderer/index.html'), { hash: 'settings' })
+  }
+  settingsWin = win
+}
+
+function closeSettings(): void {
+  if (settingsWin && !settingsWin.isDestroyed()) settingsWin.close()
 }
 
 function showPanel(): void {
@@ -164,6 +208,9 @@ function broadcastTitling(ids: string[]): void {
 
 function broadcastUpdate(state: UpdateState): void {
   panel?.webContents.send('update:status', state)
+  if (settingsWin && !settingsWin.isDestroyed()) {
+    settingsWin.webContents.send('update:status', state)
+  }
 }
 
 function writeItemToClipboard(item: ClipItem): void {
@@ -366,6 +413,8 @@ function registerIpc(): void {
   })
 
   ipcMain.handle('panel:hide', () => panel?.hide())
+  ipcMain.handle('settings:open', () => openSettings())
+  ipcMain.handle('settings:close', () => closeSettings())
 
   ipcMain.handle('app:version', () => app.getVersion())
   ipcMain.handle('onboarding:pending', () => {

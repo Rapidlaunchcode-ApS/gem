@@ -2,6 +2,7 @@ import { app, nativeTheme, safeStorage } from 'electron'
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import {
+  resolveModel,
   settingsFileSchema,
   type AiProvider,
   type AiUpdate,
@@ -31,15 +32,23 @@ export class SettingsStore {
   }
 
   view(): SettingsView {
+    const key = this.aiKey()
     return {
       theme: this.settings.theme,
       retentionDays: this.settings.retentionDays,
       ai: {
         enabled: this.settings.ai.enabled,
         provider: this.settings.ai.provider,
-        hasKey: this.settings.ai.encryptedKey.length > 0
+        hasKey: this.settings.ai.encryptedKey.length > 0,
+        keyHint: key ? `${key.slice(0, 6)}••••••` : '',
+        model: this.aiModel()
       }
     }
+  }
+
+  /** The resolved model id for the active provider (cheapest default if unset). */
+  aiModel(): string {
+    return resolveModel(this.settings.ai.provider, this.settings.ai.model)
   }
 
   retentionDays(): number {
@@ -91,9 +100,13 @@ export class SettingsStore {
         encryptedKey = PLAIN_PREFIX + Buffer.from(key, 'utf8').toString('base64')
       }
     }
+    // Switching provider resets the model to that provider's cheapest default
+    // ("" resolves to the default); an explicit model choice always wins.
+    let model = update.provider === this.settings.ai.provider ? this.settings.ai.model : ''
+    if (update.model !== undefined) model = update.model
     this.settings = {
       ...this.settings,
-      ai: { enabled: update.enabled, provider: update.provider, encryptedKey }
+      ai: { enabled: update.enabled, provider: update.provider, encryptedKey, model }
     }
     this.save()
   }

@@ -175,7 +175,13 @@ export function createMockApi(): GemApi {
       Promise.resolve<SettingsView>({
         theme: 'system',
         retentionDays: 7,
-        ai: { enabled: false, provider: 'anthropic', hasKey: false }
+        ai: {
+          enabled: false,
+          provider: 'anthropic',
+          hasKey: false,
+          keyHint: '',
+          model: 'claude-haiku-4-5'
+        }
       }),
     setTheme: () => Promise.resolve(),
     setRetentionDays: () => Promise.resolve(),
@@ -187,6 +193,8 @@ export function createMockApi(): GemApi {
     },
     hidePanel: () => Promise.resolve(),
     onPanelShown: () => () => undefined,
+    openSettings: () => Promise.resolve(),
+    closeSettings: () => Promise.resolve(),
     appVersion: () => Promise.resolve('0.0.0-dev'),
     onboardingPending: () => Promise.resolve(false),
     checkForUpdate: () => Promise.resolve(),

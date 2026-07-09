@@ -1,19 +1,9 @@
 import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
-import type {
-  AiUpdate,
-  AppState,
-  Board,
-  ClipItem,
-  ClipKind,
-  SettingsView,
-  Theme,
-  UpdateState
-} from '../../shared/types'
+import type { AppState, Board, ClipItem, ClipKind, SettingsView } from '../../shared/types'
 import { Card } from './components/Card'
 import { ClipboardIcon, PinIcon, SearchIcon, SettingsIcon } from './components/Icons'
 import { Onboarding } from './components/Onboarding'
 import { Preview } from './components/Preview'
-import { Settings } from './components/Settings'
 import { KIND_META } from './kinds'
 
 type TypeFilter = 'all' | 'pinned' | ClipKind
@@ -42,17 +32,14 @@ export function App() {
   const [creatingBoard, setCreatingBoard] = useState(false)
   const [editingItemId, setEditingItemId] = useState<string | null>(null)
   const [dragOverBoardId, setDragOverBoardId] = useState<string | null>(null)
-  const [settingsOpen, setSettingsOpen] = useState(false)
   const [showOnboarding, setShowOnboarding] = useState(false)
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const copiedTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const [appVersion, setAppVersion] = useState('')
-  const [update, setUpdate] = useState<UpdateState>({ status: 'idle' })
   const [titlingIds, setTitlingIds] = useState<ReadonlySet<string>>(() => new Set())
   const [settings, setSettings] = useState<SettingsView>({
     theme: 'system',
     retentionDays: 7,
-    ai: { enabled: false, provider: 'anthropic', hasKey: false }
+    ai: { enabled: false, provider: 'anthropic', hasKey: false, keyHint: '', model: 'claude-haiku-4-5' }
   })
   const searchRef = useRef<HTMLInputElement>(null)
   const stripRef = useRef<HTMLDivElement>(null)
@@ -78,11 +65,9 @@ export function App() {
   }, [])
 
   useEffect(() => {
-    void window.api.appVersion().then(setAppVersion)
     void window.api.onboardingPending().then((pending) => {
       if (pending) setShowOnboarding(true)
     })
-    return window.api.onUpdateStatus(setUpdate)
   }, [])
 
   // data-theme lets an explicit choice win over prefers-color-scheme
@@ -92,23 +77,6 @@ export function App() {
     else document.documentElement.dataset['theme'] = settings.theme
   }, [settings.theme])
 
-  const changeTheme = useCallback((next: Theme) => {
-    setSettings((s) => ({ ...s, theme: next }))
-    void window.api.setTheme(next)
-  }, [])
-
-  const changeRetention = useCallback((days: number) => {
-    setSettings((s) => ({ ...s, retentionDays: days }))
-    void window.api.setRetentionDays(days)
-  }, [])
-
-  const changeAi = useCallback((update: AiUpdate) => {
-    void window.api
-      .setAiSettings(update)
-      .then(() => window.api.getSettings())
-      .then(setSettings)
-  }, [])
-
   useEffect(() => {
     return window.api.onPanelShown(() => {
       setQuery('')
@@ -117,7 +85,8 @@ export function App() {
       setPreviewOpen(false)
       setCreatingBoard(false)
       setEditingItemId(null)
-      setSettingsOpen(false)
+      // Pick up theme/retention changes made in the Settings window.
+      void window.api.getSettings().then(setSettings)
       searchRef.current?.focus()
       stripRef.current?.scrollTo({ left: 0 })
     })
@@ -229,8 +198,7 @@ export function App() {
         }
         case 'Escape':
           e.preventDefault()
-          if (settingsOpen) setSettingsOpen(false)
-          else if (previewOpen) setPreviewOpen(false)
+          if (previewOpen) setPreviewOpen(false)
           else void window.api.hidePanel()
           break
         case 'Backspace':
@@ -254,17 +222,7 @@ export function App() {
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [
-    filtered.length,
-    selected,
-    paste,
-    previewOpen,
-    settingsOpen,
-    query,
-    boards,
-    activeBoardId,
-    selectTab
-  ])
+  }, [filtered.length, selected, paste, previewOpen, query, boards, activeBoardId, selectTab])
 
   return (
     <div className="panel">
@@ -360,7 +318,7 @@ export function App() {
         <button
           className="panel__settings"
           title="Settings"
-          onClick={() => setSettingsOpen(true)}
+          onClick={() => void window.api.openSettings()}
         >
           <SettingsIcon size={16} />
         </button>
@@ -421,21 +379,6 @@ export function App() {
 
       {previewOpen && selected && (
         <Preview item={selected} onClose={() => setPreviewOpen(false)} />
-      )}
-
-      {settingsOpen && (
-        <Settings
-          settings={settings}
-          version={appVersion}
-          update={update}
-          onThemeChange={changeTheme}
-          onRetentionChange={changeRetention}
-          onAiChange={changeAi}
-          onCheckUpdate={() => void window.api.checkForUpdate()}
-          onDownloadUpdate={() => void window.api.downloadUpdate()}
-          onInstallUpdate={() => void window.api.installUpdate()}
-          onClose={() => setSettingsOpen(false)}
-        />
       )}
 
       {showOnboarding && <Onboarding onDone={() => setShowOnboarding(false)} />}
