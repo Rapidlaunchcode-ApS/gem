@@ -193,6 +193,8 @@ export interface GemApi {
   onPanelShown: (listener: () => void) => () => void
   /** Fired to dim + blur the panel while the Settings window is open. */
   onPanelDim: (listener: (dim: boolean) => void) => () => void
+  /** Fired to play the leave transition before the panel hides. */
+  onPanelAnimateOut: (listener: () => void) => () => void
   /** Open the standalone, screen-centered Settings window. */
   openSettings: () => Promise<void>
   /** Close the Settings window (from inside it). */

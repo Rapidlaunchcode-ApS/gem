@@ -64,7 +64,7 @@ export const Card = memo(function Card({
       <div
         className="card__header"
         style={{
-          background: `linear-gradient(180deg, color-mix(in srgb, ${headerColor} 88%, transparent), color-mix(in srgb, ${headerColor} 64%, transparent))`
+          background: `linear-gradient(180deg, color-mix(in srgb, ${headerColor} 82%, transparent), color-mix(in srgb, ${headerColor} 60%, transparent))`
         }}
       >
         {editing ? (

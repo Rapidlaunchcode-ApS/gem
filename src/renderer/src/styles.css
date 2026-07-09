@@ -11,65 +11,65 @@
 :root {
   /* Liquid Glass: highly translucent, specular top edge, soft sheen. Light and
      dark share this treatment — only the tint and text colour differ. */
-  --bg: rgba(28, 31, 41, 0.22);
-  --surface: linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.06));
-  --surface-strong: linear-gradient(180deg, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0.13));
-  --border: rgba(255, 255, 255, 0.22);
-  --glass-highlight: rgba(255, 255, 255, 0.5);
+  --bg: rgba(34, 36, 46, 0.3);
+  --surface: linear-gradient(180deg, rgba(255, 255, 255, 0.13), rgba(255, 255, 255, 0.05));
+  --surface-strong: linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.11));
+  --border: rgba(255, 255, 255, 0.18);
+  --glass-highlight: rgba(255, 255, 255, 0.42);
   --glass-sheen: linear-gradient(
     180deg,
-    rgba(255, 255, 255, 0.2),
-    rgba(255, 255, 255, 0.05) 40%,
+    rgba(255, 255, 255, 0.16),
+    rgba(255, 255, 255, 0.03) 40%,
     rgba(255, 255, 255, 0)
   );
   --text: rgba(255, 255, 255, 0.95);
   --text-dim: rgba(255, 255, 255, 0.6);
-  --text-faint: rgba(255, 255, 255, 0.38);
-  --accent: #2fbf71;
-  --overlay-bg: rgba(30, 33, 43, 0.55);
+  --text-faint: rgba(255, 255, 255, 0.4);
+  --accent: #43d888;
+  --overlay-bg: rgba(34, 36, 46, 0.62);
   --code-bg: rgba(10, 10, 14, 0.4);
   --radius: 16px;
 }
 
 @media (prefers-color-scheme: light) {
   :root:not([data-theme='dark']) {
-    --bg: rgba(250, 251, 255, 0.24);
-    --surface: linear-gradient(180deg, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.52));
-    --surface-strong: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0.78));
-    --border: rgba(30, 35, 50, 0.12);
-    --glass-highlight: rgba(255, 255, 255, 0.95);
+    --bg: rgba(250, 251, 255, 0.34);
+    --surface: linear-gradient(180deg, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.42));
+    --surface-strong: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.7));
+    --border: rgba(255, 255, 255, 0.75);
+    --glass-highlight: rgba(255, 255, 255, 0.9);
     --glass-sheen: linear-gradient(
       180deg,
-      rgba(255, 255, 255, 0.72),
-      rgba(255, 255, 255, 0.22) 42%,
+      rgba(255, 255, 255, 0.7),
+      rgba(255, 255, 255, 0.2) 45%,
       rgba(255, 255, 255, 0)
     );
     --text: rgba(20, 22, 30, 0.92);
     --text-dim: rgba(20, 22, 30, 0.58);
-    --text-faint: rgba(20, 22, 30, 0.4);
-    --accent: #1f9d55;
-    --overlay-bg: rgba(250, 251, 255, 0.62);
+    --text-faint: rgba(20, 22, 30, 0.42);
+    --accent: #12a45c;
+    --overlay-bg: rgba(250, 251, 255, 0.7);
     --code-bg: #1f1f26;
   }
 }
 
 :root[data-theme='light'] {
-  --bg: rgba(250, 251, 255, 0.24);
-  --surface: linear-gradient(180deg, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.52));
-  --surface-strong: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0.78));
-  --border: rgba(30, 35, 50, 0.12);
-  --glass-highlight: rgba(255, 255, 255, 0.95);
+  --bg: rgba(250, 251, 255, 0.34);
+  --surface: linear-gradient(180deg, rgba(255, 255, 255, 0.7), rgba(255, 255, 255, 0.42));
+  --surface-strong: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.7));
+  --border: rgba(255, 255, 255, 0.75);
+  --glass-highlight: rgba(255, 255, 255, 0.9);
   --glass-sheen: linear-gradient(
     180deg,
-    rgba(255, 255, 255, 0.72),
-    rgba(255, 255, 255, 0.22) 42%,
+    rgba(255, 255, 255, 0.7),
+    rgba(255, 255, 255, 0.2) 45%,
     rgba(255, 255, 255, 0)
   );
   --text: rgba(20, 22, 30, 0.92);
   --text-dim: rgba(20, 22, 30, 0.58);
-  --text-faint: rgba(20, 22, 30, 0.4);
-  --accent: #1f9d55;
-  --overlay-bg: rgba(250, 251, 255, 0.62);
+  --text-faint: rgba(20, 22, 30, 0.42);
+  --accent: #12a45c;
+  --overlay-bg: rgba(250, 251, 255, 0.7);
   --code-bg: #1f1f26;
 }
 
@@ -103,19 +103,17 @@ body {
   border-radius: 10px;
   box-shadow: inset 0 1px 0 var(--glass-highlight);
   overflow: hidden;
-  /* Warp-in: rises and scales up from the bottom as the window fades in.
-     Re-triggered on every open via a reflow in the panel:shown handler. */
+  /* Warp in/out: GPU-composited transform + opacity transition, driven by the
+     `panel--hidden` class (main coordinates the enter/leave with the window). */
   transform-origin: bottom center;
-  animation: gem-panel-in 0.19s cubic-bezier(0.2, 0.9, 0.25, 1);
+  transition:
+    transform 0.19s cubic-bezier(0.2, 0.9, 0.25, 1),
+    opacity 0.16s ease;
 }
 
-@keyframes gem-panel-in {
-  from {
-    transform: translateY(14px) scale(0.965);
-  }
-  to {
-    transform: translateY(0) scale(1);
-  }
+.panel--hidden {
+  transform: translateY(14px) scale(0.965);
+  opacity: 0;
 }
 
 /* Modal scrim: dim + blur the panel while the Settings window is open. */
@@ -375,15 +373,15 @@ body {
   flex: 0 0 auto;
   display: flex;
   flex-direction: column;
-  background: var(--surface);
+  background: var(--glass-sheen), var(--surface);
   border: 1px solid var(--border);
   border-radius: var(--radius);
   overflow: hidden;
-  backdrop-filter: blur(32px) saturate(185%);
-  -webkit-backdrop-filter: blur(32px) saturate(185%);
+  backdrop-filter: blur(38px) saturate(185%);
+  -webkit-backdrop-filter: blur(38px) saturate(185%);
   box-shadow:
     inset 0 1px 0 var(--glass-highlight),
-    0 8px 24px rgba(0, 0, 0, 0.18);
+    0 8px 22px rgba(0, 0, 0, 0.22);
   transition: transform 0.12s ease, border-color 0.12s ease, box-shadow 0.12s ease;
 }
 

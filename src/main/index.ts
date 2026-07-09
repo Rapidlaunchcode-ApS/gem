@@ -59,8 +59,8 @@ let settingsWin: BrowserWindow | null = null
 let tray: Tray | null = null
 /** True after a first-launch welcome until the renderer picks it up once. */
 let onboardingPending = false
-/** Drives the panel's fade in/out animation. */
-let fadeTimer: ReturnType<typeof setInterval> | null = null
+/** Fallback timer that force-hides the panel if the renderer's leave transition never calls back. */
+let hideSafety: ReturnType<typeof setTimeout> | null = null
 let store: HistoryStore
 let settings: SettingsStore
 let watcher: ClipboardWatcher
@@ -160,31 +160,12 @@ function closeSettings(): void {
   if (settingsWin && !settingsWin.isDestroyed()) settingsWin.close()
 }
 
-/** Step the panel's opacity toward `to`, then run `done`. ~120ms either way. */
-function fadePanel(to: number, done?: () => void): void {
-  if (!panel || panel.isDestroyed()) return
-  if (fadeTimer) clearInterval(fadeTimer)
-  const dir = to >= panel.getOpacity() ? 1 : -1
-  fadeTimer = setInterval(() => {
-    if (!panel || panel.isDestroyed()) {
-      if (fadeTimer) clearInterval(fadeTimer)
-      fadeTimer = null
-      return
-    }
-    const next = panel.getOpacity() + dir * 0.16
-    if ((dir > 0 && next >= to) || (dir < 0 && next <= to)) {
-      panel.setOpacity(to)
-      if (fadeTimer) clearInterval(fadeTimer)
-      fadeTimer = null
-      done?.()
-    } else {
-      panel.setOpacity(next)
-    }
-  }, 16)
-}
-
 function showPanel(): void {
   if (!panel) return
+  if (hideSafety) {
+    clearTimeout(hideSafety)
+    hideSafety = null
+  }
   const cursor = screen.getCursorScreenPoint()
   const { workArea } = screen.getDisplayNearestPoint(cursor)
   panel.setBounds({
@@ -193,27 +174,36 @@ function showPanel(): void {
     width: workArea.width - PANEL_MARGIN * 2,
     height: PANEL_HEIGHT
   })
-  panel.setOpacity(0)
+  panel.setOpacity(1)
   panel.show()
   panel.focus()
+  // The renderer runs the GPU-composited enter transition on this signal.
   panel.webContents.send('panel:shown')
-  fadePanel(1)
 }
 
-/** Fade the panel out, then hide it (and reset opacity for next time). */
-function hidePanel(): void {
+/** Instantly hide the panel (the renderer calls this after its leave transition). */
+function hidePanelNow(): void {
+  if (hideSafety) {
+    clearTimeout(hideSafety)
+    hideSafety = null
+  }
+  if (panel && !panel.isDestroyed() && panel.isVisible()) panel.hide()
+}
+
+/**
+ * Ask the renderer to play the leave transition, then hide. A safety timeout
+ * force-hides if the renderer doesn't call back, so the panel can't get stuck.
+ */
+function requestHidePanel(): void {
   if (!panel || panel.isDestroyed() || !panel.isVisible()) return
-  fadePanel(0, () => {
-    if (panel && !panel.isDestroyed()) {
-      panel.hide()
-      panel.setOpacity(1)
-    }
-  })
+  panel.webContents.send('panel:animate-out')
+  if (hideSafety) clearTimeout(hideSafety)
+  hideSafety = setTimeout(hidePanelNow, 300)
 }
 
 function togglePanel(): void {
   if (!panel) return
-  if (panel.isVisible()) hidePanel()
+  if (panel.isVisible()) requestHidePanel()
   else showPanel()
 }
 
@@ -270,11 +260,8 @@ function writeItemToClipboard(item: ClipItem): void {
 }
 
 function pasteItem(item: ClipItem): void {
-  // Hide instantly (no fade) so focus returns before the paste keystroke fires.
-  if (fadeTimer) clearInterval(fadeTimer)
-  fadeTimer = null
-  panel?.hide()
-  panel?.setOpacity(1)
+  // Hide instantly (no animation) so focus returns before the paste keystroke fires.
+  hidePanelNow()
   writeItemToClipboard(item)
   // Give macOS a beat to return focus to the previous app before keystroking.
   setTimeout(simulatePaste, 150)
@@ -460,7 +447,7 @@ function registerIpc(): void {
     settings.setAi(apiKey === undefined ? rest : { ...rest, apiKey })
   })
 
-  ipcMain.handle('panel:hide', () => hidePanel())
+  ipcMain.handle('panel:hide', () => hidePanelNow())
   ipcMain.handle('settings:open', () => openSettings())
   ipcMain.handle('settings:close', () => closeSettings())
 
@@ -524,7 +511,7 @@ if (!gotLock) {
     setImmediate(() => {
       if (BrowserWindow.getFocusedWindow() !== null) return
       closeSettings()
-      hidePanel()
+      requestHidePanel()
     })
   })
 

@@ -5,6 +5,12 @@ All notable changes to Gem are recorded here. Each version also has a matching
 and SHA-256 checksums. Format loosely follows [Keep a Changelog](https://keepachangelog.com);
 Gem is pre-1.0, so minor versions may include breaking changes.
 
+## [0.2.16] — 2026-07-09
+
+- **Glass tuned to match the design mockup** — panel, cards, search, segments and Settings now use the approved Liquid Glass tokens (translucent surfaces, bright glass edges, top sheen) in both light and dark.
+- **More polished card entries** — glassier tiles with a top sheen, translucent colored headers, and more depth.
+- **Smoother open/close animation** — replaced the JS opacity timer with a GPU-composited CSS transition, fixing the minimize jitter.
+
 ## [0.2.14] — 2026-07-09
 
 - Opening **Settings** now dims and blurs the clipboard panel behind it (a proper modal backdrop).

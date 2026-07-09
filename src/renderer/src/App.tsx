@@ -33,9 +33,11 @@ export function App() {
   const [editingItemId, setEditingItemId] = useState<string | null>(null)
   const [dragOverBoardId, setDragOverBoardId] = useState<string | null>(null)
   const [showOnboarding, setShowOnboarding] = useState(false)
+  const [visible, setVisible] = useState(false)
   const [dimmed, setDimmed] = useState(false)
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const copiedTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
+  const dismissTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [titlingIds, setTitlingIds] = useState<ReadonlySet<string>>(() => new Set())
   const [settings, setSettings] = useState<SettingsView>({
     theme: 'system',
@@ -44,7 +46,6 @@ export function App() {
   })
   const searchRef = useRef<HTMLInputElement>(null)
   const stripRef = useRef<HTMLDivElement>(null)
-  const panelRef = useRef<HTMLDivElement>(null)
 
   const { items, boards } = state
   const activeBoard = boards.find((b) => b.id === activeBoardId) ?? null
@@ -59,6 +60,14 @@ export function App() {
   useEffect(() => window.api.onItemEdit(setEditingItemId), [])
 
   useEffect(() => window.api.onPanelDim(setDimmed), [])
+
+  // Safety: become visible shortly after mount even if the very first
+  // `panel:shown` was sent before this renderer was listening (first launch),
+  // so the panel can never render blank.
+  useEffect(() => {
+    const id = requestAnimationFrame(() => setVisible(true))
+    return () => cancelAnimationFrame(id)
+  }, [])
 
   useEffect(() => () => {
     if (copiedTimer.current) clearTimeout(copiedTimer.current)
@@ -93,13 +102,14 @@ export function App() {
       void window.api.getSettings().then(setSettings)
       searchRef.current?.focus()
       stripRef.current?.scrollTo({ left: 0 })
-      // Replay the entrance animation each time the panel opens.
-      const el = panelRef.current
-      if (el) {
-        el.style.animation = 'none'
-        void el.offsetHeight
-        el.style.animation = ''
+      // Cancel any pending leave-hide from a very recent dismiss, then run the
+      // enter transition: start hidden, flip to visible next frame.
+      if (dismissTimer.current) {
+        clearTimeout(dismissTimer.current)
+        dismissTimer.current = null
       }
+      setVisible(false)
+      requestAnimationFrame(() => setVisible(true))
     })
   }, [])
 
@@ -145,6 +155,16 @@ export function App() {
   const paste = useCallback((item: ClipItem) => {
     void window.api.pasteItem(item.id)
   }, [])
+
+  // Play the leave transition, then actually hide the window (main also has a
+  // safety timeout so this can never leave the panel stuck open).
+  const dismiss = useCallback(() => {
+    setVisible(false)
+    if (dismissTimer.current) clearTimeout(dismissTimer.current)
+    dismissTimer.current = setTimeout(() => void window.api.hidePanel(), 180)
+  }, [])
+
+  useEffect(() => window.api.onPanelAnimateOut(dismiss), [dismiss])
 
   // Single click: put the clip on the system clipboard but keep the panel open.
   // It auto-hides on blur, so switching back to your app returns focus and you can
@@ -210,7 +230,7 @@ export function App() {
         case 'Escape':
           e.preventDefault()
           if (previewOpen) setPreviewOpen(false)
-          else void window.api.hidePanel()
+          else dismiss()
           break
         case 'Backspace':
           if (e.metaKey || e.ctrlKey) {
@@ -233,10 +253,10 @@ export function App() {
     }
     window.addEventListener('keydown', onKeyDown)
     return () => window.removeEventListener('keydown', onKeyDown)
-  }, [filtered.length, selected, paste, previewOpen, query, boards, activeBoardId, selectTab])
+  }, [filtered.length, selected, paste, dismiss, previewOpen, query, boards, activeBoardId, selectTab])
 
   return (
-    <div className="panel" ref={panelRef}>
+    <div className={`panel${visible ? '' : ' panel--hidden'}`}>
       <header className="panel__header">
         <div className="search">
           <SearchIcon className="search__icon" size={14} />
