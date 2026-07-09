@@ -8,6 +8,7 @@ Gem is pre-1.0, so minor versions may include breaking changes.
 ## [0.2.13] — 2026-07-09
 
 - **Liquid Glass redesign.** The whole app is now far more translucent and glassy — stronger frosted blur, specular top-edge highlights, and a soft sheen on every surface (panel, cards, search, segments, Settings). The panel uses an adaptive frosted material so **light and dark are the same glass**, differing only in a subtle tint. Card headers become translucent colored glass.
+- More generous spacing in the Settings window (section gaps and row breathing room).
 
 ## [0.2.12] — 2026-07-09
 
