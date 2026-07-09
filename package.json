@@ -1,6 +1,6 @@
 {
   "name": "gem",
-  "version": "0.2.12",
+  "version": "0.2.13",
   "description": "Gem — the context-aware clipboard for macOS. Every copy, kept and understood.",
   "main": "./out/main/index.js",
   "type": "module",

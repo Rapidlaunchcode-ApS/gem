@@ -9,47 +9,67 @@
    unless the user forces a theme with data-theme. */
 
 :root {
-  --bg: rgba(22, 22, 27, 0.42);
-  --surface: rgba(255, 255, 255, 0.08);
-  --surface-strong: rgba(255, 255, 255, 0.14);
-  --border: rgba(255, 255, 255, 0.12);
-  --glass-highlight: rgba(255, 255, 255, 0.08);
-  --text: rgba(255, 255, 255, 0.94);
-  --text-dim: rgba(255, 255, 255, 0.58);
-  --text-faint: rgba(255, 255, 255, 0.36);
+  /* Liquid Glass: highly translucent, specular top edge, soft sheen. Light and
+     dark share this treatment — only the tint and text colour differ. */
+  --bg: rgba(30, 33, 43, 0.3);
+  --surface: linear-gradient(180deg, rgba(255, 255, 255, 0.13), rgba(255, 255, 255, 0.05));
+  --surface-strong: linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.11));
+  --border: rgba(255, 255, 255, 0.16);
+  --glass-highlight: rgba(255, 255, 255, 0.35);
+  --glass-sheen: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.14),
+    rgba(255, 255, 255, 0.03) 42%,
+    rgba(255, 255, 255, 0)
+  );
+  --text: rgba(255, 255, 255, 0.95);
+  --text-dim: rgba(255, 255, 255, 0.6);
+  --text-faint: rgba(255, 255, 255, 0.38);
   --accent: #2fbf71;
-  --overlay-bg: rgba(28, 28, 34, 0.72);
-  --code-bg: rgba(10, 10, 14, 0.45);
+  --overlay-bg: rgba(30, 33, 43, 0.55);
+  --code-bg: rgba(10, 10, 14, 0.4);
   --radius: 16px;
 }
 
 @media (prefers-color-scheme: light) {
   :root:not([data-theme='dark']) {
-    --bg: rgba(246, 246, 248, 0.45);
-    --surface: rgba(255, 255, 255, 0.55);
-    --surface-strong: rgba(0, 0, 0, 0.08);
-    --border: rgba(0, 0, 0, 0.09);
-    --glass-highlight: rgba(255, 255, 255, 0.65);
-    --text: rgba(22, 22, 27, 0.92);
-    --text-dim: rgba(22, 22, 27, 0.55);
-    --text-faint: rgba(22, 22, 27, 0.38);
+    --bg: rgba(250, 251, 255, 0.32);
+    --surface: linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.45));
+    --surface-strong: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.68));
+    --border: rgba(30, 35, 50, 0.1);
+    --glass-highlight: rgba(255, 255, 255, 0.85);
+    --glass-sheen: linear-gradient(
+      180deg,
+      rgba(255, 255, 255, 0.65),
+      rgba(255, 255, 255, 0.18) 45%,
+      rgba(255, 255, 255, 0)
+    );
+    --text: rgba(20, 22, 30, 0.92);
+    --text-dim: rgba(20, 22, 30, 0.58);
+    --text-faint: rgba(20, 22, 30, 0.4);
     --accent: #1f9d55;
-    --overlay-bg: rgba(248, 248, 250, 0.78);
+    --overlay-bg: rgba(250, 251, 255, 0.62);
     --code-bg: #1f1f26;
   }
 }
 
 :root[data-theme='light'] {
-  --bg: rgba(246, 246, 248, 0.45);
-  --surface: rgba(255, 255, 255, 0.55);
-  --surface-strong: rgba(0, 0, 0, 0.08);
-  --border: rgba(0, 0, 0, 0.09);
-  --glass-highlight: rgba(255, 255, 255, 0.65);
-  --text: rgba(22, 22, 27, 0.92);
-  --text-dim: rgba(22, 22, 27, 0.55);
-  --text-faint: rgba(22, 22, 27, 0.38);
+  --bg: rgba(250, 251, 255, 0.32);
+  --surface: linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.45));
+  --surface-strong: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.68));
+  --border: rgba(30, 35, 50, 0.1);
+  --glass-highlight: rgba(255, 255, 255, 0.85);
+  --glass-sheen: linear-gradient(
+    180deg,
+    rgba(255, 255, 255, 0.65),
+    rgba(255, 255, 255, 0.18) 45%,
+    rgba(255, 255, 255, 0)
+  );
+  --text: rgba(20, 22, 30, 0.92);
+  --text-dim: rgba(20, 22, 30, 0.58);
+  --text-faint: rgba(20, 22, 30, 0.4);
   --accent: #1f9d55;
-  --overlay-bg: rgba(248, 248, 250, 0.78);
+  --overlay-bg: rgba(250, 251, 255, 0.62);
   --code-bg: #1f1f26;
 }
 
@@ -76,7 +96,7 @@ body {
   height: 100%;
   display: flex;
   flex-direction: column;
-  background: var(--bg);
+  background: var(--glass-sheen), var(--bg);
   /* The window itself is inset from the screen edges and natively rounded —
      the panel renders as a floating card, so it gets a full hairline. */
   border: 1px solid var(--glass-highlight);
@@ -338,7 +358,8 @@ body {
   border: 1px solid var(--border);
   border-radius: var(--radius);
   overflow: hidden;
-  backdrop-filter: blur(24px) saturate(140%);
+  backdrop-filter: blur(32px) saturate(185%);
+  -webkit-backdrop-filter: blur(32px) saturate(185%);
   box-shadow:
     inset 0 1px 0 var(--glass-highlight),
     0 8px 24px rgba(0, 0, 0, 0.18);
@@ -347,7 +368,7 @@ body {
 
 .card:hover {
   transform: translateY(-2px);
-  border-color: var(--surface-strong);
+  border-color: var(--glass-highlight);
 }
 
 .card--selected {
@@ -366,6 +387,7 @@ body {
   font-weight: 600;
   color: rgba(255, 255, 255, 0.96);
   text-shadow: 0 1px 2px rgba(0, 0, 0, 0.25);
+  box-shadow: inset 0 1px 0 rgba(255, 255, 255, 0.3);
   flex-shrink: 0;
 }
 
@@ -607,7 +629,7 @@ body {
   object-fit: cover;
   display: block;
   background:
-    repeating-conic-gradient(var(--surface) 0% 25%, transparent 0% 50%)
+    repeating-conic-gradient(rgba(128, 128, 128, 0.12) 0% 25%, transparent 0% 50%)
     0 0 / 16px 16px;
 }
 
@@ -799,7 +821,8 @@ body {
 .preview__card,
 .settings {
   background: var(--overlay-bg);
-  backdrop-filter: blur(36px) saturate(160%);
+  backdrop-filter: blur(42px) saturate(185%);
+  -webkit-backdrop-filter: blur(42px) saturate(185%);
   border: 1px solid var(--border);
   border-radius: 16px;
   box-shadow:
@@ -1128,7 +1151,8 @@ body {
   max-height: 90vh;
   overflow-y: auto;
   background: var(--overlay-bg);
-  backdrop-filter: blur(36px) saturate(160%);
+  backdrop-filter: blur(42px) saturate(185%);
+  -webkit-backdrop-filter: blur(42px) saturate(185%);
   border: 1px solid var(--border);
   border-radius: 18px;
   box-shadow:
@@ -1240,7 +1264,7 @@ body {
   display: flex;
   flex-direction: column;
   height: 100%;
-  background: var(--bg);
+  background: var(--glass-sheen), var(--bg);
   color: var(--text);
 }
 
@@ -1281,12 +1305,33 @@ body {
 .settings-win__body {
   flex: 1;
   overflow-y: auto;
-  padding: 14px 18px 18px;
+  padding: 18px 20px 22px;
 }
 
-/* Larger, roomier controls now that Settings has a full window */
+/* Roomier layout now that Settings has a full window */
 .settings-win .settings__section {
-  margin-bottom: 18px;
+  margin-bottom: 26px;
+}
+
+.settings-win .settings__label {
+  margin-bottom: 11px;
+}
+
+.settings-win .settings__row,
+.settings-win .settings__row--clickable {
+  margin-bottom: 13px;
+}
+
+.settings-win .settings__segments {
+  margin-bottom: 13px;
+}
+
+.settings-win .settings__key-row {
+  margin-top: 4px;
+}
+
+.settings-win .settings__hint {
+  margin-top: 9px;
 }
 
 .settings__key-row {

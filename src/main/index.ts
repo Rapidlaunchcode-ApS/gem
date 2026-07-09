@@ -81,7 +81,9 @@ function createPanel(): BrowserWindow {
     ...(isMac
       ? {
           transparent: true,
-          vibrancy: 'hud' as const,
+          // Adaptive frosted material so the panel is true glass in both light
+          // and dark (unlike the always-dark 'hud'); matches the Settings window.
+          vibrancy: 'sidebar' as const,
           visualEffectState: 'active' as const,
           roundedCorners: true
         }

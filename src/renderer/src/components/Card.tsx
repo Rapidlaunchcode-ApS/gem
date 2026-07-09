@@ -61,7 +61,12 @@ export const Card = memo(function Card({
       role="option"
       aria-selected={selected}
     >
-      <div className="card__header" style={{ background: headerColor }}>
+      <div
+        className="card__header"
+        style={{
+          background: `linear-gradient(180deg, color-mix(in srgb, ${headerColor} 88%, transparent), color-mix(in srgb, ${headerColor} 64%, transparent))`
+        }}
+      >
         {editing ? (
           <input
             className="card__title-input"
