@@ -5,6 +5,11 @@ All notable changes to Gem are recorded here. Each version also has a matching
 and SHA-256 checksums. Format loosely follows [Keep a Changelog](https://keepachangelog.com);
 Gem is pre-1.0, so minor versions may include breaking changes.
 
+## [0.2.14] — 2026-07-09
+
+- Opening **Settings** now dims and blurs the clipboard panel behind it (a proper modal backdrop).
+- **Clearer Liquid Glass** — more translucent surfaces with brighter specular edges and a stronger sheen, in both light and dark.
+
 ## [0.2.13] — 2026-07-09
 
 - **Liquid Glass redesign.** The whole app is now far more translucent and glassy — stronger frosted blur, specular top-edge highlights, and a soft sheen on every surface (panel, cards, search, segments, Settings). The panel uses an adaptive frosted material so **light and dark are the same glass**, differing only in a subtle tint. Card headers become translucent colored glass.

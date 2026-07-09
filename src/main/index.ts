@@ -138,12 +138,14 @@ function openSettings(): void {
     // The panel floats at 'pop-up-menu' level; drop that so the Settings window
     // (a normal focused window) sits above it instead of behind it.
     panel?.setAlwaysOnTop(false)
+    panel?.webContents.send('panel:dim', true)
     win.show()
     win.focus()
   })
   win.on('closed', () => {
     settingsWin = null
     panel?.setAlwaysOnTop(true, 'pop-up-menu')
+    panel?.webContents.send('panel:dim', false)
   })
   const rendererUrl = process.env['ELECTRON_RENDERER_URL']
   if (isDev && rendererUrl) {

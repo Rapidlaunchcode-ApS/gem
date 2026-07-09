@@ -11,15 +11,15 @@
 :root {
   /* Liquid Glass: highly translucent, specular top edge, soft sheen. Light and
      dark share this treatment — only the tint and text colour differ. */
-  --bg: rgba(30, 33, 43, 0.3);
-  --surface: linear-gradient(180deg, rgba(255, 255, 255, 0.13), rgba(255, 255, 255, 0.05));
-  --surface-strong: linear-gradient(180deg, rgba(255, 255, 255, 0.22), rgba(255, 255, 255, 0.11));
-  --border: rgba(255, 255, 255, 0.16);
-  --glass-highlight: rgba(255, 255, 255, 0.35);
+  --bg: rgba(28, 31, 41, 0.22);
+  --surface: linear-gradient(180deg, rgba(255, 255, 255, 0.18), rgba(255, 255, 255, 0.06));
+  --surface-strong: linear-gradient(180deg, rgba(255, 255, 255, 0.28), rgba(255, 255, 255, 0.13));
+  --border: rgba(255, 255, 255, 0.22);
+  --glass-highlight: rgba(255, 255, 255, 0.5);
   --glass-sheen: linear-gradient(
     180deg,
-    rgba(255, 255, 255, 0.14),
-    rgba(255, 255, 255, 0.03) 42%,
+    rgba(255, 255, 255, 0.2),
+    rgba(255, 255, 255, 0.05) 40%,
     rgba(255, 255, 255, 0)
   );
   --text: rgba(255, 255, 255, 0.95);
@@ -33,15 +33,15 @@
 
 @media (prefers-color-scheme: light) {
   :root:not([data-theme='dark']) {
-    --bg: rgba(250, 251, 255, 0.32);
-    --surface: linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.45));
-    --surface-strong: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.68));
-    --border: rgba(30, 35, 50, 0.1);
-    --glass-highlight: rgba(255, 255, 255, 0.85);
+    --bg: rgba(250, 251, 255, 0.24);
+    --surface: linear-gradient(180deg, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.52));
+    --surface-strong: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0.78));
+    --border: rgba(30, 35, 50, 0.12);
+    --glass-highlight: rgba(255, 255, 255, 0.95);
     --glass-sheen: linear-gradient(
       180deg,
-      rgba(255, 255, 255, 0.65),
-      rgba(255, 255, 255, 0.18) 45%,
+      rgba(255, 255, 255, 0.72),
+      rgba(255, 255, 255, 0.22) 42%,
       rgba(255, 255, 255, 0)
     );
     --text: rgba(20, 22, 30, 0.92);
@@ -54,15 +54,15 @@
 }
 
 :root[data-theme='light'] {
-  --bg: rgba(250, 251, 255, 0.32);
-  --surface: linear-gradient(180deg, rgba(255, 255, 255, 0.72), rgba(255, 255, 255, 0.45));
-  --surface-strong: linear-gradient(180deg, rgba(255, 255, 255, 0.92), rgba(255, 255, 255, 0.68));
-  --border: rgba(30, 35, 50, 0.1);
-  --glass-highlight: rgba(255, 255, 255, 0.85);
+  --bg: rgba(250, 251, 255, 0.24);
+  --surface: linear-gradient(180deg, rgba(255, 255, 255, 0.85), rgba(255, 255, 255, 0.52));
+  --surface-strong: linear-gradient(180deg, rgba(255, 255, 255, 0.98), rgba(255, 255, 255, 0.78));
+  --border: rgba(30, 35, 50, 0.12);
+  --glass-highlight: rgba(255, 255, 255, 0.95);
   --glass-sheen: linear-gradient(
     180deg,
-    rgba(255, 255, 255, 0.65),
-    rgba(255, 255, 255, 0.18) 45%,
+    rgba(255, 255, 255, 0.72),
+    rgba(255, 255, 255, 0.22) 42%,
     rgba(255, 255, 255, 0)
   );
   --text: rgba(20, 22, 30, 0.92);
@@ -115,6 +115,27 @@ body {
   }
   to {
     transform: translateY(0) scale(1);
+  }
+}
+
+/* Modal scrim: dim + blur the panel while the Settings window is open. */
+.panel__scrim {
+  position: absolute;
+  inset: 0;
+  z-index: 20;
+  border-radius: inherit;
+  background: rgba(8, 10, 14, 0.44);
+  backdrop-filter: blur(7px) saturate(85%);
+  -webkit-backdrop-filter: blur(7px) saturate(85%);
+  animation: gem-scrim-in 0.2s ease;
+}
+
+@keyframes gem-scrim-in {
+  from {
+    opacity: 0;
+  }
+  to {
+    opacity: 1;
   }
 }
 

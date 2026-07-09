@@ -191,6 +191,8 @@ export interface GemApi {
   clearHistory: () => Promise<void>
   hidePanel: () => Promise<void>
   onPanelShown: (listener: () => void) => () => void
+  /** Fired to dim + blur the panel while the Settings window is open. */
+  onPanelDim: (listener: (dim: boolean) => void) => () => void
   /** Open the standalone, screen-centered Settings window. */
   openSettings: () => Promise<void>
   /** Close the Settings window (from inside it). */

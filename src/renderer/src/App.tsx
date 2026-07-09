@@ -33,6 +33,7 @@ export function App() {
   const [editingItemId, setEditingItemId] = useState<string | null>(null)
   const [dragOverBoardId, setDragOverBoardId] = useState<string | null>(null)
   const [showOnboarding, setShowOnboarding] = useState(false)
+  const [dimmed, setDimmed] = useState(false)
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const copiedTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [titlingIds, setTitlingIds] = useState<ReadonlySet<string>>(() => new Set())
@@ -56,6 +57,8 @@ export function App() {
   }, [])
 
   useEffect(() => window.api.onItemEdit(setEditingItemId), [])
+
+  useEffect(() => window.api.onPanelDim(setDimmed), [])
 
   useEffect(() => () => {
     if (copiedTimer.current) clearTimeout(copiedTimer.current)
@@ -390,6 +393,8 @@ export function App() {
       )}
 
       {showOnboarding && <Onboarding onDone={() => setShowOnboarding(false)} />}
+
+      {dimmed && <div className="panel__scrim" aria-hidden />}
     </div>
   )
 }

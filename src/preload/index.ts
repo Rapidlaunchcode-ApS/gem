@@ -31,6 +31,7 @@ const api: GemApi = {
   clearHistory: () => ipcRenderer.invoke('history:clear') as Promise<void>,
   hidePanel: () => ipcRenderer.invoke('panel:hide') as Promise<void>,
   onPanelShown: (listener) => subscribe<void>('panel:shown', () => listener()),
+  onPanelDim: (listener) => subscribe<boolean>('panel:dim', listener),
   openSettings: () => ipcRenderer.invoke('settings:open') as Promise<void>,
   closeSettings: () => ipcRenderer.invoke('settings:close') as Promise<void>,
   appVersion: () => ipcRenderer.invoke('app:version') as Promise<string>,

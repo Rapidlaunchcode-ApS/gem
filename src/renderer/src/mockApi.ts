@@ -193,6 +193,7 @@ export function createMockApi(): GemApi {
     },
     hidePanel: () => Promise.resolve(),
     onPanelShown: () => () => undefined,
+    onPanelDim: () => () => undefined,
     openSettings: () => Promise.resolve(),
     closeSettings: () => Promise.resolve(),
     appVersion: () => Promise.resolve('0.0.0-dev'),
