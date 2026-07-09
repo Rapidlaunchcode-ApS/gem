@@ -59,6 +59,8 @@ let settingsWin: BrowserWindow | null = null
 let tray: Tray | null = null
 /** True after a first-launch welcome until the renderer picks it up once. */
 let onboardingPending = false
+/** Drives the panel's fade in/out animation. */
+let fadeTimer: ReturnType<typeof setInterval> | null = null
 let store: HistoryStore
 let settings: SettingsStore
 let watcher: ClipboardWatcher
@@ -95,16 +97,8 @@ function createPanel(): BrowserWindow {
 
   win.setAlwaysOnTop(true, 'pop-up-menu')
   win.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true })
-
-  win.on('blur', () => {
-    // Defer so the newly-focused window (if any) is known. Keep the panel in the
-    // background when focus moves to our own Settings window; only dismiss it when
-    // focus leaves Gem entirely (no Gem window focused → user switched apps/clicked away).
-    setImmediate(() => {
-      if (win.isDestroyed() || !win.isVisible()) return
-      if (BrowserWindow.getFocusedWindow() === null) win.hide()
-    })
-  })
+  // Auto-hide is handled app-wide (see the browser-window-blur handler) so it
+  // still fires when focus leaves Gem from the Settings window, not just the panel.
 
   const rendererUrl = process.env['ELECTRON_RENDERER_URL']
   if (isDev && rendererUrl) {
@@ -139,11 +133,15 @@ function openSettings(): void {
     webPreferences: { preload: join(import.meta.dirname, '../preload/index.mjs'), sandbox: false }
   })
   win.once('ready-to-show', () => {
+    // The panel floats at 'pop-up-menu' level; drop that so the Settings window
+    // (a normal focused window) sits above it instead of behind it.
+    panel?.setAlwaysOnTop(false)
     win.show()
     win.focus()
   })
   win.on('closed', () => {
     settingsWin = null
+    panel?.setAlwaysOnTop(true, 'pop-up-menu')
   })
   const rendererUrl = process.env['ELECTRON_RENDERER_URL']
   if (isDev && rendererUrl) {
@@ -158,6 +156,29 @@ function closeSettings(): void {
   if (settingsWin && !settingsWin.isDestroyed()) settingsWin.close()
 }
 
+/** Step the panel's opacity toward `to`, then run `done`. ~120ms either way. */
+function fadePanel(to: number, done?: () => void): void {
+  if (!panel || panel.isDestroyed()) return
+  if (fadeTimer) clearInterval(fadeTimer)
+  const dir = to >= panel.getOpacity() ? 1 : -1
+  fadeTimer = setInterval(() => {
+    if (!panel || panel.isDestroyed()) {
+      if (fadeTimer) clearInterval(fadeTimer)
+      fadeTimer = null
+      return
+    }
+    const next = panel.getOpacity() + dir * 0.16
+    if ((dir > 0 && next >= to) || (dir < 0 && next <= to)) {
+      panel.setOpacity(to)
+      if (fadeTimer) clearInterval(fadeTimer)
+      fadeTimer = null
+      done?.()
+    } else {
+      panel.setOpacity(next)
+    }
+  }, 16)
+}
+
 function showPanel(): void {
   if (!panel) return
   const cursor = screen.getCursorScreenPoint()
@@ -168,14 +189,27 @@ function showPanel(): void {
     width: workArea.width - PANEL_MARGIN * 2,
     height: PANEL_HEIGHT
   })
+  panel.setOpacity(0)
   panel.show()
   panel.focus()
   panel.webContents.send('panel:shown')
+  fadePanel(1)
+}
+
+/** Fade the panel out, then hide it (and reset opacity for next time). */
+function hidePanel(): void {
+  if (!panel || panel.isDestroyed() || !panel.isVisible()) return
+  fadePanel(0, () => {
+    if (panel && !panel.isDestroyed()) {
+      panel.hide()
+      panel.setOpacity(1)
+    }
+  })
 }
 
 function togglePanel(): void {
   if (!panel) return
-  if (panel.isVisible()) panel.hide()
+  if (panel.isVisible()) hidePanel()
   else showPanel()
 }
 
@@ -232,7 +266,11 @@ function writeItemToClipboard(item: ClipItem): void {
 }
 
 function pasteItem(item: ClipItem): void {
+  // Hide instantly (no fade) so focus returns before the paste keystroke fires.
+  if (fadeTimer) clearInterval(fadeTimer)
+  fadeTimer = null
   panel?.hide()
+  panel?.setOpacity(1)
   writeItemToClipboard(item)
   // Give macOS a beat to return focus to the previous app before keystroking.
   setTimeout(simulatePaste, 150)
@@ -418,7 +456,7 @@ function registerIpc(): void {
     settings.setAi(apiKey === undefined ? rest : { ...rest, apiKey })
   })
 
-  ipcMain.handle('panel:hide', () => panel?.hide())
+  ipcMain.handle('panel:hide', () => hidePanel())
   ipcMain.handle('settings:open', () => openSettings())
   ipcMain.handle('settings:close', () => closeSettings())
 
@@ -474,6 +512,17 @@ if (!gotLock) {
   })
 
   app.on('second-instance', () => showPanel())
+
+  // Dismiss the UI only when focus leaves Gem entirely. Deferring lets the
+  // newly-focused window register first, so moving focus between the panel and
+  // the Settings window (both Gem windows) never triggers a hide.
+  app.on('browser-window-blur', () => {
+    setImmediate(() => {
+      if (BrowserWindow.getFocusedWindow() !== null) return
+      closeSettings()
+      hidePanel()
+    })
+  })
 
   app.on('window-all-closed', () => {
     // Menu-bar app: stay alive with no windows.

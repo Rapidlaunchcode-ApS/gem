@@ -43,6 +43,7 @@ export function App() {
   })
   const searchRef = useRef<HTMLInputElement>(null)
   const stripRef = useRef<HTMLDivElement>(null)
+  const panelRef = useRef<HTMLDivElement>(null)
 
   const { items, boards } = state
   const activeBoard = boards.find((b) => b.id === activeBoardId) ?? null
@@ -89,6 +90,13 @@ export function App() {
       void window.api.getSettings().then(setSettings)
       searchRef.current?.focus()
       stripRef.current?.scrollTo({ left: 0 })
+      // Replay the entrance animation each time the panel opens.
+      const el = panelRef.current
+      if (el) {
+        el.style.animation = 'none'
+        void el.offsetHeight
+        el.style.animation = ''
+      }
     })
   }, [])
 
@@ -225,7 +233,7 @@ export function App() {
   }, [filtered.length, selected, paste, previewOpen, query, boards, activeBoardId, selectTab])
 
   return (
-    <div className="panel">
+    <div className="panel" ref={panelRef}>
       <header className="panel__header">
         <div className="search">
           <SearchIcon className="search__icon" size={14} />

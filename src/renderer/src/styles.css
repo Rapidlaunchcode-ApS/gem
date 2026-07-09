@@ -83,6 +83,19 @@ body {
   border-radius: 10px;
   box-shadow: inset 0 1px 0 var(--glass-highlight);
   overflow: hidden;
+  /* Warp-in: rises and scales up from the bottom as the window fades in.
+     Re-triggered on every open via a reflow in the panel:shown handler. */
+  transform-origin: bottom center;
+  animation: gem-panel-in 0.19s cubic-bezier(0.2, 0.9, 0.25, 1);
+}
+
+@keyframes gem-panel-in {
+  from {
+    transform: translateY(14px) scale(0.965);
+  }
+  to {
+    transform: translateY(0) scale(1);
+  }
 }
 
 /* ── Header ─────────────────────────────────────────── */
