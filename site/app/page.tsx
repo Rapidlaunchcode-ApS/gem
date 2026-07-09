@@ -1,9 +1,11 @@
 import Link from 'next/link'
+import { DemoMobile } from '../components/demo-mobile'
 import { DemoScene } from '../components/demo-scene'
 import { FadeIn } from '../components/fade-in'
 import { HeroPanel } from '../components/hero-panel'
 import { KeyPress } from '../components/keys'
 import { PinboardDemo } from '../components/pinboard-demo'
+import { PinboardMobile } from '../components/pinboard-mobile'
 import { Scrolly } from '../components/scrolly'
 import { Stats } from '../components/stats'
 import { FAQ, MAC_URL, REPO_URL, WIN_URL } from '../lib/site'
@@ -100,6 +102,7 @@ export default async function Page() {
           </FadeIn>
           <FadeIn delay={0.1}>
             <DemoScene />
+            <DemoMobile />
           </FadeIn>
         </section>
 
@@ -118,6 +121,7 @@ export default async function Page() {
             </FadeIn>
             <FadeIn delay={0.12}>
               <PinboardDemo />
+              <PinboardMobile />
             </FadeIn>
           </div>
         </section>
