@@ -47,11 +47,13 @@ export function PinboardMobile() {
         <motion.div
           className="pinmobile__card pinmobile__card--fly"
           animate={{
-            y: [0, -6, -132, -146, 0],
-            x: [0, 2, 26, 36, 0],
-            scale: [1, 1.04, 0.46, 0.3, 1],
-            opacity: [1, 1, 0.9, 0, 1],
-            rotate: [0, -1, -6, -8, 0]
+            // Lands on the Regex pill (measured ~82px up, ~17px left of the card
+            // centre) and shrinks into it, instead of overshooting above it.
+            y: [0, -8, -58, -82, 0],
+            x: [0, -2, -12, -17, 0],
+            scale: [1, 1.04, 0.56, 0.3, 1],
+            opacity: [1, 1, 1, 0, 1],
+            rotate: [0, -1, -4, -6, 0]
           }}
           transition={LOOP}
         >

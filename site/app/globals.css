@@ -1328,7 +1328,7 @@ a {
 
 .footer {
   border-top: 1px solid var(--line);
-  padding: 1.9rem 0 2.5rem;
+  padding-block: 1.9rem 2.5rem;
   display: flex;
   align-items: center;
   justify-content: space-between;
