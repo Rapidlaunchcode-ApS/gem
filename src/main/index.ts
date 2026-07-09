@@ -97,7 +97,13 @@ function createPanel(): BrowserWindow {
   win.setVisibleOnAllWorkspaces(true, { visibleOnFullScreen: true })
 
   win.on('blur', () => {
-    if (win.isVisible()) win.hide()
+    // Defer so the newly-focused window (if any) is known. Keep the panel in the
+    // background when focus moves to our own Settings window; only dismiss it when
+    // focus leaves Gem entirely (no Gem window focused → user switched apps/clicked away).
+    setImmediate(() => {
+      if (win.isDestroyed() || !win.isVisible()) return
+      if (BrowserWindow.getFocusedWindow() === null) win.hide()
+    })
   })
 
   const rendererUrl = process.env['ELECTRON_RENDERER_URL']
