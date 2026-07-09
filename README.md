@@ -12,7 +12,8 @@
 <p align="center">
   <a href="https://github.com/Rapidlaunchcode-ApS/gem/releases/latest/download/Gem-macOS-universal.zip"><b>Download for Mac</b></a> ·
   <a href="https://github.com/Rapidlaunchcode-ApS/gem/releases/latest/download/Gem-Windows-Setup.exe"><b>Download for Windows</b></a> ·
-  <a href="https://gem-clipboard.vercel.app"><b>Gem Clipboard website</b></a>
+  <a href="https://gem-clipboard.vercel.app"><b>Gem Clipboard website</b></a> ·
+  <a href="CHANGELOG.md"><b>Changelog</b></a>
 </p>
 
 <p align="center">
