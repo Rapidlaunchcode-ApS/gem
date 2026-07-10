@@ -2,6 +2,8 @@ import { app, nativeTheme, safeStorage } from 'electron'
 import { existsSync, readFileSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import {
+  DEFAULT_SHORTCUT_MAC,
+  DEFAULT_SHORTCUT_WIN,
   resolveModel,
   settingsFileSchema,
   type AiProvider,
@@ -12,6 +14,8 @@ import {
 } from '../shared/types'
 
 const PLAIN_PREFIX = 'plain:'
+const DEFAULT_SHORTCUT =
+  process.platform === 'darwin' ? DEFAULT_SHORTCUT_MAC : DEFAULT_SHORTCUT_WIN
 
 export class SettingsStore {
   private settings: SettingsFile
@@ -36,6 +40,7 @@ export class SettingsStore {
     return {
       theme: this.settings.theme,
       retentionDays: this.settings.retentionDays,
+      shortcut: this.shortcut(),
       ai: {
         enabled: this.settings.ai.enabled,
         provider: this.settings.ai.provider,
@@ -44,6 +49,16 @@ export class SettingsStore {
         model: this.aiModel()
       }
     }
+  }
+
+  /** The resolved global open-panel shortcut (platform default if unset). */
+  shortcut(): string {
+    return this.settings.shortcut || DEFAULT_SHORTCUT
+  }
+
+  setShortcut(accel: string): void {
+    this.settings = { ...this.settings, shortcut: accel }
+    this.save()
   }
 
   /** The resolved model id for the active provider (cheapest default if unset). */

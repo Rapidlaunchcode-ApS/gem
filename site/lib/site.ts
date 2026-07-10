@@ -12,7 +12,7 @@ export const DESCRIPTION =
 export const FAQ: { q: string; a: string }[] = [
   {
     q: 'What is Gem?',
-    a: 'Gem is a free, open-source clipboard manager for macOS and Windows. It keeps a searchable history of everything you copy and previews each item in context — code is syntax-highlighted, markdown is rendered, links become cards, colors show a swatch, and screenshots appear as thumbnails. Press ⌘⇧V (Ctrl+Shift+V on Windows) to open the panel over any app.'
+    a: 'Gem is a free, open-source clipboard manager for macOS and Windows. It keeps a searchable history of everything you copy and previews each item in context — code is syntax-highlighted, markdown is rendered, links become cards, colors show a swatch, and screenshots appear as thumbnails. Press ⌘⇧V (Ctrl+Alt+V on Windows) to open the panel over any app.'
   },
   {
     q: 'What is the best free clipboard manager for Mac and Windows?',
@@ -24,7 +24,7 @@ export const FAQ: { q: string; a: string }[] = [
   },
   {
     q: 'Does Gem work on Windows?',
-    a: 'Yes. Gem ships native builds for both macOS (Apple Silicon) and Windows (x64). The Windows version uses an acrylic panel on Windows 11 and opens with Ctrl+Shift+V.'
+    a: 'Yes. Gem ships native builds for both macOS (Apple Silicon) and Windows (x64). The Windows version uses an acrylic panel on Windows 11 and opens with Ctrl+Alt+V (Windows reserves Ctrl+Shift+V for paste-as-plain-text).'
   },
   {
     q: 'How is Gem different from Paste?',

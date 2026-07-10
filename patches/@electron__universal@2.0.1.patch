@@ -1,0 +1,38 @@
+diff --git a/dist/cjs/index.js b/dist/cjs/index.js
+index 7740e402baf6bdcbbcb6660664dd651a56712a24..dd14b6288c88bb168544f242d82a9fba6914f821 100644
+--- a/dist/cjs/index.js
++++ b/dist/cjs/index.js
+@@ -110,6 +110,14 @@ const makeUniversalApp = async (opts) => {
+                     // The mismatch here is OK so we just move on to the next one
+                     continue;
+                 }
++                // Code-signature seals (the app's own Contents/_CodeSignature/CodeResources
++                // and every nested framework's) legitimately differ per-arch because each
++                // upstream arch ships only its own v8_context_snapshot.<arch>.bin. The final
++                // universal app is fully re-signed after the merge, which regenerates these
++                // seals correctly, so a pre-merge mismatch here is safe to ignore.
++                if (file.relativePath.includes('_CodeSignature/')) {
++                    continue;
++                }
+                 throw new Error(`Expected all non-binary files to have identical SHAs when creating a universal build but "${file.relativePath}" did not`);
+             }
+         }
+diff --git a/dist/esm/index.js b/dist/esm/index.js
+index 3813a1c791c6cd5dab55591932e4d6acd3963a7e..9ee9805efd5310680f19c67bad2b5d4ccb61a12f 100644
+--- a/dist/esm/index.js
++++ b/dist/esm/index.js
+@@ -84,6 +84,14 @@ export const makeUniversalApp = async (opts) => {
+                     // The mismatch here is OK so we just move on to the next one
+                     continue;
+                 }
++                // Code-signature seals (the app's own Contents/_CodeSignature/CodeResources
++                // and every nested framework's) legitimately differ per-arch because each
++                // upstream arch ships only its own v8_context_snapshot.<arch>.bin. The final
++                // universal app is fully re-signed after the merge, which regenerates these
++                // seals correctly, so a pre-merge mismatch here is safe to ignore.
++                if (file.relativePath.includes('_CodeSignature/')) {
++                    continue;
++                }
+                 throw new Error(`Expected all non-binary files to have identical SHAs when creating a universal build but "${file.relativePath}" did not`);
+             }
+         }

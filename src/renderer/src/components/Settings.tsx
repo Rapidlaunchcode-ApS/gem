@@ -2,6 +2,8 @@ import { useRef, useState } from 'react'
 import {
   AI_MODELS,
   RETENTION_OPTIONS,
+  SHORTCUTS_MAC,
+  SHORTCUTS_WIN,
   type AiProvider,
   type AiUpdate,
   type SettingsView,
@@ -16,12 +18,18 @@ interface SettingsProps {
   update: UpdateState
   onThemeChange: (theme: Theme) => void
   onRetentionChange: (days: number) => void
+  onShortcutChange: (accel: string) => void
   onAiChange: (update: AiUpdate) => void
   onCheckUpdate: () => void
   onDownloadUpdate: () => void
   onInstallUpdate: () => void
   onClose: () => void
 }
+
+const IS_MAC =
+  typeof navigator !== 'undefined' && navigator.platform.toUpperCase().includes('MAC')
+
+const SHORTCUTS = IS_MAC ? SHORTCUTS_MAC : SHORTCUTS_WIN
 
 const THEME_OPTIONS: { value: Theme; label: string; Icon: typeof SunIcon }[] = [
   { value: 'system', label: 'System', Icon: MonitorIcon },
@@ -41,6 +49,7 @@ export function Settings({
   update,
   onThemeChange,
   onRetentionChange,
+  onShortcutChange,
   onAiChange,
   onCheckUpdate,
   onDownloadUpdate,
@@ -112,6 +121,29 @@ export function Settings({
             </select>
           </div>
           <div className="settings__hint">Pinned items and pinboards are always kept.</div>
+        </div>
+
+        <div className="settings__section">
+          <div className="settings__label">Shortcut</div>
+          <div className="settings__row">
+            <span>Open Gem with</span>
+            <select
+              className="settings__select"
+              value={settings.shortcut}
+              onChange={(e) => onShortcutChange(e.target.value)}
+            >
+              {SHORTCUTS.map((s) => (
+                <option key={s.accel} value={s.accel}>
+                  {s.label}
+                </option>
+              ))}
+            </select>
+          </div>
+          <div className="settings__hint">
+            {IS_MAC
+              ? 'The global hotkey that pops the panel over any app.'
+              : 'Windows reserves Ctrl+Shift+V for “paste as plain text”, so Gem uses one of these instead.'}
+          </div>
         </div>
 
         <div className="settings__section">

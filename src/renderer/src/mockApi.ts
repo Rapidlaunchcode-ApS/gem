@@ -175,6 +175,7 @@ export function createMockApi(): GemApi {
       Promise.resolve<SettingsView>({
         theme: 'system',
         retentionDays: 7,
+        shortcut: 'CommandOrControl+Shift+V',
         ai: {
           enabled: false,
           provider: 'anthropic',
@@ -185,6 +186,7 @@ export function createMockApi(): GemApi {
       }),
     setTheme: () => Promise.resolve(),
     setRetentionDays: () => Promise.resolve(),
+    setShortcut: () => Promise.resolve(),
     setAiSettings: () => Promise.resolve(),
     clearHistory: () => {
       items = items.filter((i) => i.pinned || i.boardId !== undefined)
@@ -197,8 +199,10 @@ export function createMockApi(): GemApi {
     onPanelAnimateOut: () => () => undefined,
     openSettings: () => Promise.resolve(),
     closeSettings: () => Promise.resolve(),
+    openOnboarding: () => Promise.resolve(),
+    closeOnboarding: () => Promise.resolve(),
+    openPanel: () => Promise.resolve(),
     appVersion: () => Promise.resolve('0.0.0-dev'),
-    onboardingPending: () => Promise.resolve(false),
     checkForUpdate: () => Promise.resolve(),
     downloadUpdate: () => Promise.resolve(),
     installUpdate: () => Promise.resolve(),

@@ -4,6 +4,9 @@ settings:
   autoInstallPeers: true
   excludeLinksFromLockfile: false
 
+patchedDependencies:
+  '@electron/universal@2.0.1': f25b90847b563b7ea9ef792a18a1a5459f7c0eead1affa3556dc6fab4921aff9
+
 importers:
 
   .:
@@ -2263,7 +2266,7 @@ snapshots:
       - bluebird
       - supports-color
 
-  '@electron/universal@2.0.1':
+  '@electron/universal@2.0.1(patch_hash=f25b90847b563b7ea9ef792a18a1a5459f7c0eead1affa3556dc6fab4921aff9)':
     dependencies:
       '@electron/asar': 3.4.1
       '@malept/cross-spawn-promise': 2.0.0
@@ -2637,7 +2640,7 @@ snapshots:
       '@electron/notarize': 2.5.0
       '@electron/osx-sign': 1.3.1
       '@electron/rebuild': 3.6.1
-      '@electron/universal': 2.0.1
+      '@electron/universal': 2.0.1(patch_hash=f25b90847b563b7ea9ef792a18a1a5459f7c0eead1affa3556dc6fab4921aff9)
       '@malept/flatpak-bundler': 0.4.0
       '@types/fs-extra': 9.0.13
       async-exit-hook: 2.0.1

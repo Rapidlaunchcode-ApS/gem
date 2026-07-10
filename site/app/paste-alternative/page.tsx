@@ -59,7 +59,7 @@ const PAGE_FAQ = [
   },
   {
     q: 'How do I switch from Paste to Gem?',
-    a: 'Download Gem, move it to Applications (macOS) or run the installer (Windows), and open the panel with ⌘⇧V or Ctrl+Shift+V. Gem starts building your history from the moment it is installed — there is nothing to import.'
+    a: 'Download Gem, move it to Applications (macOS) or run the installer (Windows), and open the panel with ⌘⇧V or Ctrl+Alt+V. Gem starts building your history from the moment it is installed — there is nothing to import.'
   },
   {
     q: 'Is Gem as good as Paste?',

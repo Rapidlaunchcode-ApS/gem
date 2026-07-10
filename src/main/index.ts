@@ -14,7 +14,15 @@ import { execFile } from 'node:child_process'
 import { existsSync, mkdirSync, readFileSync, renameSync, rmSync, writeFileSync } from 'node:fs'
 import { join } from 'node:path'
 import { z } from 'zod'
-import { aiProviderSchema, themeSchema, type ClipItem, type UpdateState } from '../shared/types'
+import {
+  aiProviderSchema,
+  SHORTCUTS_MAC,
+  SHORTCUTS_WIN,
+  shortcutLabel,
+  themeSchema,
+  type ClipItem,
+  type UpdateState
+} from '../shared/types'
 import { Enricher } from './enricher'
 import { SettingsStore } from './settings'
 import { HistoryStore } from './store'
@@ -56,9 +64,10 @@ function migrateLegacyUserData(): void {
 
 let panel: BrowserWindow | null = null
 let settingsWin: BrowserWindow | null = null
+let onboardingWin: BrowserWindow | null = null
 let tray: Tray | null = null
-/** True after a first-launch welcome until the renderer picks it up once. */
-let onboardingPending = false
+/** The accelerator currently registered with globalShortcut, so it can be replaced. */
+let registeredShortcut: string | null = null
 /** Fallback timer that force-hides the panel if the renderer's leave transition never calls back. */
 let hideSafety: ReturnType<typeof setTimeout> | null = null
 let store: HistoryStore
@@ -160,6 +169,63 @@ function closeSettings(): void {
   if (settingsWin && !settingsWin.isDestroyed()) settingsWin.close()
 }
 
+/** Standalone, screen-centered onboarding window (the same renderer at #onboarding). */
+function openOnboarding(): void {
+  if (onboardingWin && !onboardingWin.isDestroyed()) {
+    onboardingWin.show()
+    onboardingWin.focus()
+    return
+  }
+  const win = new BrowserWindow({
+    width: 440,
+    height: 620,
+    center: true,
+    resizable: false,
+    minimizable: false,
+    maximizable: false,
+    fullscreenable: false,
+    frame: false,
+    skipTaskbar: true,
+    show: false,
+    ...(isMac
+      ? { transparent: true, vibrancy: 'sidebar' as const, visualEffectState: 'active' as const, roundedCorners: true }
+      : { backgroundColor: '#1c1917', backgroundMaterial: 'acrylic' as const }),
+    webPreferences: { preload: join(import.meta.dirname, '../preload/index.mjs'), sandbox: false }
+  })
+  win.once('ready-to-show', () => {
+    win.show()
+    win.focus()
+  })
+  win.on('closed', () => {
+    onboardingWin = null
+  })
+  const rendererUrl = process.env['ELECTRON_RENDERER_URL']
+  if (isDev && rendererUrl) {
+    void win.loadURL(`${rendererUrl}#onboarding`)
+  } else {
+    void win.loadFile(join(import.meta.dirname, '../renderer/index.html'), { hash: 'onboarding' })
+  }
+  onboardingWin = win
+}
+
+function closeOnboarding(): void {
+  if (onboardingWin && !onboardingWin.isDestroyed()) onboardingWin.close()
+}
+
+/** (Re)register the global open-panel hotkey from settings, replacing any prior one. */
+function registerShortcut(): void {
+  if (registeredShortcut) {
+    globalShortcut.unregister(registeredShortcut)
+    registeredShortcut = null
+  }
+  const accel = settings.shortcut()
+  if (globalShortcut.register(accel, togglePanel)) {
+    registeredShortcut = accel
+  } else {
+    console.error(`Failed to register ${accel} — is another app using that shortcut?`)
+  }
+}
+
 function showPanel(): void {
   if (!panel) return
   if (hideSafety) {
@@ -209,8 +275,9 @@ function togglePanel(): void {
 
 /**
  * First-launch onboarding. Gem is a menu-bar app with no window or Dock icon, so
- * a cold start otherwise looks like "nothing happened". On the very first run we
- * pop the panel once and fire a notification pointing at the menu bar + shortcut.
+ * a cold start otherwise looks like "nothing happened" (the #1 "Windows won't
+ * launch" report). On the very first run we open a real onboarding window that
+ * explains the tray, the shortcut, and how to use it.
  */
 function maybeShowWelcome(): void {
   const marker = join(app.getPath('userData'), '.welcomed')
@@ -220,13 +287,11 @@ function maybeShowWelcome(): void {
   } catch {
     // If we can't persist the marker, still show the welcome this once.
   }
-  const shortcut = isMac ? '⌘⇧V' : 'Ctrl+Shift+V'
-  onboardingPending = true
-  showPanel()
+  openOnboarding()
   if (Notification.isSupported()) {
     new Notification({
       title: 'Gem is ready',
-      body: `Gem lives in your menu bar — press ${shortcut} anytime to open your clipboard.`,
+      body: `Gem lives in your ${isMac ? 'menu bar' : 'system tray'} — press ${shortcutLabel(settings.shortcut(), isMac)} anytime to open your clipboard.`,
       silent: true
     }).show()
   }
@@ -344,30 +409,39 @@ function showBoardMenu(id: string): void {
   menu.popup({ window: panel })
 }
 
+function buildTrayMenu(): Menu {
+  return Menu.buildFromTemplate([
+    { label: `Open Gem  ${shortcutLabel(settings.shortcut(), isMac)}`, click: () => showPanel() },
+    { label: 'How to use Gem…', click: () => openOnboarding() },
+    { label: 'Settings…', click: () => openSettings() },
+    { type: 'separator' },
+    {
+      label: 'Launch at Login',
+      type: 'checkbox',
+      checked: app.getLoginItemSettings().openAtLogin,
+      click: (item) => app.setLoginItemSettings({ openAtLogin: item.checked })
+    },
+    {
+      label: 'Clear History…',
+      click: () => {
+        store.clear()
+        broadcastState()
+      }
+    },
+    { type: 'separator' },
+    { label: 'Quit Gem', click: () => app.quit() }
+  ])
+}
+
 function createTray(): void {
   tray = new Tray(createTrayIcon())
   tray.setToolTip('Gem')
-  tray.setContextMenu(
-    Menu.buildFromTemplate([
-      { label: `Open Gem  ${isMac ? '⌘⇧V' : 'Ctrl+Shift+V'}`, click: () => showPanel() },
-      { type: 'separator' },
-      {
-        label: 'Launch at Login',
-        type: 'checkbox',
-        checked: app.getLoginItemSettings().openAtLogin,
-        click: (item) => app.setLoginItemSettings({ openAtLogin: item.checked })
-      },
-      {
-        label: 'Clear History…',
-        click: () => {
-          store.clear()
-          broadcastState()
-        }
-      },
-      { type: 'separator' },
-      { label: 'Quit Gem', click: () => app.quit() }
-    ])
-  )
+  tray.setContextMenu(buildTrayMenu())
+}
+
+/** Rebuild the tray menu so its shortcut label reflects the current setting. */
+function refreshTray(): void {
+  tray?.setContextMenu(buildTrayMenu())
 }
 
 function registerIpc(): void {
@@ -447,16 +521,26 @@ function registerIpc(): void {
     settings.setAi(apiKey === undefined ? rest : { ...rest, apiKey })
   })
 
+  ipcMain.handle('settings:set-shortcut', (_e, accel: unknown) => {
+    const value = asString(accel)
+    // Only accept one of the known per-platform presets so we never hand
+    // globalShortcut an accelerator it can't parse.
+    const valid = (isMac ? SHORTCUTS_MAC : SHORTCUTS_WIN).some((s) => s.accel === value)
+    if (!valid) throw new Error(`Unknown shortcut: ${value}`)
+    settings.setShortcut(value)
+    registerShortcut()
+    refreshTray()
+    // The panel re-reads settings each time it opens, so no push needed here.
+  })
+
   ipcMain.handle('panel:hide', () => hidePanelNow())
+  ipcMain.handle('panel:open', () => showPanel())
   ipcMain.handle('settings:open', () => openSettings())
   ipcMain.handle('settings:close', () => closeSettings())
+  ipcMain.handle('onboarding:open', () => openOnboarding())
+  ipcMain.handle('onboarding:close', () => closeOnboarding())
 
   ipcMain.handle('app:version', () => app.getVersion())
-  ipcMain.handle('onboarding:pending', () => {
-    const pending = onboardingPending
-    onboardingPending = false
-    return pending
-  })
   ipcMain.handle('update:check', () => checkForUpdate())
   ipcMain.handle('update:download', () => downloadUpdate())
   ipcMain.handle('update:install', () => installUpdate())
@@ -491,12 +575,17 @@ if (!gotLock) {
     }, 3_600_000)
 
     panel = createPanel()
-    createTray()
+    // A tray failure must not abort startup — otherwise the whole app looks like
+    // it "won't launch" (a reported Windows symptom). Onboarding + the shortcut
+    // still come up, and the user gets a menu-bar-less but working Gem.
+    try {
+      createTray()
+    } catch (err) {
+      console.error('Tray creation failed:', err)
+    }
     registerIpc()
 
-    if (!globalShortcut.register('CommandOrControl+Shift+V', togglePanel)) {
-      console.error('Failed to register ⌘⇧V — is another clipboard manager running?')
-    }
+    registerShortcut()
 
     maybeShowWelcome()
     initUpdater(broadcastUpdate)

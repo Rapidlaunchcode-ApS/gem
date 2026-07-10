@@ -2,7 +2,6 @@ import { useCallback, useEffect, useMemo, useRef, useState } from 'react'
 import type { AppState, Board, ClipItem, ClipKind, SettingsView } from '../../shared/types'
 import { Card } from './components/Card'
 import { ClipboardIcon, PinIcon, SearchIcon, SettingsIcon } from './components/Icons'
-import { Onboarding } from './components/Onboarding'
 import { Preview } from './components/Preview'
 import { KIND_META } from './kinds'
 
@@ -32,7 +31,6 @@ export function App() {
   const [creatingBoard, setCreatingBoard] = useState(false)
   const [editingItemId, setEditingItemId] = useState<string | null>(null)
   const [dragOverBoardId, setDragOverBoardId] = useState<string | null>(null)
-  const [showOnboarding, setShowOnboarding] = useState(false)
   const [visible, setVisible] = useState(false)
   const [dimmed, setDimmed] = useState(false)
   const [copiedId, setCopiedId] = useState<string | null>(null)
@@ -42,6 +40,7 @@ export function App() {
   const [settings, setSettings] = useState<SettingsView>({
     theme: 'system',
     retentionDays: 7,
+    shortcut: 'CommandOrControl+Shift+V',
     ai: { enabled: false, provider: 'anthropic', hasKey: false, keyHint: '', model: 'claude-haiku-4-5' }
   })
   const searchRef = useRef<HTMLInputElement>(null)
@@ -75,12 +74,6 @@ export function App() {
 
   useEffect(() => {
     void window.api.getSettings().then(setSettings)
-  }, [])
-
-  useEffect(() => {
-    void window.api.onboardingPending().then((pending) => {
-      if (pending) setShowOnboarding(true)
-    })
   }, [])
 
   // data-theme lets an explicit choice win over prefers-color-scheme
@@ -411,8 +404,6 @@ export function App() {
       {previewOpen && selected && (
         <Preview item={selected} onClose={() => setPreviewOpen(false)} />
       )}
-
-      {showOnboarding && <Onboarding onDone={() => setShowOnboarding(false)} />}
 
       {dimmed && <div className="panel__scrim" aria-hidden />}
     </div>

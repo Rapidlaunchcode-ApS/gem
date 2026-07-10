@@ -107,6 +107,35 @@ export const RETENTION_OPTIONS: { days: number; label: string }[] = [
   { days: 0, label: 'Forever' }
 ]
 
+/**
+ * Selectable global shortcuts to open the panel. Per-platform because the Windows
+ * default (Ctrl+Shift+V) collides with "paste as plain text" — so on Windows we
+ * offer combos that don't hijack a common editing shortcut. First entry = default.
+ */
+export const SHORTCUTS_MAC: { accel: string; label: string }[] = [
+  { accel: 'CommandOrControl+Shift+V', label: '⌘⇧V' },
+  { accel: 'CommandOrControl+Option+V', label: '⌘⌥V' },
+  { accel: 'Control+Shift+V', label: '⌃⇧V' },
+  { accel: 'CommandOrControl+Shift+Space', label: '⌘⇧Space' }
+]
+
+export const SHORTCUTS_WIN: { accel: string; label: string }[] = [
+  { accel: 'Control+Alt+V', label: 'Ctrl+Alt+V' },
+  { accel: 'Control+Shift+Space', label: 'Ctrl+Shift+Space' },
+  { accel: 'Alt+Shift+V', label: 'Alt+Shift+V' },
+  { accel: 'Super+Shift+V', label: 'Win+Shift+V' }
+]
+
+export const DEFAULT_SHORTCUT_MAC = SHORTCUTS_MAC[0]!.accel
+export const DEFAULT_SHORTCUT_WIN = SHORTCUTS_WIN[0]!.accel
+
+/** Human label for a shortcut accelerator ("" or unknown → the platform default). */
+export function shortcutLabel(accel: string, isMac: boolean): string {
+  const list = isMac ? SHORTCUTS_MAC : SHORTCUTS_WIN
+  const found = list.find((s) => s.accel === accel)
+  return found?.label ?? list[0]!.label
+}
+
 const DEFAULT_AI = { enabled: false, provider: 'anthropic' as const, encryptedKey: '', model: '' }
 
 /** On-disk settings; the API key is stored encrypted and never sent to the renderer. */
@@ -114,6 +143,8 @@ export const settingsFileSchema = z
   .object({
     theme: themeSchema.catch('system'),
     retentionDays: z.number().int().min(0).max(3650).catch(7),
+    /** Global open-panel shortcut accelerator; "" resolves to the platform default. */
+    shortcut: z.string().catch(''),
     ai: z
       .object({
         enabled: z.boolean().catch(false),
@@ -123,13 +154,15 @@ export const settingsFileSchema = z
       })
       .catch(DEFAULT_AI)
   })
-  .catch({ theme: 'system', retentionDays: 7, ai: DEFAULT_AI })
+  .catch({ theme: 'system', retentionDays: 7, shortcut: '', ai: DEFAULT_AI })
 export type SettingsFile = z.infer<typeof settingsFileSchema>
 
 /** What the renderer sees — no full key material, only a masked hint. */
 export interface SettingsView {
   theme: Theme
   retentionDays: number
+  /** Resolved open-panel shortcut accelerator (never ""). */
+  shortcut: string
   ai: {
     enabled: boolean
     provider: AiProvider
@@ -188,6 +221,8 @@ export interface GemApi {
   setTheme: (theme: Theme) => Promise<void>
   setRetentionDays: (days: number) => Promise<void>
   setAiSettings: (update: AiUpdate) => Promise<void>
+  /** Change the global open-panel shortcut (re-registered immediately). */
+  setShortcut: (accel: string) => Promise<void>
   clearHistory: () => Promise<void>
   hidePanel: () => Promise<void>
   onPanelShown: (listener: () => void) => () => void
@@ -199,10 +234,14 @@ export interface GemApi {
   openSettings: () => Promise<void>
   /** Close the Settings window (from inside it). */
   closeSettings: () => Promise<void>
+  /** Open the standalone onboarding window (also shown once on first launch). */
+  openOnboarding: () => Promise<void>
+  /** Close the onboarding window (from inside it). */
+  closeOnboarding: () => Promise<void>
+  /** Show the clipboard panel (used by the onboarding "Open Gem" button). */
+  openPanel: () => Promise<void>
   /** The running app version (e.g. "0.2.7"). */
   appVersion: () => Promise<string>
-  /** Resolves true exactly once — on the very first launch — to show onboarding. */
-  onboardingPending: () => Promise<boolean>
   /** Ask the main process to check GitHub for a newer release. */
   checkForUpdate: () => Promise<void>
   /** Download the available update in the background. */

@@ -5,6 +5,7 @@ import { Settings } from './Settings'
 const DEFAULT: SettingsView = {
   theme: 'system',
   retentionDays: 7,
+  shortcut: 'CommandOrControl+Shift+V',
   ai: { enabled: false, provider: 'anthropic', hasKey: false, keyHint: '', model: 'claude-haiku-4-5' }
 }
 
@@ -46,6 +47,11 @@ export function SettingsWindow() {
     void window.api.setRetentionDays(days)
   }, [])
 
+  const changeShortcut = useCallback((accel: string) => {
+    setSettings((s) => ({ ...s, shortcut: accel }))
+    void window.api.setShortcut(accel)
+  }, [])
+
   const changeAi = useCallback((patch: AiUpdate) => {
     void window.api
       .setAiSettings(patch)
@@ -60,6 +66,7 @@ export function SettingsWindow() {
       update={update}
       onThemeChange={changeTheme}
       onRetentionChange={changeRetention}
+      onShortcutChange={changeShortcut}
       onAiChange={changeAi}
       onCheckUpdate={() => void window.api.checkForUpdate()}
       onDownloadUpdate={() => void window.api.downloadUpdate()}

@@ -149,7 +149,7 @@ export default async function Page() {
                 <kbd>Esc</kbd> gone
               </span>
             </div>
-            <p className="keys__note">⌘⇧V on Mac · Ctrl+Shift+V on Windows</p>
+            <p className="keys__note">⌘⇧V on Mac · Ctrl+Alt+V on Windows</p>
           </div>
         </section>
 

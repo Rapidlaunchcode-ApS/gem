@@ -5,6 +5,13 @@ All notable changes to Gem are recorded here. Each version also has a matching
 and SHA-256 checksums. Format loosely follows [Keep a Changelog](https://keepachangelog.com);
 Gem is pre-1.0, so minor versions may include breaking changes.
 
+## [0.2.17] — 2026-07-10
+
+- **First-run onboarding window.** Gem now opens a proper welcome window on first launch that explains it lives in the menu bar / system tray, shows the shortcut, and how to use it — so a cold start no longer looks like "nothing happened" (the main "Windows won't launch" report). Re-openable anytime from the tray → *How to use Gem…*.
+- **Configurable open shortcut.** The global hotkey is now a setting. Windows reserves **Ctrl+Shift+V** for "paste as plain text", so Gem now defaults to **Ctrl+Alt+V** on Windows (choose from a few presets in Settings → Shortcut). macOS stays on ⌘⇧V.
+- **More resilient startup** — a tray-icon failure no longer aborts launch; onboarding and the shortcut still come up.
+- Tray menu gains **How to use Gem…** and **Settings…** entries.
+
 ## [0.2.16] — 2026-07-09
 
 - **Glass tuned to match the design mockup** — panel, cards, search, segments and Settings now use the approved Liquid Glass tokens (translucent surfaces, bright glass edges, top sheen) in both light and dark.

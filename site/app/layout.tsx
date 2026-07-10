@@ -89,7 +89,7 @@ const softwareLd = {
   featureList: [
     'Context-aware previews for code, markdown, links, colors and images',
     'Pinboards for reusable snippets',
-    'Keyboard-first panel (⌘⇧V / Ctrl+Shift+V)',
+    'Keyboard-first panel (⌘⇧V / Ctrl+Alt+V)',
     'Local-only history with configurable retention',
     'Optional bring-your-own-key AI titles (OpenAI, Gemini, Anthropic)'
   ]
