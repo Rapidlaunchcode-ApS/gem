@@ -1,0 +1,106 @@
+name: Windows Smoke Test
+
+on:
+  workflow_dispatch:
+    inputs:
+      installer_url:
+        description: 'URL to the Gem-Windows-Setup.exe to test'
+        required: false
+        default: 'https://github.com/Rapidlaunchcode-ApS/gem/releases/latest/download/Gem-Windows-Setup.exe'
+
+jobs:
+  smoke-test:
+    runs-on: windows-latest
+    timeout-minutes: 10
+    steps:
+      - name: Download installer
+        shell: pwsh
+        run: |
+          $ProgressPreference = 'SilentlyContinue'
+          Invoke-WebRequest -Uri "${{ github.event.inputs.installer_url }}" -OutFile "$env:RUNNER_TEMP\Gem-Setup.exe"
+
+      - name: Run installer
+        shell: pwsh
+        run: |
+          $p = Start-Process -FilePath "$env:RUNNER_TEMP\Gem-Setup.exe" -PassThru
+          $p.WaitForExit(60000) | Out-Null
+          if (-not $p.HasExited) { throw "Installer did not finish within 60s" }
+          Write-Host "Installer exit code: $($p.ExitCode)"
+
+      - name: Locate installed app
+        shell: pwsh
+        run: |
+          $exe = Get-ChildItem -Path "$env:LOCALAPPDATA\Programs" -Recurse -Filter "Gem.exe" -ErrorAction SilentlyContinue | Select-Object -First 1
+          if (-not $exe) {
+            $exe = Get-ChildItem -Path "$env:ProgramFiles","${env:ProgramFiles(x86)}" -Recurse -Filter "Gem.exe" -ErrorAction SilentlyContinue | Select-Object -First 1
+          }
+          if (-not $exe) { throw "Gem.exe not found anywhere after install" }
+          Write-Host "Found: $($exe.FullName)"
+          "GEM_EXE=$($exe.FullName)" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Stop any auto-launched instance from install
+        shell: pwsh
+        run: |
+          Get-Process -Name Gem -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
+          Start-Sleep -Seconds 2
+
+      - name: Launch Gem and capture stdout/stderr
+        shell: pwsh
+        run: |
+          $out = "$env:RUNNER_TEMP\gem-stdout.log"
+          $err = "$env:RUNNER_TEMP\gem-stderr.log"
+          $proc = Start-Process -FilePath $env:GEM_EXE -PassThru -RedirectStandardOutput $out -RedirectStandardError $err
+          Start-Sleep -Seconds 10
+          $alive = -not $proc.HasExited
+          Write-Host "Process alive after 10s: $alive"
+          Write-Host "--- stdout ---"
+          Get-Content $out -ErrorAction SilentlyContinue
+          Write-Host "--- stderr ---"
+          Get-Content $err -ErrorAction SilentlyContinue
+          if (-not $alive) {
+            throw "Gem.exe exited within 10 seconds of launch (exit code $($proc.ExitCode))"
+          }
+          "GEM_PID=$($proc.Id)" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Check for a crash dialog (Windows Error Reporting)
+        shell: pwsh
+        run: |
+          $wer = Get-Process -Name WerFault -ErrorAction SilentlyContinue
+          if ($wer) { throw "Windows Error Reporting triggered — Gem crashed" }
+          Write-Host "No crash reporter detected"
+
+      - name: Verify still running at steady state (30s uptime)
+        shell: pwsh
+        run: |
+          Start-Sleep -Seconds 20
+          $p = Get-Process -Id $env:GEM_PID -ErrorAction SilentlyContinue
+          if (-not $p) { throw "Gem.exe process disappeared before steady state" }
+          Write-Host "Gem.exe still running (PID $env:GEM_PID) after ~30s uptime"
+
+      - name: Screenshot desktop (tray icon evidence)
+        if: always()
+        shell: pwsh
+        run: |
+          Add-Type -AssemblyName System.Windows.Forms,System.Drawing
+          $bounds = [System.Windows.Forms.Screen]::PrimaryScreen.Bounds
+          $bmp = New-Object System.Drawing.Bitmap $bounds.Width, $bounds.Height
+          $graphics = [System.Drawing.Graphics]::FromImage($bmp)
+          $graphics.CopyFromScreen($bounds.Location, [System.Drawing.Point]::Empty, $bounds.Size)
+          $bmp.Save("$env:RUNNER_TEMP\desktop.png")
+
+      - name: Upload evidence
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: windows-smoke-test-evidence
+          path: |
+            ${{ runner.temp }}/desktop.png
+            ${{ runner.temp }}/gem-stdout.log
+            ${{ runner.temp }}/gem-stderr.log
+          if-no-files-found: ignore
+
+      - name: Cleanup
+        if: always()
+        shell: pwsh
+        run: |
+          Get-Process -Name Gem -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
