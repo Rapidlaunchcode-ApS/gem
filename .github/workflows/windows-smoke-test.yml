@@ -18,6 +18,9 @@ jobs:
         run: |
           $ProgressPreference = 'SilentlyContinue'
           Invoke-WebRequest -Uri "${{ github.event.inputs.installer_url }}" -OutFile "$env:RUNNER_TEMP\Gem-Setup.exe"
+          $f = Get-Item "$env:RUNNER_TEMP\Gem-Setup.exe"
+          Write-Host "Downloaded size: $($f.Length) bytes"
+          Write-Host "SHA-256: $((Get-FileHash $f.FullName -Algorithm SHA256).Hash)"
 
       - name: Run installer
         shell: pwsh
@@ -25,7 +28,27 @@ jobs:
           $p = Start-Process -FilePath "$env:RUNNER_TEMP\Gem-Setup.exe" -PassThru
           $p.WaitForExit(60000) | Out-Null
           if (-not $p.HasExited) { throw "Installer did not finish within 60s" }
-          Write-Host "Installer exit code: $($p.ExitCode)"
+          $code = $p.ExitCode
+          Write-Host "Installer exit code: $code (0x$($code.ToString('X')))"
+          "INSTALLER_EXIT=$code" | Out-File -FilePath $env:GITHUB_ENV -Append
+
+      - name: Crash diagnostics if installer didn't exit cleanly
+        if: always()
+        shell: pwsh
+        run: |
+          if ($env:INSTALLER_EXIT -and $env:INSTALLER_EXIT -ne "0") {
+            Write-Host "Installer exit code was non-zero — querying Application event log for crash details..."
+            Start-Sleep -Seconds 3
+            $events = Get-WinEvent -FilterHashtable @{LogName='Application'; ProviderName='Application Error'} -MaxEvents 5 -ErrorAction SilentlyContinue
+            if ($events) {
+              foreach ($e in $events) {
+                Write-Host "--- Event: $($e.TimeCreated) ---"
+                Write-Host $e.Message
+              }
+            } else {
+              Write-Host "No 'Application Error' events found in the Application log."
+            }
+          }
 
       - name: Locate installed app
         shell: pwsh
@@ -34,7 +57,11 @@ jobs:
           if (-not $exe) {
             $exe = Get-ChildItem -Path "$env:ProgramFiles","${env:ProgramFiles(x86)}" -Recurse -Filter "Gem.exe" -ErrorAction SilentlyContinue | Select-Object -First 1
           }
-          if (-not $exe) { throw "Gem.exe not found anywhere after install" }
+          if (-not $exe) {
+            Write-Host "Gem.exe not found anywhere after install — dumping LOCALAPPDATA\Programs tree:"
+            Get-ChildItem -Path "$env:LOCALAPPDATA\Programs" -Recurse -ErrorAction SilentlyContinue | Select-Object -First 50 FullName
+            throw "Gem.exe not found anywhere after install"
+          }
           Write-Host "Found: $($exe.FullName)"
           "GEM_EXE=$($exe.FullName)" | Out-File -FilePath $env:GITHUB_ENV -Append
 
