@@ -16,8 +16,8 @@
     "dist:win": "electron-vite build && electron-builder --win"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.110.0",
-    "dompurify": "^3.2.4",
+    "@anthropic-ai/sdk": "^0.111.0",
+    "dompurify": "^3.4.12",
     "electron-updater": "^6.8.9",
     "highlight.js": "^11.11.1",
     "marked": "^15.0.7",
