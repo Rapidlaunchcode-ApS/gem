@@ -7,7 +7,10 @@ minimumReleaseAge: 4320
 # blocked from executing code at install time.
 allowBuilds:
   electron: true
+  # electron-winstaller drives the Squirrel.Windows target, which Gem doesn't use
+  # (build.win.target is nsis only) — no need to grant it install-script execution.
+  electron-winstaller: false
   esbuild: true
 
 patchedDependencies:
-  '@electron/universal@2.0.1': patches/@electron__universal@2.0.1.patch
+  '@electron/universal@2.0.3': patches/@electron__universal@2.0.3.patch

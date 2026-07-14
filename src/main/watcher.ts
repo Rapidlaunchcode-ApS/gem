@@ -39,7 +39,10 @@ export class ClipboardWatcher {
     const text = clipboard.readText()
     if (text.trim().length > 0) return hash(`t:${text}`)
     const image = clipboard.readImage()
-    if (!image.isEmpty()) return hash(image.toPNG())
+    // Raw bitmap, not toPNG(): this runs every poll tick and PNG's DEFLATE pass
+    // is expensive enough on a multi-megapixel image to keep the CPU from ever
+    // idling for as long as an image sits on the clipboard (real battery drain).
+    if (!image.isEmpty()) return hash(image.toBitmap())
     return ''
   }
 
@@ -56,11 +59,11 @@ export class ClipboardWatcher {
 
       const image = clipboard.readImage()
       if (!image.isEmpty()) {
-        const png = image.toPNG()
-        const h = hash(png)
+        const h = hash(image.toBitmap())
         if (h === this.lastHash) return
         this.lastHash = h
-        this.captureImage(png)
+        // Only pay the PNG-encode cost once an actual change is confirmed.
+        this.captureImage(image.toPNG())
       }
     } catch (err) {
       console.error('Clipboard poll failed:', err)

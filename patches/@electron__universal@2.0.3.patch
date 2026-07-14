@@ -1,8 +1,8 @@
 diff --git a/dist/cjs/index.js b/dist/cjs/index.js
-index 7740e402baf6bdcbbcb6660664dd651a56712a24..dd14b6288c88bb168544f242d82a9fba6914f821 100644
+index a8e99778a052f17bfeacf8f02d50ddd099cc2968..d095d469930c570c42ca8666bc0032bfc0751482 100644
 --- a/dist/cjs/index.js
 +++ b/dist/cjs/index.js
-@@ -110,6 +110,14 @@ const makeUniversalApp = async (opts) => {
+@@ -111,6 +111,14 @@ const makeUniversalApp = async (opts) => {
                      // The mismatch here is OK so we just move on to the next one
                      continue;
                  }
@@ -18,10 +18,10 @@ index 7740e402baf6bdcbbcb6660664dd651a56712a24..dd14b6288c88bb168544f242d82a9fba
              }
          }
 diff --git a/dist/esm/index.js b/dist/esm/index.js
-index 3813a1c791c6cd5dab55591932e4d6acd3963a7e..9ee9805efd5310680f19c67bad2b5d4ccb61a12f 100644
+index 34ff91a3270e4bbb99ace1e3ce6e0a699fe5c5ff..a0604124fbe809381c42140cd77cf321af7228ff 100644
 --- a/dist/esm/index.js
 +++ b/dist/esm/index.js
-@@ -84,6 +84,14 @@ export const makeUniversalApp = async (opts) => {
+@@ -85,6 +85,14 @@ export const makeUniversalApp = async (opts) => {
                      // The mismatch here is OK so we just move on to the next one
                      continue;
                  }

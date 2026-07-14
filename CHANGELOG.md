@@ -5,6 +5,11 @@ All notable changes to Gem are recorded here. Each version also has a matching
 and SHA-256 checksums. Format loosely follows [Keep a Changelog](https://keepachangelog.com);
 Gem is pre-1.0, so minor versions may include breaking changes.
 
+## [0.2.18] — 2026-07-14
+
+- **Fixed severe battery drain.** The clipboard watcher polls every 400ms (needed to catch copies promptly), but whenever an image sat on the clipboard it was re-encoding it to PNG on *every single poll tick* just to check whether it had changed — full DEFLATE compression of a multi-megapixel screenshot, 2.5 times a second, indefinitely, for as long as that image stayed on the clipboard. That kept the CPU from ever reaching a deep idle state. Change-detection now hashes the raw bitmap instead (no compression pass); the PNG is only encoded once, when an actual change is confirmed. Verified against a real, 5-day-uptime installed copy (which had accumulated ~3% average CPU usage) and reproduced with a synthetic 11MB screenshot: CPU now returns to ~0% within seconds of a capture and stays there for as long as the image sits on the clipboard.
+- **Fixed the Windows installer actually crashing on launch.** `Gem-Windows-Setup.exe` was silently broken since the Windows build was first introduced — it crashed instantly with an access violation before ever reaching the app (a mismatched build toolchain on the machine producing these releases). Verified end-to-end on a real Windows VM: the installer now completes cleanly and Gem runs normally afterward.
+
 ## [0.2.17] — 2026-07-10
 
 - **First-run onboarding window.** Gem now opens a proper welcome window on first launch that explains it lives in the menu bar / system tray, shows the shortcut, and how to use it — so a cold start no longer looks like "nothing happened" (the main "Windows won't launch" report). Re-openable anytime from the tray → *How to use Gem…*.
