@@ -71,38 +71,44 @@ jobs:
           Get-Process -Name Gem -ErrorAction SilentlyContinue | Stop-Process -Force -ErrorAction SilentlyContinue
           Start-Sleep -Seconds 2
 
-      - name: Launch Gem and capture stdout/stderr
+      - name: Launch Gem and verify it survives to steady state
+        # Everything that needs Gem.exe alive stays in ONE step: GitHub-hosted
+        # Windows runners run each `run:` block in its own Job Object, and a
+        # child process spawned by one step can be reaped when that step's
+        # shell exits — a prior version of this workflow split launch and the
+        # steady-state check into separate steps and got a false "process
+        # disappeared" failure purely from that step boundary, not a real bug.
         shell: pwsh
         run: |
           $out = "$env:RUNNER_TEMP\gem-stdout.log"
           $err = "$env:RUNNER_TEMP\gem-stderr.log"
           $proc = Start-Process -FilePath $env:GEM_EXE -PassThru -RedirectStandardOutput $out -RedirectStandardError $err
+          "GEM_PID=$($proc.Id)" | Out-File -FilePath $env:GITHUB_ENV -Append
+
           Start-Sleep -Seconds 10
           $alive = -not $proc.HasExited
           Write-Host "Process alive after 10s: $alive"
-          Write-Host "--- stdout ---"
-          Get-Content $out -ErrorAction SilentlyContinue
-          Write-Host "--- stderr ---"
-          Get-Content $err -ErrorAction SilentlyContinue
           if (-not $alive) {
+            Write-Host "--- stdout ---"; Get-Content $out -ErrorAction SilentlyContinue
+            Write-Host "--- stderr ---"; Get-Content $err -ErrorAction SilentlyContinue
             throw "Gem.exe exited within 10 seconds of launch (exit code $($proc.ExitCode))"
           }
-          "GEM_PID=$($proc.Id)" | Out-File -FilePath $env:GITHUB_ENV -Append
 
-      - name: Check for a crash dialog (Windows Error Reporting)
-        shell: pwsh
-        run: |
           $wer = Get-Process -Name WerFault -ErrorAction SilentlyContinue
           if ($wer) { throw "Windows Error Reporting triggered — Gem crashed" }
           Write-Host "No crash reporter detected"
 
-      - name: Verify still running at steady state (30s uptime)
-        shell: pwsh
-        run: |
           Start-Sleep -Seconds 20
-          $p = Get-Process -Id $env:GEM_PID -ErrorAction SilentlyContinue
-          if (-not $p) { throw "Gem.exe process disappeared before steady state" }
-          Write-Host "Gem.exe still running (PID $env:GEM_PID) after ~30s uptime"
+          $p = Get-Process -Id $proc.Id -ErrorAction SilentlyContinue
+          if (-not $p) {
+            Write-Host "--- stdout ---"; Get-Content $out -ErrorAction SilentlyContinue
+            Write-Host "--- stderr ---"; Get-Content $err -ErrorAction SilentlyContinue
+            throw "Gem.exe process disappeared before steady state"
+          }
+          Write-Host "Gem.exe still running (PID $($proc.Id)) after ~30s uptime"
+
+          Write-Host "--- stdout ---"; Get-Content $out -ErrorAction SilentlyContinue
+          Write-Host "--- stderr ---"; Get-Content $err -ErrorAction SilentlyContinue
 
       - name: Diagnose disappearance if the process died
         if: failure()
