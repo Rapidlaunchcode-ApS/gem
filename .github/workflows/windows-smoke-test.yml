@@ -104,6 +104,37 @@ jobs:
           if (-not $p) { throw "Gem.exe process disappeared before steady state" }
           Write-Host "Gem.exe still running (PID $env:GEM_PID) after ~30s uptime"
 
+      - name: Diagnose disappearance if the process died
+        if: failure()
+        shell: pwsh
+        run: |
+          Write-Host "--- Windows Defender detection history ---"
+          try {
+            Get-MpThreatDetection -ErrorAction Stop | Format-List
+          } catch { Write-Host "No Defender detections / Get-MpThreatDetection unavailable: $_" }
+
+          Write-Host "--- Defender preferences (is real-time protection on?) ---"
+          try { Get-MpComputerStatus | Select-Object RealTimeProtectionEnabled, AntivirusEnabled | Format-List } catch {}
+
+          Write-Host "--- Application log, last 10 events ---"
+          Get-WinEvent -LogName Application -MaxEvents 10 -ErrorAction SilentlyContinue |
+            Format-Table TimeCreated, ProviderName, Id, LevelDisplayName, Message -AutoSize -Wrap
+
+          Write-Host "--- System log, last 10 events ---"
+          Get-WinEvent -LogName System -MaxEvents 10 -ErrorAction SilentlyContinue |
+            Format-Table TimeCreated, ProviderName, Id, LevelDisplayName, Message -AutoSize -Wrap
+
+          Write-Host "--- Defender operational log, last 10 events ---"
+          Get-WinEvent -LogName "Microsoft-Windows-Windows Defender/Operational" -MaxEvents 10 -ErrorAction SilentlyContinue |
+            Format-Table TimeCreated, Id, LevelDisplayName, Message -AutoSize -Wrap
+
+          Write-Host "--- Is the exe file still on disk? ---"
+          if (Test-Path $env:GEM_EXE) { Write-Host "Still present: $env:GEM_EXE" } else { Write-Host "MISSING (quarantined?): $env:GEM_EXE" }
+
+          Write-Host "--- stdout/stderr captured before death ---"
+          Get-Content "$env:RUNNER_TEMP\gem-stdout.log" -ErrorAction SilentlyContinue
+          Get-Content "$env:RUNNER_TEMP\gem-stderr.log" -ErrorAction SilentlyContinue
+
       - name: Screenshot desktop (tray icon evidence)
         if: always()
         shell: pwsh
