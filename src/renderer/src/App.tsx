@@ -35,7 +35,6 @@ export function App() {
   const [dimmed, setDimmed] = useState(false)
   const [copiedId, setCopiedId] = useState<string | null>(null)
   const copiedTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
-  const dismissTimer = useRef<ReturnType<typeof setTimeout> | null>(null)
   const [titlingIds, setTitlingIds] = useState<ReadonlySet<string>>(() => new Set())
   const [settings, setSettings] = useState<SettingsView>({
     theme: 'system',
@@ -95,12 +94,7 @@ export function App() {
       void window.api.getSettings().then(setSettings)
       searchRef.current?.focus()
       stripRef.current?.scrollTo({ left: 0 })
-      // Cancel any pending leave-hide from a very recent dismiss, then run the
-      // enter transition: start hidden, flip to visible next frame.
-      if (dismissTimer.current) {
-        clearTimeout(dismissTimer.current)
-        dismissTimer.current = null
-      }
+      // Run the enter transition: start hidden, flip to visible next frame.
       setVisible(false)
       requestAnimationFrame(() => setVisible(true))
     })
@@ -149,12 +143,11 @@ export function App() {
     void window.api.pasteItem(item.id)
   }, [])
 
-  // Play the leave transition, then actually hide the window (main also has a
-  // safety timeout so this can never leave the panel stuck open).
+  // Play the child card's leave transition. Main owns hiding the window: it
+  // fades the native window out in lockstep and calls hide() when the fade ends
+  // (with a safety timeout), so this only flips the CSS class.
   const dismiss = useCallback(() => {
     setVisible(false)
-    if (dismissTimer.current) clearTimeout(dismissTimer.current)
-    dismissTimer.current = setTimeout(() => void window.api.hidePanel(), 180)
   }, [])
 
   useEffect(() => window.api.onPanelAnimateOut(dismiss), [dismiss])
