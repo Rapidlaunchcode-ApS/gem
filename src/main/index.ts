@@ -33,6 +33,14 @@ import { ClipboardWatcher } from './watcher'
 const PANEL_HEIGHT = 380
 /** Gap between the floating panel and the screen edges. */
 const PANEL_MARGIN = 14
+/**
+ * Duration of the panel's enter/leave animation. The native window ramps its own
+ * opacity across this window in lockstep with the child `.panel`'s CSS transition,
+ * so its vibrancy/acrylic material never lingers as a bare rectangle around the
+ * animating card. MUST stay in sync with the longest transition in styles.css
+ * (`.panel { transition: transform 0.19s … }`).
+ */
+const PANEL_ANIM_MS = 190
 const isDev = !app.isPackaged && process.env['ELECTRON_RENDERER_URL'] !== undefined
 const isMac = process.platform === 'darwin'
 
@@ -68,8 +76,10 @@ let onboardingWin: BrowserWindow | null = null
 let tray: Tray | null = null
 /** The accelerator currently registered with globalShortcut, so it can be replaced. */
 let registeredShortcut: string | null = null
-/** Fallback timer that force-hides the panel if the renderer's leave transition never calls back. */
+/** Fallback timer that force-hides the panel if the opacity ramp never completes. */
 let hideSafety: ReturnType<typeof setTimeout> | null = null
+/** Interval driving the native window's opacity ramp during show/hide. */
+let panelFade: ReturnType<typeof setInterval> | null = null
 let store: HistoryStore
 let settings: SettingsStore
 let watcher: ClipboardWatcher
@@ -226,8 +236,39 @@ function registerShortcut(): void {
   }
 }
 
+function clearPanelFade(): void {
+  if (panelFade) {
+    clearInterval(panelFade)
+    panelFade = null
+  }
+}
+
+/**
+ * Step the panel window's own opacity from `from` to `to` over PANEL_ANIM_MS so
+ * the native window fades in lockstep with the child `.panel`'s CSS transition,
+ * instead of its vibrancy/acrylic material popping in or lingering around the
+ * animating card. `setOpacity` isn't natively animatable, so ramp it in a few
+ * steps; `done` fires once it reaches `to`.
+ */
+function rampPanelOpacity(from: number, to: number, done?: () => void): void {
+  if (!panel || panel.isDestroyed()) return
+  clearPanelFade()
+  const steps = 8
+  panel.setOpacity(from)
+  let i = 0
+  panelFade = setInterval(() => {
+    i += 1
+    if (panel && !panel.isDestroyed()) panel.setOpacity(from + (to - from) * (i / steps))
+    if (i >= steps) {
+      clearPanelFade()
+      done?.()
+    }
+  }, Math.round(PANEL_ANIM_MS / steps))
+}
+
 function showPanel(): void {
   if (!panel) return
+  clearPanelFade()
   if (hideSafety) {
     clearTimeout(hideSafety)
     hideSafety = null
@@ -240,31 +281,49 @@ function showPanel(): void {
     width: workArea.width - PANEL_MARGIN * 2,
     height: PANEL_HEIGHT
   })
-  panel.setOpacity(1)
+  // Reopening an already-visible panel (tray, second-instance) must not flash
+  // through opacity 0 — only ramp the window in when it's actually appearing.
+  // Ramp from whatever opacity it's currently at (e.g. mid-leave-fade if the
+  // user re-triggers show right after dismiss) instead of snapping to 0 first.
+  const currentOpacity = panel.isVisible() ? panel.getOpacity() : 0
+  const appearing = currentOpacity < 0.99
   panel.show()
   panel.focus()
   // The renderer runs the GPU-composited enter transition on this signal.
   panel.webContents.send('panel:shown')
+  if (appearing) rampPanelOpacity(currentOpacity, 1)
+  else panel.setOpacity(1)
 }
 
-/** Instantly hide the panel (the renderer calls this after its leave transition). */
+/**
+ * Instantly hide the panel with no fade (paste flow, or the final step of the
+ * leave ramp). Resets opacity to 1 so an interrupted ramp can't leave the next
+ * show transparent.
+ */
 function hidePanelNow(): void {
+  clearPanelFade()
   if (hideSafety) {
     clearTimeout(hideSafety)
     hideSafety = null
   }
-  if (panel && !panel.isDestroyed() && panel.isVisible()) panel.hide()
+  if (panel && !panel.isDestroyed()) {
+    if (panel.isVisible()) panel.hide()
+    panel.setOpacity(1)
+  }
 }
 
 /**
- * Ask the renderer to play the leave transition, then hide. A safety timeout
- * force-hides if the renderer doesn't call back, so the panel can't get stuck.
+ * Play the leave transition: tell the renderer to swap in `panel--hidden` (the
+ * child card's CSS transition) and fade the native window out in lockstep, then
+ * hide once the ramp reaches 0. A safety timeout force-hides if the ramp is
+ * interrupted, so the panel can never get stuck open.
  */
 function requestHidePanel(): void {
   if (!panel || panel.isDestroyed() || !panel.isVisible()) return
   panel.webContents.send('panel:animate-out')
+  rampPanelOpacity(1, 0, hidePanelNow)
   if (hideSafety) clearTimeout(hideSafety)
-  hideSafety = setTimeout(hidePanelNow, 300)
+  hideSafety = setTimeout(hidePanelNow, PANEL_ANIM_MS + 120)
 }
 
 function togglePanel(): void {
