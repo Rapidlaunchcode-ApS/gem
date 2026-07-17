@@ -5,6 +5,10 @@ All notable changes to Gem are recorded here. Each version also has a matching
 and SHA-256 checksums. Format loosely follows [Keep a Changelog](https://keepachangelog.com);
 Gem is pre-1.0, so minor versions may include breaking changes.
 
+## [0.2.20] — 2026-07-17
+
+- **Fixed the Settings shortcut dropdown being invisible on Windows.** Its `<select>` used a CSS gradient as the background, which macOS ignores (native menu) but Chromium on Windows renders itself and can't apply as a popup background — it silently fell back to plain white while the option text stayed near-white from the dark theme, making every unselected row unreadable. The popup rows now get an explicit solid, theme-aware color.
+
 ## [0.2.19] — 2026-07-15
 
 - **Fixed a glitchy minimize/open animation.** The panel window itself (the frosted glass rectangle) stayed fully opaque while only the inner card shrank and faded away on dismiss, leaving a static box behind that then popped away abruptly — the window and card now fade in and out together, so nothing lingers.

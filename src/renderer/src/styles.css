@@ -29,6 +29,9 @@
   --overlay-bg: rgba(34, 36, 46, 0.62);
   --code-bg: rgba(10, 10, 14, 0.4);
   --radius: 16px;
+  /* Opaque fallback for surfaces the OS renders itself (e.g. the Windows
+     <select> popup), where a translucent/gradient --surface can't apply. */
+  --surface-solid: #2a2c38;
 }
 
 @media (prefers-color-scheme: light) {
@@ -50,6 +53,7 @@
     --accent: #12a45c;
     --overlay-bg: rgba(250, 251, 255, 0.7);
     --code-bg: #1f1f26;
+    --surface-solid: #f3f4f8;
   }
 }
 
@@ -71,6 +75,7 @@
   --accent: #12a45c;
   --overlay-bg: rgba(250, 251, 255, 0.7);
   --code-bg: #1f1f26;
+  --surface-solid: #f3f4f8;
 }
 
 html,
@@ -1051,6 +1056,15 @@ body {
   background-image: url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='10' height='6' viewBox='0 0 10 6'%3E%3Cpath d='m1 1 4 4 4-4' fill='none' stroke='%23888' stroke-width='1.6' stroke-linecap='round'/%3E%3C/svg%3E");
   background-repeat: no-repeat;
   background-position: right 9px center;
+}
+
+/* Windows renders the <select> popup itself instead of deferring to the OS,
+   and it can't use --surface's gradient there — it silently falls back to a
+   white popup while the (light-on-dark-theme) text stays unset, making
+   unselected rows invisible. Give the popup rows an explicit solid color. */
+.settings__select option {
+  background-color: var(--surface-solid);
+  color: var(--text);
 }
 
 .settings__select:focus-visible {
