@@ -23,6 +23,7 @@ interface CardProps {
   onActivate: () => void
   onTogglePin: () => void
   onContextMenu: () => void
+  onStartRename: () => void
   onRenamed: (title: string) => void
   onEditCancel: () => void
 }
@@ -38,6 +39,7 @@ export const Card = memo(function Card({
   onActivate,
   onTogglePin,
   onContextMenu,
+  onStartRename,
   onRenamed,
   onEditCancel
 }: CardProps) {
@@ -66,6 +68,11 @@ export const Card = memo(function Card({
         style={{
           background: `linear-gradient(180deg, color-mix(in srgb, ${headerColor} 82%, transparent), color-mix(in srgb, ${headerColor} 60%, transparent))`
         }}
+        onDoubleClick={(e) => {
+          if (editing) return
+          e.stopPropagation()
+          onStartRename()
+        }}
       >
         {editing ? (
           <input
@@ -87,7 +94,7 @@ export const Card = memo(function Card({
             Naming…
           </span>
         ) : (
-          <span className="card__kind" title={item.title ?? undefined}>
+          <span className="card__kind" title={item.title ?? 'Double-click to rename'}>
             {!item.title && <KindIcon kind={item.kind} size={12} className="card__kind-icon" />}
             {item.title ?? kindTitle(item)}
           </span>

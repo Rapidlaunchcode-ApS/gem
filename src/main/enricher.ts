@@ -7,10 +7,28 @@ const MIN_CHARS = 20
 const CONTENT_SNIPPET = 1500
 const TIMEOUT_MS = 20_000
 
-const PROMPT =
-  'You name clipboard snippets for a clipboard manager. ' +
-  'Reply with ONLY a short descriptive title, 2-5 words, no quotes, no trailing punctuation. ' +
-  'Name this snippet:\n\n'
+type EnrichableKind = 'text' | 'code' | 'markdown'
+
+const KIND_HINT: Record<EnrichableKind, string> = {
+  text:
+    'This is a plain-text clipping. Name its specific subject or purpose ' +
+    '(e.g. a person, place, task, address, or topic) — do not just say it is "text".',
+  code:
+    'This is a source code snippet. Name what the code does — its function, class, ' +
+    'or role — not the programming language.',
+  markdown:
+    'This is a Markdown document. Name its subject, drawing on its heading or ' +
+    'first section if one is present.'
+}
+
+function buildPrompt(kind: EnrichableKind): string {
+  return (
+    'You name clipboard snippets for a clipboard manager. ' +
+    KIND_HINT[kind] +
+    ' Reply with ONLY a short descriptive title, 2-5 words, no quotes, no trailing punctuation.\n\n' +
+    'Name this snippet:\n\n'
+  )
+}
 
 /**
  * Gives freshly captured clips an AI-generated title using the user's own
@@ -34,6 +52,7 @@ export class Enricher {
     if (item.title !== undefined) return
     if (item.kind !== 'text' && item.kind !== 'code' && item.kind !== 'markdown') return
     if (item.content.length < MIN_CHARS) return
+    const kind = item.kind
 
     // Mark it immediately so the card shows a "naming…" shimmer even while the
     // request waits in the queue behind an earlier clip.
@@ -41,17 +60,17 @@ export class Enricher {
     this.emitTitling()
 
     // One request at a time — clipboard bursts shouldn't fan out.
-    this.queue = this.queue.then(() => this.enrich(item.id, item.content))
+    this.queue = this.queue.then(() => this.enrich(item.id, kind, item.content))
   }
 
-  private async enrich(itemId: string, content: string): Promise<void> {
+  private async enrich(itemId: string, kind: EnrichableKind, content: string): Promise<void> {
     const key = this.settings.aiKey()
     if (!key) {
       this.finish(itemId)
       return
     }
     try {
-      const raw = await this.requestTitle(key, content.slice(0, CONTENT_SNIPPET))
+      const raw = await this.requestTitle(key, buildPrompt(kind), content.slice(0, CONTENT_SNIPPET))
       const title = sanitizeTitle(raw)
       if (!title) return
       const current = this.store.get(itemId)
@@ -74,29 +93,29 @@ export class Enricher {
     this.onTitlingChange([...this.inFlight])
   }
 
-  private async requestTitle(key: string, snippet: string): Promise<string> {
+  private async requestTitle(key: string, prompt: string, snippet: string): Promise<string> {
     switch (this.settings.aiProvider()) {
       case 'anthropic':
-        return this.requestAnthropic(key, snippet)
+        return this.requestAnthropic(key, prompt, snippet)
       case 'openai':
-        return this.requestOpenAi(key, snippet)
+        return this.requestOpenAi(key, prompt, snippet)
       case 'gemini':
-        return this.requestGemini(key, snippet)
+        return this.requestGemini(key, prompt, snippet)
     }
   }
 
-  private async requestAnthropic(key: string, snippet: string): Promise<string> {
+  private async requestAnthropic(key: string, prompt: string, snippet: string): Promise<string> {
     const client = new Anthropic({ apiKey: key, timeout: TIMEOUT_MS, maxRetries: 1 })
     const response = await client.messages.create({
       model: this.settings.aiModel(),
       max_tokens: 256,
-      messages: [{ role: 'user', content: PROMPT + snippet }]
+      messages: [{ role: 'user', content: prompt + snippet }]
     })
     const block = response.content.find((b) => b.type === 'text')
     return block && block.type === 'text' ? block.text : ''
   }
 
-  private async requestOpenAi(key: string, snippet: string): Promise<string> {
+  private async requestOpenAi(key: string, prompt: string, snippet: string): Promise<string> {
     const res = await fetch('https://api.openai.com/v1/chat/completions', {
       method: 'POST',
       headers: {
@@ -107,7 +126,7 @@ export class Enricher {
         model: this.settings.aiModel(),
         reasoning_effort: 'minimal',
         max_completion_tokens: 256,
-        messages: [{ role: 'user', content: PROMPT + snippet }]
+        messages: [{ role: 'user', content: prompt + snippet }]
       }),
       signal: AbortSignal.timeout(TIMEOUT_MS)
     })
@@ -118,7 +137,7 @@ export class Enricher {
     return data.choices?.[0]?.message?.content ?? ''
   }
 
-  private async requestGemini(key: string, snippet: string): Promise<string> {
+  private async requestGemini(key: string, prompt: string, snippet: string): Promise<string> {
     const res = await fetch(
       `https://generativelanguage.googleapis.com/v1beta/models/${this.settings.aiModel()}:generateContent`,
       {
@@ -128,7 +147,7 @@ export class Enricher {
           'Content-Type': 'application/json'
         },
         body: JSON.stringify({
-          contents: [{ parts: [{ text: PROMPT + snippet }] }],
+          contents: [{ parts: [{ text: prompt + snippet }] }],
           generationConfig: { maxOutputTokens: 256 }
         }),
         signal: AbortSignal.timeout(TIMEOUT_MS)

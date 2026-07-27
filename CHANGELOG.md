@@ -5,6 +5,11 @@ All notable changes to Gem are recorded here. Each version also has a matching
 and SHA-256 checksums. Format loosely follows [Keep a Changelog](https://keepachangelog.com);
 Gem is pre-1.0, so minor versions may include breaking changes.
 
+## [0.2.21] — 2026-07-27
+
+- **Clipboard entries can now be renamed with a double-click**, not just via right-click → Rename — double-click a card's title bar to edit it in place.
+- **Smarter AI-generated titles.** The AI titler now knows whether a clip is plain text, code, or Markdown and names it accordingly (e.g. naming a code snippet by what it does, not restating that it's "code"), instead of one generic prompt for every kind.
+
 ## [0.2.20] — 2026-07-17
 
 - **Fixed the Settings shortcut dropdown being invisible on Windows.** Its `<select>` used a CSS gradient as the background, which macOS ignores (native menu) but Chromium on Windows renders itself and can't apply as a popup background — it silently fell back to plain white while the option text stayed near-white from the dark theme, making every unselected row unreadable. The popup rows now get an explicit solid, theme-aware color.
