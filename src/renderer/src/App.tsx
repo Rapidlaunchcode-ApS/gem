@@ -374,6 +374,7 @@ export function App() {
               onActivate={() => grab(item)}
               onTogglePin={() => void window.api.setPinned(item.id, !item.pinned)}
               onContextMenu={() => void window.api.showItemMenu(item.id)}
+              onStartRename={() => setEditingItemId(item.id)}
               onRenamed={(title) => {
                 setEditingItemId(null)
                 void window.api.renameItem(item.id, title)
