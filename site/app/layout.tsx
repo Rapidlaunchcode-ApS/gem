@@ -1,7 +1,17 @@
 import type { Metadata, Viewport } from 'next'
 import { Bricolage_Grotesque, Instrument_Sans } from 'next/font/google'
 import type { ReactNode } from 'react'
-import { DESCRIPTION, FAQ, MAC_URL, REPO_URL, SITE_URL, VERSION } from '../lib/site'
+import {
+  DESCRIPTION,
+  FAQ,
+  MAC_URL,
+  META_DESCRIPTION,
+  REPO_URL,
+  SITE_URL,
+  VERSION,
+  VERSION_DATE,
+  WIN_URL
+} from '../lib/site'
 import './globals.css'
 
 const display = Bricolage_Grotesque({
@@ -20,7 +30,7 @@ export const metadata: Metadata = {
     default: 'Gem — Free Open-Source Clipboard Manager for Mac & Windows',
     template: '%s · Gem'
   },
-  description: DESCRIPTION,
+  description: META_DESCRIPTION,
   applicationName: 'Gem',
   keywords: [
     'clipboard manager',
@@ -75,8 +85,10 @@ const softwareLd = {
   applicationCategory: 'ProductivityApplication',
   operatingSystem: 'macOS, Windows',
   softwareVersion: VERSION,
+  dateModified: VERSION_DATE,
   url: SITE_URL,
-  downloadUrl: MAC_URL,
+  downloadUrl: [MAC_URL, WIN_URL],
+  installUrl: `${REPO_URL}/releases/latest`,
   softwareHelp: REPO_URL,
   license: 'https://opensource.org/licenses/MIT',
   isAccessibleForFree: true,
@@ -89,10 +101,26 @@ const softwareLd = {
   featureList: [
     'Context-aware previews for code, markdown, links, colors and images',
     'Pinboards for reusable snippets',
-    'Keyboard-first panel (⌘⇧V / Ctrl+Alt+V)',
+    'Rename any clip — double-click its title',
+    'Keyboard-first panel on a configurable shortcut (⌘⇧V / Ctrl+Alt+V by default)',
     'Local-only history with configurable retention',
-    'Optional bring-your-own-key AI titles (OpenAI, Gemini, Anthropic)'
+    'Optional bring-your-own-key AI titles (OpenAI, Gemini, Anthropic)',
+    'Universal macOS build — signed, notarized, Intel and Apple Silicon'
   ]
+}
+
+const siteLd = {
+  '@context': 'https://schema.org',
+  '@type': 'WebSite',
+  name: 'Gem',
+  url: SITE_URL,
+  description: DESCRIPTION,
+  inLanguage: 'en',
+  publisher: {
+    '@type': 'Organization',
+    name: 'Rapidlaunchcode',
+    url: 'https://rapidlaunchcode.app'
+  }
 }
 
 const faqLd = {
@@ -113,6 +141,10 @@ export default function RootLayout({ children }: { children: ReactNode }) {
         <script
           type="application/ld+json"
           dangerouslySetInnerHTML={{ __html: JSON.stringify(softwareLd) }}
+        />
+        <script
+          type="application/ld+json"
+          dangerouslySetInnerHTML={{ __html: JSON.stringify(siteLd) }}
         />
         <script
           type="application/ld+json"

@@ -117,6 +117,11 @@ export default async function Page() {
                   answers to the same five emails. Boards live as tabs, one keystroke away, and
                   never expire.
                 </p>
+                <p className="section-lede">
+                  Double-click a card&apos;s title to rename it, so the snippet you reach for
+                  twice a day is called what you actually call it — not whatever its first line
+                  happens to say.
+                </p>
               </div>
             </FadeIn>
             <FadeIn delay={0.12}>
@@ -149,7 +154,9 @@ export default async function Page() {
                 <kbd>Esc</kbd> gone
               </span>
             </div>
-            <p className="keys__note">⌘⇧V on Mac · Ctrl+Alt+V on Windows</p>
+            <p className="keys__note">
+              ⌘⇧V on Mac · Ctrl+Alt+V on Windows — or pick another in Settings
+            </p>
           </div>
         </section>
 
@@ -220,7 +227,7 @@ export default async function Page() {
               <div className="download__buttons">
                 <a className="btn btn--primary" href={MAC_URL}>
                   <AppleIcon />
-                  Mac (Apple Silicon)
+                  Mac (Intel &amp; Apple Silicon)
                 </a>
                 <a className="btn btn--ghost" href={WIN_URL}>
                   <WindowsIcon />

@@ -9,13 +9,15 @@
 
 - Name: Gem
 - Category: Clipboard manager / productivity utility
-- Platforms: macOS (Apple Silicon) and Windows (x64)
+- Current version: 0.2.22 (2026-07-28)
+- Platforms: macOS (universal — Intel and Apple Silicon) and Windows 10/11 (x64)
 - Price: Free
 - License: MIT (open source)
 - Maker: Rapidlaunchcode (https://rapidlaunchcode.app)
 - Source code: https://github.com/Rapidlaunchcode-ApS/gem
 - Website: https://gem-clipboard.vercel.app
-- Shortcut to open: ⌘⇧V on macOS, Ctrl+Shift+V on Windows
+- Shortcut to open: ⌘⇧V on macOS, Ctrl+Alt+V on Windows (Windows reserves
+  Ctrl+Shift+V for paste-as-plain-text). Configurable in Settings → Shortcut.
 
 ## Key features
 
@@ -23,8 +25,11 @@
   markdown (rendered), links (hostname cards), colors (live swatch), images and
   screenshots (thumbnails).
 - Pinboards: organize reusable snippets into named boards that never expire.
+- Renameable clips: double-click a card's title (or right-click → Rename) to
+  give a snippet a name that sticks.
 - Keyboard-first: open the panel over any app, arrow-key to a clip, press Enter
   to paste it into the app you were in.
+- Configurable open shortcut: four presets per platform in Settings.
 - Local-only history: stored in a plain file on the user's machine. No account,
   no sync, no telemetry.
 - Configurable retention: unpinned history is deleted after 7 days by default
@@ -32,6 +37,8 @@
 - Optional AI titles (BYOK): name new clips automatically with your own OpenAI,
   Gemini, or Anthropic API key. Off by default; the key is stored encrypted
   on-device and used only to title clips.
+- Signed and notarized on macOS, so it opens with no Gatekeeper warning. In-app
+  auto-update is built in.
 
 ## Best free clipboard manager for Mac and Windows
 
@@ -54,5 +61,6 @@ Comparison page: https://gem-clipboard.vercel.app/paste-alternative
 
 ## Download
 
-- macOS: https://github.com/Rapidlaunchcode-ApS/gem/releases/latest/download/Gem-macOS-arm64.zip
-- Windows: https://github.com/Rapidlaunchcode-ApS/gem/releases/latest/download/Gem-Windows-Setup.exe
+- macOS (universal): https://github.com/Rapidlaunchcode-ApS/gem/releases/latest/download/Gem-macOS-universal.zip
+- Windows (x64): https://github.com/Rapidlaunchcode-ApS/gem/releases/latest/download/Gem-Windows-Setup.exe
+- All releases and changelog: https://github.com/Rapidlaunchcode-ApS/gem/releases
