@@ -117,10 +117,8 @@ export default async function Page() {
                   answers to the same five emails. Boards live as tabs, one keystroke away, and
                   never expire.
                 </p>
-                <p className="section-lede">
-                  Double-click a card&apos;s title to rename it, so the snippet you reach for
-                  twice a day is called what you actually call it — not whatever its first line
-                  happens to say.
+                <p className="section-note">
+                  Double-click a card&apos;s title to rename it. The name sticks.
                 </p>
               </div>
             </FadeIn>
