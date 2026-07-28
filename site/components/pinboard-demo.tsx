@@ -55,9 +55,9 @@ export function PinboardDemo() {
           <div className="minicard__body" />
         </motion.div>
         <StaticCard title="Signature" color="#8e8e93">
-          Nicklas Dupont
+          Sam Okafor
           <br />
-          Rapidlaunchcode
+          Support, Acme Co.
         </StaticCard>
         <StaticCard title="Markdown" color="#ff9f0a">
           <strong style={{ color: 'var(--ink)' }}>Release notes</strong>

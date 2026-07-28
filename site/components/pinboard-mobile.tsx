@@ -72,9 +72,9 @@ export function PinboardMobile() {
             Signature
           </div>
           <div className="pinmobile__body">
-            Nicklas Dupont
+            Sam Okafor
             <br />
-            Rapidlaunchcode
+            Support, Acme Co.
           </div>
         </div>
 

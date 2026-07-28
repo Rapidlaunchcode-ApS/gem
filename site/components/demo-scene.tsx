@@ -29,7 +29,10 @@ const TIMELINE: [Phase, number][] = [
 ]
 
 const PANEL_OPEN = ['opening', 'idle', 'toTab', 'clickTab', 'board', 'toCard', 'clickCard', 'selected']
-const BOARD_MODE = ['board', 'toCard', 'clickCard', 'selected']
+// 'closing' stays in board mode on purpose: the panel is still on screen while
+// it warps away, and swapping the cards back to history mid-dismiss reads as the
+// demo glitching. The set reverts during 'closed', once nothing is visible.
+const BOARD_MODE = ['board', 'toCard', 'clickCard', 'selected', 'closing']
 const AT_TAB = ['toTab', 'clickTab', 'board']
 const AT_CARD = ['toCard', 'clickCard', 'selected']
 
@@ -128,7 +131,7 @@ export function DemoScene() {
           <span style={{ color: '#b8e28a' }}>paste</span>(panel.
           <span style={{ color: '#f4efe7' }}>pick</span>())
           <br />
-          <span style={{ color: '#8a8378' }}>{'// your clipboard, kept'}</span>
+          <span style={{ color: '#a89e90' }}>{'// your clipboard, kept'}</span>
         </div>
       </div>
 
@@ -172,7 +175,12 @@ export function DemoScene() {
         </div>
 
         <div className="demoscene__cards" ref={cardsRef}>
-          <AnimatePresence mode="popLayout" initial={false}>
+          {/* `wait`, not `popLayout`: the whole set swaps at once, and popLayout
+              absolutely-positions the exiting cards — with the grid unpositioned
+              they escaped to the panel and stacked on top of the incoming set.
+              Worse when a background tab throttles timers mid-swap, which parks
+              both sets on screen until you come back. */}
+          <AnimatePresence mode="wait" initial={false}>
             {(board ? BOARD_CARDS : HISTORY_CARDS).map((card, i) => (
               <motion.div
                 key={card.title}

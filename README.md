@@ -12,23 +12,33 @@
 <p align="center">
   <a href="https://github.com/Rapidlaunchcode-ApS/gem/releases/latest/download/Gem-macOS-universal.zip"><b>Download for Mac</b></a> ·
   <a href="https://github.com/Rapidlaunchcode-ApS/gem/releases/latest/download/Gem-Windows-Setup.exe"><b>Download for Windows</b></a> ·
-  <a href="https://gem-clipboard.vercel.app"><b>Gem Clipboard website</b></a> ·
+  <a href="https://www.gemclipboard.app"><b>Gem Clipboard website</b></a> ·
   <a href="CHANGELOG.md"><b>Changelog</b></a>
 </p>
 
-<p align="center">
-  <img src="https://img.shields.io/github/v/release/Rapidlaunchcode-ApS/gem?color=2fbf71&label=release" alt="Latest release">
-  <img src="https://img.shields.io/github/stars/Rapidlaunchcode-ApS/gem?color=2fbf71" alt="GitHub stars">
-  <img src="https://img.shields.io/github/downloads/Rapidlaunchcode-ApS/gem/total?color=2fbf71&label=downloads" alt="Downloads">
-  <img src="https://img.shields.io/badge/platform-macOS%20%7C%20Windows-2f8f5b" alt="Platforms">
-  <img src="https://img.shields.io/badge/license-MIT-2fbf71" alt="MIT license">
-</p>
+<!-- Badges must stay on ONE source line — a newline between them makes GitHub
+     break each onto its own row instead of laying them out inline. -->
+<p align="center"><img src="https://img.shields.io/github/v/release/Rapidlaunchcode-ApS/gem?color=2fbf71&label=release" alt="Latest release">&nbsp; <img src="https://img.shields.io/github/stars/Rapidlaunchcode-ApS/gem?color=2fbf71" alt="GitHub stars">&nbsp; <img src="https://img.shields.io/github/downloads/Rapidlaunchcode-ApS/gem/total?color=2fbf71&label=downloads" alt="Downloads">&nbsp; <img src="https://img.shields.io/badge/platform-macOS%20%7C%20Windows-2f8f5b" alt="Platforms">&nbsp; <img src="https://img.shields.io/badge/license-MIT-2fbf71" alt="MIT license"></p>
+
+---
+
+## What's new — v0.2.23
+
+- **Esc now closes the panel properly.** It used to fade the cards out but leave the
+  frosted window sitting on screen until something else took focus.
+- **The clipboard strip's scrollbar** no longer runs into the panel's rounded corner.
+- **Built on Electron 39** (up from 35) — roughly a year of Chromium and Node security
+  and performance work, plus a refreshed dependency set.
+
+Full history in the [changelog](CHANGELOG.md) · every version also has a
+[GitHub Release](https://github.com/Rapidlaunchcode-ApS/gem/releases) with downloads and
+SHA-256 checksums.
 
 ---
 
 Gem watches your clipboard and turns every copy into something you can actually see —
 highlighted code, rendered markdown, link cards, color swatches, screenshot thumbnails.
-Press **⌘⇧V** (macOS) or **Ctrl+Shift+V** (Windows) to open the panel over any app, arrow
+Press **⌘⇧V** (macOS) or **Ctrl+Alt+V** (Windows) to open the panel over any app, arrow
 to the clip you want, and press <kbd>↵</kbd> to paste it straight back into the app you
 came from.
 
@@ -81,7 +91,7 @@ taskbar window.
 
 | Action | macOS | Windows |
 | --- | --- | --- |
-| Open the panel | `⌘⇧V` | `Ctrl+Shift+V` |
+| Open the panel | `⌘⇧V` | `Ctrl+Alt+V` |
 | Move between clips | `←` / `→` | `←` / `→` |
 | Paste into the previous app | `↵` | `↵` |
 | Quick-look preview | `Space` | `Space` |
