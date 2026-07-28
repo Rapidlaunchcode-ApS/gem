@@ -8,6 +8,26 @@ import { KindIcon, LinkIcon, PinIcon, SparkleIcon } from './Icons'
 
 const PREVIEW_CHARS = 1200
 
+/**
+ * Drag a compact name chip instead of the whole card. A full-size card under the
+ * cursor covers the board tabs you are aiming at; a chip leaves them visible.
+ *
+ * The element has to be in the document for setDragImage to rasterise it, so it
+ * is parked off-screen and removed on the next tick — by then the browser has
+ * taken its snapshot.
+ */
+function useNameDragImage(label: string, color: string) {
+  return (e: React.DragEvent): void => {
+    const chip = document.createElement('div')
+    chip.className = 'dragchip'
+    chip.textContent = label
+    chip.style.setProperty('--dragchip-color', color)
+    document.body.appendChild(chip)
+    e.dataTransfer.setDragImage(chip, 14, chip.offsetHeight / 2)
+    setTimeout(() => chip.remove(), 0)
+  }
+}
+
 interface CardProps {
   item: ClipItem
   /** Set when the card is shown inside a pinboard — colors the header like Paste. */
@@ -44,6 +64,7 @@ export const Card = memo(function Card({
   onEditCancel
 }: CardProps) {
   const headerColor = boardColor ?? (item.kind === 'color' ? item.content : KIND_META[item.kind].color)
+  const setDragImage = useNameDragImage(item.title ?? KIND_META[item.kind].label, headerColor)
 
   return (
     <div
@@ -53,6 +74,7 @@ export const Card = memo(function Card({
       onDragStart={(e) => {
         e.dataTransfer.setData('application/x-gem-item', item.id)
         e.dataTransfer.effectAllowed = 'copy'
+        setDragImage(e)
       }}
       onClick={onActivate}
       onContextMenu={(e) => {
@@ -65,9 +87,10 @@ export const Card = memo(function Card({
     >
       <div
         className="card__header"
-        style={{
-          background: `linear-gradient(180deg, color-mix(in srgb, ${headerColor} 82%, transparent), color-mix(in srgb, ${headerColor} 60%, transparent))`
-        }}
+        // Solid, not a translucent 82%→60% gradient: over the vibrancy window
+        // that let the desktop bleed through and washed every header into the
+        // same hazy tint, so the kind colours stopped reading as distinct.
+        style={{ background: headerColor }}
         onDoubleClick={(e) => {
           if (editing) return
           e.stopPropagation()

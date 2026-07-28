@@ -226,7 +226,7 @@ function ColorCard() {
 function ShotCard() {
   return (
     <div className="bigcard">
-      <div className="bigcard__head" style={{ background: '#ff375f' }}>
+      <div className="bigcard__head" style={{ background: '#0f9b8e' }}>
         <span>Image</span>
         <span>◇</span>
       </div>

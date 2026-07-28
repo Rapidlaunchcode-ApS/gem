@@ -11,7 +11,7 @@ export const KIND_META: Record<ClipKind, KindMeta> = {
   markdown: { label: 'Markdown', color: '#ff9f0a' },
   link: { label: 'Link', color: '#34c759' },
   color: { label: 'Color', color: '#ffd60a' },
-  image: { label: 'Image', color: '#ff375f' }
+  image: { label: 'Image', color: '#0f9b8e' }
 }
 
 export function timeAgo(timestamp: number): string {

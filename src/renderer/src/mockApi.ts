@@ -40,8 +40,8 @@ const demoItems: ClipItem[] = [
     title: 'Signature',
     boardId: 'board-email',
     content:
-      'Nicklas Dupont\nRapidlaunchcode\n\nnicklas@rapidlaunchcode.app\nrapidlaunchcode.app',
-    chars: 79,
+      'Sam Okafor\nSupport, Acme Co.\n\nsam@example.com\nexample.com',
+    chars: 57,
     pinned: false,
     copiedAt: now - 8 * 60_000
   },
