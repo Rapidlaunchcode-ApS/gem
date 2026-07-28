@@ -41,7 +41,7 @@ const demoItems: ClipItem[] = [
     boardId: 'board-email',
     content:
       'Sam Okafor\nSupport, Acme Co.\n\nsam@example.com\nexample.com',
-    chars: 79,
+    chars: 57,
     pinned: false,
     copiedAt: now - 8 * 60_000
   },

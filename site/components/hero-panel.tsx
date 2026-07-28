@@ -268,7 +268,7 @@ const POOL: Card[] = [
     key: 'text',
     title: 'Signature',
     color: '#8e8e93',
-    meta: '79 characters',
+    meta: '57 characters',
     body: (
       <div className="clipcard__body">
         Sam Okafor
