@@ -2,9 +2,15 @@ export const SITE_URL = 'https://gem-clipboard.vercel.app'
 export const REPO_URL = 'https://github.com/Rapidlaunchcode-ApS/gem'
 export const MAC_URL = `${REPO_URL}/releases/latest/download/Gem-macOS-universal.zip`
 export const WIN_URL = `${REPO_URL}/releases/latest/download/Gem-Windows-Setup.exe`
-export const VERSION = '0.2.16'
+export const VERSION = '0.2.22'
+/** Ships in the SoftwareApplication JSON-LD as dateModified. Bump with VERSION. */
+export const VERSION_DATE = '2026-07-28'
 
 export const TAGLINE = 'Every copy, kept and understood.'
+/** Search-result description — kept under ~155 chars so Google doesn't truncate it. */
+export const META_DESCRIPTION =
+  'Gem is a free, open-source clipboard manager for Mac and Windows. Searchable history, context-aware previews, pinboards. No account, no subscription.'
+/** The long form — used for OG/JSON-LD, where there is no snippet limit. */
 export const DESCRIPTION =
   'Looking for a free alternative to Paste? Gem is an open-source (MIT), local-first clipboard manager for macOS and Windows — with code syntax highlighting, Markdown rendering, link cards, and color-swatch previews, plus pinboards and optional AI titles. Free, no account, no subscription.'
 
@@ -24,7 +30,19 @@ export const FAQ: { q: string; a: string }[] = [
   },
   {
     q: 'Does Gem work on Windows?',
-    a: 'Yes. Gem ships native builds for both macOS (Apple Silicon) and Windows (x64). The Windows version uses an acrylic panel on Windows 11 and opens with Ctrl+Alt+V (Windows reserves Ctrl+Shift+V for paste-as-plain-text).'
+    a: 'Yes. Gem ships native builds for both macOS and Windows (x64). The Windows version uses an acrylic panel on Windows 11 and opens with Ctrl+Alt+V (Windows reserves Ctrl+Shift+V for paste-as-plain-text).'
+  },
+  {
+    q: 'Does Gem run on Intel Macs?',
+    a: 'Yes. The macOS download is a universal build — one app that runs natively on both Intel and Apple Silicon Macs. There is no separate Intel download to pick.'
+  },
+  {
+    q: 'Can I rename a clip in Gem?',
+    a: 'Yes. Double-click a card’s title to rename it in place, or right-click the card and choose Rename. Your name sticks, so a snippet you reuse can be called what you actually call it instead of showing its first line.'
+  },
+  {
+    q: 'Can I change the keyboard shortcut that opens Gem?',
+    a: 'Yes. Settings → Shortcut offers a few presets per platform — ⌘⇧V, ⌘⌥V, ⌃⇧V or ⌘⇧Space on macOS, and Ctrl+Alt+V, Ctrl+Shift+Space, Alt+Shift+V or Win+Shift+V on Windows.'
   },
   {
     q: 'How is Gem different from Paste?',
