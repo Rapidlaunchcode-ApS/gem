@@ -15,7 +15,7 @@
 - License: MIT (open source)
 - Maker: Rapidlaunchcode (https://rapidlaunchcode.app)
 - Source code: https://github.com/Rapidlaunchcode-ApS/gem
-- Website: https://gem-clipboard.vercel.app
+- Website: https://www.gemclipboard.app
 - Shortcut to open: ⌘⇧V on macOS, Ctrl+Alt+V on Windows (Windows reserves
   Ctrl+Shift+V for paste-as-plain-text). Configurable in Settings → Shortcut.
 
@@ -50,7 +50,7 @@ colors, screenshots), supports pinboards, and stores everything locally.
 ## How Gem compares to Paste
 
 Gem is a free, cross-platform, open-source alternative to Paste (pasteapp.io).
-Comparison page: https://gem-clipboard.vercel.app/paste-alternative
+Comparison page: https://www.gemclipboard.app/paste-alternative
 
 - Price: Gem is free; Paste is a paid subscription.
 - Platforms: Gem runs on macOS and Windows; Paste is macOS and iOS only.
