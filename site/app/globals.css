@@ -359,6 +359,10 @@ a {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 0.9rem;
+  /* AnimatePresence popLayout takes the departing card out of grid flow by
+     absolutely positioning it — without this it would resolve against the panel
+     and land on top of the remaining cards. */
+  position: relative;
 }
 
 @media (max-width: 780px) {
@@ -401,6 +405,25 @@ a {
   overflow: hidden;
 }
 
+/* Age on the left, what-it-is on the right — the app's own card footer. */
+.clipcard__foot {
+  display: flex;
+  justify-content: space-between;
+  gap: 0.5rem;
+  flex-shrink: 0;
+  padding: 0.4rem 0.85rem;
+  border-top: 1px solid var(--line);
+  background: color-mix(in srgb, var(--paper-deep) 55%, transparent);
+  font-size: 0.7rem;
+  color: var(--ink-faint);
+  white-space: nowrap;
+}
+
+.clipcard__foot span:last-child {
+  overflow: hidden;
+  text-overflow: ellipsis;
+}
+
 .clipcard__body--code {
   font-family: 'SF Mono', ui-monospace, Menlo, Consolas, monospace;
   font-size: 0.73rem;
@@ -426,6 +449,38 @@ a {
   display: flex;
   align-items: center;
   justify-content: center;
+}
+
+/* Image clip: a drawn stand-in for a screenshot thumbnail. The site ships no
+   bitmaps, so the "photo" is CSS like every other mock here. */
+.clipcard__body--shot {
+  padding: 0;
+  display: flex;
+  flex-direction: column;
+  gap: 0.4rem;
+  background: linear-gradient(150deg, #f6efe6 0%, #eadfd0 55%, #e2d3c0 100%);
+  padding: 0.7rem;
+}
+
+.shot__bar {
+  height: 0.5rem;
+  border-radius: 3px;
+  background: rgba(28, 21, 16, 0.16);
+  margin-bottom: 0.15rem;
+}
+
+.shot__line {
+  height: 0.38rem;
+  border-radius: 3px;
+  background: rgba(28, 21, 16, 0.1);
+}
+
+.shot__line--wide {
+  width: 100%;
+}
+
+.shot__line--short {
+  width: 55%;
 }
 
 .hexchip {
@@ -834,6 +889,9 @@ a {
   font-size: clamp(0.55rem, 1.15vw, 0.82rem);
   line-height: 1.8;
   white-space: nowrap;
+  /* Anything not wrapped in a token span — `= `, `(panel.`, `())` — inherited
+     --ink (#1c1510) and rendered near-black inside a near-black window. */
+  color: #e3dcd1;
 }
 
 .demoscene__panel {
@@ -874,6 +932,9 @@ a {
   display: grid;
   grid-template-columns: repeat(4, 1fr);
   gap: 0.7rem;
+  /* Contain any absolutely-positioned exiting card to the grid box instead of
+     letting it resolve against .demoscene__panel. */
+  position: relative;
 }
 
 .democard {
@@ -961,7 +1022,10 @@ a {
   min-width: 0;
 }
 
-@media (max-width: 860px) {
+/* Stack well before the 860px used elsewhere. The left column holds up to 30rem,
+   so under ~1024px the right one drops to ~300px — narrower than the pinboard
+   demo's own tab row, which then wraps to two lines and collides with the cards. */
+@media (max-width: 1024px) {
   .split {
     grid-template-columns: 1fr;
   }
