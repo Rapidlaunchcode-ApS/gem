@@ -2,7 +2,7 @@ export const SITE_URL = 'https://www.gemclipboard.app'
 export const REPO_URL = 'https://github.com/Rapidlaunchcode-ApS/gem'
 export const MAC_URL = `${REPO_URL}/releases/latest/download/Gem-macOS-universal.zip`
 export const WIN_URL = `${REPO_URL}/releases/latest/download/Gem-Windows-Setup.exe`
-export const VERSION = '0.2.22'
+export const VERSION = '0.2.23'
 /** Ships in the SoftwareApplication JSON-LD as dateModified. Bump with VERSION. */
 export const VERSION_DATE = '2026-07-28'
 
