@@ -16,18 +16,18 @@
     "dist:win": "electron-vite build && electron-builder --win"
   },
   "dependencies": {
-    "@anthropic-ai/sdk": "^0.110.0",
-    "dompurify": "^3.2.4",
+    "@anthropic-ai/sdk": "^0.115.0",
+    "dompurify": "^3.4.12",
     "electron-updater": "^6.8.9",
     "highlight.js": "^11.11.1",
-    "marked": "^15.0.7",
-    "react": "^19.0.0",
-    "react-dom": "^19.0.0",
-    "zod": "^3.24.2"
+    "marked": "^18.0.7",
+    "react": "^19.2.8",
+    "react-dom": "^19.2.8",
+    "zod": "^4.4.3"
   },
   "devDependencies": {
     "@electron/notarize": "^3.1.1",
-    "@types/node": "^22.13.10",
+    "@types/node": "^26.1.2",
     "@types/react": "^19.0.10",
     "@types/react-dom": "^19.0.4",
     "@vitejs/plugin-react": "^4.3.4",
