@@ -216,7 +216,10 @@ export function App() {
         case 'Escape':
           e.preventDefault()
           if (previewOpen) setPreviewOpen(false)
-          else dismiss()
+          // Ask main to hide — it plays the leave ramp and hides the window.
+          // Calling dismiss() directly would only fade the card out and leave
+          // the native window sitting on screen as an empty rectangle.
+          else void window.api.hidePanel()
           break
         case 'Backspace':
           if (e.metaKey || e.ctrlKey) {
