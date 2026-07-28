@@ -4,6 +4,7 @@ import { DemoScene } from '../components/demo-scene'
 import { FadeIn } from '../components/fade-in'
 import { HeroPanel } from '../components/hero-panel'
 import { KeyPress } from '../components/keys'
+import { MacbookPro } from '../components/macbook-pro'
 import { PinboardDemo } from '../components/pinboard-demo'
 import { PinboardMobile } from '../components/pinboard-mobile'
 import { Scrolly } from '../components/scrolly'
@@ -101,7 +102,12 @@ export default async function Page() {
             </p>
           </FadeIn>
           <FadeIn delay={0.1}>
-            <DemoScene />
+            <div className="macbook">
+              <MacbookPro className="macbook__frame" aria-hidden="true" />
+              <div className="macbook__screen">
+                <DemoScene />
+              </div>
+            </div>
             <DemoMobile />
           </FadeIn>
         </section>
