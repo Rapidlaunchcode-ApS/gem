@@ -50,8 +50,26 @@ usable references treat a supporting detail.
 
 ## Component matching
 
-No section was hand-built this round — the only change was to copy and text
-hierarchy inside an existing, already-designed section, so no
-`component-library` / 21st.dev lookup applied. A new section here does need
-one: catalog first (`docs/catalog/index.md`), then 21st.dev, then hand-build,
-logging matches and misses in this file.
+**"In action" — laptop frame → matched on 21st.dev, reimplemented.**
+`https://21st.dev/@designali-in/components/macbook-pro` (id 1540), pulled with
+`21st get 1540 --json`. Direction was named by the user: pasteapp.io frames its
+product shot in a MacBook rather than floating a bare screenshot, and Gem sells
+a panel that only makes sense *over a desktop* — the bezel is what tells you
+that.
+
+Reimplemented into `components/macbook-pro.tsx` rather than installed, for two
+reasons worth keeping:
+- Upstream paints the screen from an `src` image. This site has no bitmap
+  screenshots by design — every mock is live DOM — so the `<image>` slot and its
+  clipPath are dropped and `DemoScene` is overlaid into the screen rect instead
+  (`.macbook__screen`, positioned from the artwork's own x/y/w/h). The demo keeps
+  animating inside the laptop, and nothing goes stale when the app's UI changes.
+- The camera dot shipped as `#080d4c`. Brand rule: no blue anywhere. Neutral
+  dark now.
+
+The Safari mockup (`@dillionverma/safari`) was considered in the same pass and
+**not used** — nothing on this page is a browser story.
+
+Anything new still follows the order: `component-library` catalog first
+(`docs/catalog/index.md`), then 21st.dev, then hand-build, logged here either
+way.

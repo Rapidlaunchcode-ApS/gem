@@ -731,6 +731,45 @@ a {
     linear-gradient(135deg, #ffb45c 0%, #ff7e4f 48%, #b8446a 100%);
 }
 
+/* ── MacBook frame around the demo ──────────────────────
+   The SVG sets the box; the screen overlay is positioned from the same numbers
+   as the artwork's screen rect (x 74.52 / y 21.32 / w 501.22 / h 323.85 in a
+   650x400 viewBox), so the scene lands exactly inside the bezel. */
+
+.macbook {
+  position: relative;
+  margin-top: 2.4rem;
+}
+
+.macbook__frame {
+  display: block;
+  width: 100%;
+  height: auto;
+  /* currentColor paints the screen rect — the ground behind the scene. */
+  color: #0b0b0d;
+  filter: drop-shadow(0 26px 50px rgba(28, 21, 16, 0.22));
+}
+
+.macbook__screen {
+  position: absolute;
+  left: 11.4646%;
+  top: 5.33%;
+  width: 77.1108%;
+  height: 80.9625%;
+  border-radius: 6px;
+  overflow: hidden;
+}
+
+/* Inside the bezel the scene is the screen — it drops its own framing. */
+.macbook__screen .demoscene {
+  margin-top: 0;
+  height: 100%;
+  aspect-ratio: auto;
+  border: none;
+  border-radius: 0;
+  box-shadow: none;
+}
+
 .demoscene__menubar {
   display: flex;
   align-items: center;
@@ -1369,6 +1408,9 @@ a {
 }
 
 @media (max-width: 860px) {
+  /* The laptop frame goes too — a MacBook rendered 380px wide is a toy, and the
+     phone-shaped demomobile is the honest small-screen telling. */
+  .macbook,
   .demoscene {
     display: none;
   }
