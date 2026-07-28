@@ -5,6 +5,12 @@ All notable changes to Gem are recorded here. Each version also has a matching
 and SHA-256 checksums. Format loosely follows [Keep a Changelog](https://keepachangelog.com);
 Gem is pre-1.0, so minor versions may include breaking changes.
 
+## [0.2.23] — 2026-07-28
+
+- **Fixed Esc leaving an empty panel behind.** Pressing Esc faded the cards out but never told the app to close the window, so the frosted rectangle stayed on screen — sitting over whatever you were working on until something else took focus. Every other way of dismissing the panel (clicking away, pressing the shortcut again, pasting) closed it properly; only Esc was affected. Esc now closes the panel with the same animation as everything else.
+- **The clipboard strip's scrollbar no longer runs into the panel's rounded corner** — it's inset to line up with the cards above it.
+- **Now built on Electron 39** (from 35), so Gem picks up roughly a year of Chromium and Node security and performance work. Alongside it, the app's dependencies were updated in one batch — including DOMPurify, which sanitizes rendered Markdown previews.
+
 ## [0.2.22] — 2026-07-28
 
 - **Fixed the doubled outline around the panel's corners.** The panel drew its top edge twice — a 1px hairline border plus an inset highlight in the same color right underneath it — so the top rendered 2px thick against 1px sides, and because the inset highlight is offset a pixel down, it curled around each corner. The result read as a second rounded rectangle sitting behind the panel, most visible at the top corners on macOS. One hairline now, even all the way around.
