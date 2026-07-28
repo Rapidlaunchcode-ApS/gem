@@ -524,6 +524,15 @@ a {
   max-width: 52ch;
 }
 
+/* A supporting detail under a lede. Deliberately NOT a second .section-lede —
+   two paragraphs of equal weight blur which one is the section's actual claim. */
+.section-note {
+  margin-top: 0.8rem;
+  font-size: 0.85rem;
+  color: var(--ink-faint);
+  max-width: 52ch;
+}
+
 /* ── Scrollytelling ─────────────────────────────────── */
 
 .scrolly {
