@@ -1,4 +1,4 @@
-export const SITE_URL = 'https://gem-clipboard.vercel.app'
+export const SITE_URL = 'https://www.gemclipboard.app'
 export const REPO_URL = 'https://github.com/Rapidlaunchcode-ApS/gem'
 export const MAC_URL = `${REPO_URL}/releases/latest/download/Gem-macOS-universal.zip`
 export const WIN_URL = `${REPO_URL}/releases/latest/download/Gem-Windows-Setup.exe`

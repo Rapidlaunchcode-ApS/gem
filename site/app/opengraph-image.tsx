@@ -70,7 +70,7 @@ export default function OpengraphImage() {
           <span style={{ display: 'flex', color: 'rgba(28,21,16,0.28)' }}>•</span>
           <span style={{ display: 'flex', color: 'rgba(28,21,16,0.6)' }}>Open source</span>
           <span style={{ display: 'flex', color: 'rgba(28,21,16,0.28)' }}>•</span>
-          <span style={{ display: 'flex', color: 'rgba(28,21,16,0.6)' }}>gem-clipboard.vercel.app</span>
+          <span style={{ display: 'flex', color: 'rgba(28,21,16,0.6)' }}>gemclipboard.app</span>
         </div>
       </div>
     ),
