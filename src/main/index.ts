@@ -592,7 +592,9 @@ function registerIpc(): void {
     // The panel re-reads settings each time it opens, so no push needed here.
   })
 
-  ipcMain.handle('panel:hide', () => hidePanelNow())
+  // Animated, not instant: this is the Esc/dismiss path, so it gets the same
+  // lockstep card+window leave as a blur or a second shortcut press.
+  ipcMain.handle('panel:hide', () => requestHidePanel())
   ipcMain.handle('panel:open', () => showPanel())
   ipcMain.handle('settings:open', () => openSettings())
   ipcMain.handle('settings:close', () => closeSettings())

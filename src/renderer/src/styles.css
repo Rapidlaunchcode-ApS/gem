@@ -370,6 +370,9 @@ body {
 
 .strip::-webkit-scrollbar-track {
   background: transparent;
+  /* Inset to the strip's own 16px gutter — otherwise the thumb runs into the
+     panel's rounded corners instead of lining up with the cards above it. */
+  margin-inline: 16px;
 }
 
 /* Square glass cards */
