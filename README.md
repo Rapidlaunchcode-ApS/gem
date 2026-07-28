@@ -26,6 +26,10 @@
 
 - **Esc now closes the panel properly.** It used to fade the cards out but leave the
   frosted window sitting on screen until something else took focus.
+- **Dragging a clip onto a pinboard drags just its name**, so the card no longer covers
+  the tabs you're aiming at.
+- **Solid card headers.** They were a translucent gradient that let the desktop through
+  and washed every kind colour into the same tint. Images also move from red to teal.
 - **The clipboard strip's scrollbar** no longer runs into the panel's rounded corner.
 - **Built on Electron 39** (up from 35) — roughly a year of Chromium and Node security
   and performance work, plus a refreshed dependency set.
