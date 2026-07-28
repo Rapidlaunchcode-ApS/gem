@@ -9,6 +9,9 @@ Gem is pre-1.0, so minor versions may include breaking changes.
 
 - **Fixed Esc leaving an empty panel behind.** Pressing Esc faded the cards out but never told the app to close the window, so the frosted rectangle stayed on screen — sitting over whatever you were working on until something else took focus. Every other way of dismissing the panel (clicking away, pressing the shortcut again, pasting) closed it properly; only Esc was affected. Esc now closes the panel with the same animation as everything else.
 - **The clipboard strip's scrollbar no longer runs into the panel's rounded corner** — it's inset to line up with the cards above it.
+- **Dragging a clip onto a pinboard now drags just its name.** The full-size card used to follow the cursor and cover the very tabs you were aiming at; you now drag a small labelled chip and can see where you're dropping.
+- **Card headers are solid again.** They were painted as a translucent gradient, so the desktop showed through and every kind — code, link, colour, image — washed into the same hazy tint instead of reading as its own colour.
+- **Images are teal instead of red.** The old header colour looked like an error state.
 - **Now built on Electron 39** (from 35), so Gem picks up roughly a year of Chromium and Node security and performance work. Alongside it, the app's dependencies were updated in one batch — including DOMPurify, which sanitizes rendered Markdown previews.
 
 ## [0.2.22] — 2026-07-28
