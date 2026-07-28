@@ -9,7 +9,7 @@
 
 - Name: Gem
 - Category: Clipboard manager / productivity utility
-- Current version: 0.2.22 (2026-07-28)
+- Current version: 0.2.23 (2026-07-28)
 - Platforms: macOS (universal — Intel and Apple Silicon) and Windows 10/11 (x64)
 - Price: Free
 - License: MIT (open source)
