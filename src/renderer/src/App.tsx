@@ -402,7 +402,7 @@ export function App() {
         <Preview item={selected} onClose={() => setPreviewOpen(false)} />
       )}
 
-      {dimmed && <div className="panel__scrim" aria-hidden />}
+      <div className={`panel__scrim${dimmed ? '' : ' panel__scrim--hidden'}`} aria-hidden />
     </div>
   )
 }
