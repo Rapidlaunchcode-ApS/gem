@@ -122,7 +122,11 @@ body {
   opacity: 0;
 }
 
-/* Modal scrim: dim + blur the panel while the Settings window is open. */
+/* Modal scrim: dim + blur the panel while the Settings window is open. Stays
+   mounted and transitions opacity both ways (rather than mount/unmount) so a
+   Settings close that lands mid-panel-fade — e.g. clicking outside both
+   windows, which hides the panel and un-dims it in the same tick — fades out
+   instead of popping off and flashing the fade underneath it. */
 .panel__scrim {
   position: absolute;
   inset: 0;
@@ -131,16 +135,13 @@ body {
   background: rgba(8, 10, 14, 0.44);
   backdrop-filter: blur(7px) saturate(85%);
   -webkit-backdrop-filter: blur(7px) saturate(85%);
-  animation: gem-scrim-in 0.2s ease;
+  opacity: 1;
+  transition: opacity 0.16s ease;
 }
 
-@keyframes gem-scrim-in {
-  from {
-    opacity: 0;
-  }
-  to {
-    opacity: 1;
-  }
+.panel__scrim--hidden {
+  opacity: 0;
+  pointer-events: none;
 }
 
 /* ── Header ─────────────────────────────────────────── */

@@ -5,6 +5,10 @@ All notable changes to Gem are recorded here. Each version also has a matching
 and SHA-256 checksums. Format loosely follows [Keep a Changelog](https://keepachangelog.com);
 Gem is pre-1.0, so minor versions may include breaking changes.
 
+## [0.2.24] — 2026-08-03
+
+- **Fixed a flash when Settings closed by clicking outside the app.** Clicking outside both the panel and Settings dismisses them together — that un-dims the panel and fades it out in the same instant. The dim overlay used to pop off the screen the moment Settings closed instead of fading with it, flashing the brighter panel underneath for a frame mid-close. It now fades out in step with everything else.
+
 ## [0.2.23] — 2026-07-28
 
 - **Fixed Esc leaving an empty panel behind.** Pressing Esc faded the cards out but never told the app to close the window, so the frosted rectangle stayed on screen — sitting over whatever you were working on until something else took focus. Every other way of dismissing the panel (clicking away, pressing the shortcut again, pasting) closed it properly; only Esc was affected. Esc now closes the panel with the same animation as everything else.
